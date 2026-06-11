@@ -89,39 +89,40 @@ function mixHex(a, b, t) {
 const D = (name, emoji, color, sub, query, itunesTerm, vibe) =>
   ({ name, emoji, color, sub, query, itunesTerm, vibe });
 
+/* query: 컴필레이션 영상이 아니라 '공식 뮤직비디오가 있는 음원'을 찾는 검색어 */
 const DRINKS = {
   hot: [
     [ // body: LIGHT
-      D('GREEN TEA', '🌿', '#9caf6f', 'CALM · ZEN · LEAF BLEND', 'calm zen ambient piano playlist', 'piano ambient', 'warm acoustic'),
-      D('CHAMOMILE', '🌼', '#d9c47a', 'SOFT · FLORAL · EVENING BLEND', 'soft acoustic evening playlist', 'acoustic cafe', 'warm acoustic'),
-      D('HONEY YUZU TEA', '🍯', '#e0a83e', 'SWEET · CITRUS · WARM BLEND', 'warm sweet acoustic pop playlist', 'sweet acoustic pop', 'warm acoustic'),
+      D('GREEN TEA', '🌿', '#9caf6f', 'CALM · ZEN · LEAF BLEND', 'calm piano ballad official music video', 'piano ambient', 'warm acoustic'),
+      D('CHAMOMILE', '🌼', '#d9c47a', 'SOFT · FLORAL · EVENING BLEND', 'soft acoustic ballad official music video', 'acoustic cafe', 'warm acoustic'),
+      D('HONEY YUZU TEA', '🍯', '#e0a83e', 'SWEET · CITRUS · WARM BLEND', 'sweet acoustic pop official music video', 'sweet acoustic pop', 'warm acoustic'),
     ],
     [ // body: MEDIUM
-      D('MATCHA LATTE', '🍵', '#88a764', 'EARTHY · SMOOTH · GREEN BLEND', 'matcha lofi chill beats playlist', 'chill lofi', 'chill lofi beats'),
-      D('CHAI LATTE', '🫖', '#b07b4a', 'SPICED · COZY · MILK BLEND', 'cozy chai jazz cafe playlist', 'jazz cafe', 'cozy jazz'),
-      D('CARAMEL LATTE', '🍮', '#c98e4f', 'SWEET · BUTTERY · COZY BLEND', 'sweet cozy pop playlist', 'city pop', 'warm acoustic'),
+      D('MATCHA LATTE', '🍵', '#88a764', 'EARTHY · SMOOTH · GREEN BLEND', 'mellow r&b official music video', 'chill lofi', 'chill lofi beats'),
+      D('CHAI LATTE', '🫖', '#b07b4a', 'SPICED · COZY · MILK BLEND', 'jazz soul official music video', 'jazz cafe', 'cozy jazz'),
+      D('CARAMEL LATTE', '🍮', '#c98e4f', 'SWEET · BUTTERY · COZY BLEND', 'city pop official music video', 'city pop', 'warm acoustic'),
     ],
     [ // body: HEAVY
-      D('COFFEE', '☕', '#3f2d22', 'INTENSE · DARK · ROASTED BLEND', 'dark roast deep jazz playlist', 'jazz piano', 'cozy jazz'),
-      D('FLAT WHITE', '🥛', '#a07852', 'SMOOTH · VELVET · MILK BLEND', 'smooth jazz coffee shop playlist', 'smooth jazz', 'cozy jazz'),
-      D('HOT CHOCOLATE', '🍫', '#6e4a33', 'SWEET · RICH · COCOA BLEND', 'warm soul r&b playlist', 'soul r&b', 'cozy jazz'),
+      D('COFFEE', '☕', '#3f2d22', 'INTENSE · DARK · ROASTED BLEND', 'smooth jazz vocal official music video', 'jazz piano', 'cozy jazz'),
+      D('FLAT WHITE', '🥛', '#a07852', 'SMOOTH · VELVET · MILK BLEND', 'soul ballad official music video', 'smooth jazz', 'cozy jazz'),
+      D('HOT CHOCOLATE', '🍫', '#6e4a33', 'SWEET · RICH · COCOA BLEND', 'r&b soul official music video', 'soul r&b', 'cozy jazz'),
     ],
   ],
   cold: [
     [ // body: LIGHT
-      D('KIWI JUICE', '🥝', '#9bbf3b', 'TANGY · GREEN · FRESH BLEND', 'fresh morning indie pop playlist', 'indie pop', 'fresh indie pop'),
-      D('LEMONADE', '🍋', '#dede8d', 'ZESTY · SPARKLING · SUMMER BLEND', 'refreshing summer pop playlist', 'summer pop', 'fresh indie pop'),
-      D('ORANGE JUICE', '🍊', '#f5a637', 'BRIGHT · CITRUS · MORNING BLEND', 'bright happy morning pop playlist', 'happy pop', 'fresh indie pop'),
+      D('KIWI JUICE', '🥝', '#9bbf3b', 'TANGY · GREEN · FRESH BLEND', 'indie pop official music video', 'indie pop', 'fresh indie pop'),
+      D('LEMONADE', '🍋', '#dede8d', 'ZESTY · SPARKLING · SUMMER BLEND', 'summer pop official music video', 'summer pop', 'fresh indie pop'),
+      D('ORANGE JUICE', '🍊', '#f5a637', 'BRIGHT · CITRUS · MORNING BLEND', 'upbeat pop official music video', 'happy pop', 'fresh indie pop'),
     ],
     [ // body: MEDIUM
-      D('GREEN JUICE', '🥬', '#4f8f46', 'CLEAN · CRISP · DETOX BLEND', 'clean fresh chill house playlist', 'chill house', 'fresh indie pop'),
-      D('PEACH ICED TEA', '🍑', '#e8a06a', 'BREEZY · FRUITY · AFTERNOON BLEND', 'breezy afternoon chill pop playlist', 'chill pop', 'fresh indie pop'),
-      D('MANGO SMOOTHIE', '🥭', '#f3b04e', 'TROPICAL · SWEET · SUNNY BLEND', 'tropical sweet pop playlist', 'tropical house', 'fresh indie pop'),
+      D('GREEN JUICE', '🥬', '#4f8f46', 'CLEAN · CRISP · DETOX BLEND', 'chill house official music video', 'chill house', 'fresh indie pop'),
+      D('PEACH ICED TEA', '🍑', '#e8a06a', 'BREEZY · FRUITY · AFTERNOON BLEND', 'chill pop official music video', 'chill pop', 'fresh indie pop'),
+      D('MANGO SMOOTHIE', '🥭', '#f3b04e', 'TROPICAL · SWEET · SUNNY BLEND', 'tropical house official music video', 'tropical house', 'fresh indie pop'),
     ],
     [ // body: HEAVY
-      D('COLD BREW', '🧊', '#3a2a20', 'BOLD · SLOW · DARK BLEND', 'cold brew dark lofi beats playlist', 'dark r&b', 'chill lofi beats'),
-      D('ICED LATTE', '🥤', '#b9986e', 'CHILL · SMOOTH · STUDY BLEND', 'chill study lofi playlist', 'lofi', 'chill lofi beats'),
-      D('BERRY SMOOTHIE', '🫐', '#a64d79', 'SWEET · BERRY · VELVET BLEND', 'sweet berry r&b pop playlist', 'k-r&b', 'chill lofi beats'),
+      D('COLD BREW', '🧊', '#3a2a20', 'BOLD · SLOW · DARK BLEND', 'dark r&b official music video', 'dark r&b', 'chill lofi beats'),
+      D('ICED LATTE', '🥤', '#b9986e', 'CHILL · SMOOTH · STUDY BLEND', 'mellow pop official music video', 'lofi', 'chill lofi beats'),
+      D('BERRY SMOOTHIE', '🫐', '#a64d79', 'SWEET · BERRY · VELVET BLEND', 'k-r&b official music video', 'k-r&b', 'chill lofi beats'),
     ],
   ],
 };
@@ -164,17 +165,30 @@ function updateCupVisual() {
 /* ════════════════════════════════════════════════
    2) API — YouTube Data API v3 / iTunes Search(JSONP)
    ════════════════════════════════════════════════ */
-const DEMO_SETS = {
-  'cozy jazz': ['36YnV9STBqc', 'jfKfPfyJRdk', '4xDzrJKXOOY'],
-  'warm acoustic': ['36YnV9STBqc', 'rUxyKA_-grg', 'jfKfPfyJRdk'],
-  'chill lofi beats': ['jfKfPfyJRdk', 'rUxyKA_-grg', '4xDzrJKXOOY'],
-  'fresh indie pop': ['4xDzrJKXOOY', '36YnV9STBqc', 'jfKfPfyJRdk'],
-};
+/* 데모 모드(키 없음): 공식 뮤직비디오가 있는 음원들로 무드별 플레이리스트 구성 */
 const DEMO_TITLES = {
-  'jfKfPfyJRdk': ['lofi hip hop radio — beats to relax/study to', 'Lofi Girl'],
-  'rUxyKA_-grg': ['lofi hip hop radio — beats to sleep/chill to', 'Lofi Girl'],
-  '4xDzrJKXOOY': ['synthwave radio — beats to chill/game to', 'Lofi Girl'],
-  '36YnV9STBqc': ['The Good Life Radio · 24/7 Live Radio', 'The Good Life Radio x Sensual Musique'],
+  '2Vv-BfVoq4g': ['Ed Sheeran - Perfect (Official Music Video)', 'Ed Sheeran'],
+  '450p7goxZqg': ['John Legend - All of Me (Official Video)', 'John Legend'],
+  'YQHsXMglC9A': ['Adele - Hello (Official Music Video)', 'Adele'],
+  'V1Pl8CzNzCw': ['Billie Eilish, Khalid - lovely (Official Music Video)', 'Billie Eilish'],
+  'wXhTHyIgQ_U': ['Post Malone - Circles (Official Music Video)', 'Post Malone'],
+  'RgKAFK5djSk': ['Wiz Khalifa - See You Again ft. Charlie Puth (Official Video)', 'Wiz Khalifa'],
+  'JGwWNGJdvx8': ['Ed Sheeran - Shape of You (Official Music Video)', 'Ed Sheeran'],
+  'hT_nvWreIhg': ['OneRepublic - Counting Stars (Official Music Video)', 'OneRepublic'],
+  'ZbZSe6N_BXs': ['Pharrell Williams - Happy (Official Music Video)', 'Pharrell Williams'],
+  '60ItHLz5WEA': ['Alan Walker - Faded (Official Music Video)', 'Alan Walker'],
+  'kXYiU_JCYtU': ['Linkin Park - Numb (Official Music Video)', 'Linkin Park'],
+  'OPf0YbXqDm0': ['Mark Ronson - Uptown Funk ft. Bruno Mars (Official Video)', 'Mark Ronson'],
+  '09R8_2nJtjg': ['Maroon 5 - Sugar (Official Music Video)', 'Maroon 5'],
+  'CevxZvSJLk8': ['Katy Perry - Roar (Official Music Video)', 'Katy Perry'],
+  'nfWlot6h_JM': ['Taylor Swift - Shake It Off (Official Video)', 'Taylor Swift'],
+  'kJQP7kiw5Fk': ['Luis Fonsi - Despacito ft. Daddy Yankee (Official Video)', 'Luis Fonsi'],
+};
+const DEMO_SETS = {
+  'cozy jazz': ['2Vv-BfVoq4g', '450p7goxZqg', 'YQHsXMglC9A', 'V1Pl8CzNzCw', 'wXhTHyIgQ_U', 'RgKAFK5djSk'],
+  'warm acoustic': ['2Vv-BfVoq4g', 'JGwWNGJdvx8', '450p7goxZqg', 'hT_nvWreIhg', 'YQHsXMglC9A', 'ZbZSe6N_BXs'],
+  'chill lofi beats': ['wXhTHyIgQ_U', 'V1Pl8CzNzCw', '60ItHLz5WEA', 'RgKAFK5djSk', 'kXYiU_JCYtU', 'YQHsXMglC9A'],
+  'fresh indie pop': ['OPf0YbXqDm0', 'ZbZSe6N_BXs', '09R8_2nJtjg', 'CevxZvSJLk8', 'nfWlot6h_JM', 'kJQP7kiw5Fk'],
 };
 
 function demoQueue(profile) {
@@ -186,13 +200,12 @@ function demoQueue(profile) {
   }));
 }
 
-async function searchYouTube(profile) {
-  const key = getApiKey();
-  if (!key) return { items: demoQueue(profile), demo: true };
-
+/* YouTube 검색 (음악 카테고리 + 임베드 가능 영상만) */
+async function ytSearch(q, key, max) {
   const url = 'https://www.googleapis.com/youtube/v3/search'
-    + `?part=snippet&type=video&videoCategoryId=10&maxResults=8&safeSearch=none`
-    + `&q=${encodeURIComponent(profile.query)}&key=${encodeURIComponent(key)}`;
+    + `?part=snippet&type=video&videoCategoryId=10&maxResults=${max}`
+    + `&videoEmbeddable=true&videoSyndicated=true&safeSearch=none`
+    + `&q=${encodeURIComponent(q)}&key=${encodeURIComponent(key)}`;
   const res = await fetch(url);
   if (!res.ok) {
     const err = new Error(`YouTube API 오류 (HTTP ${res.status})`);
@@ -200,7 +213,7 @@ async function searchYouTube(profile) {
     throw err;
   }
   const data = await res.json();
-  const items = (data.items || [])
+  return (data.items || [])
     .filter((i) => i.id && i.id.videoId)
     .map((i) => ({
       videoId: i.id.videoId,
@@ -209,32 +222,62 @@ async function searchYouTube(profile) {
       thumb: (i.snippet.thumbnails.medium || i.snippet.thumbnails.default || {}).url ||
              `https://i.ytimg.com/vi/${i.id.videoId}/hqdefault.jpg`,
     }));
+}
+
+/* 핵심 매칭: iTunes에서 무드에 맞는 '실제 곡' 10개를 추린 뒤,
+   곡마다 YouTube에서 공식 뮤직비디오를 찾아 플레이리스트 구성 */
+async function searchYouTube(profile) {
+  const key = getApiKey();
+  if (!key) return { items: demoQueue(profile), demo: true };
+
+  const tracks = await searchItunesTracks(profile.itunesTerm || profile.query, 10);
+  if (tracks.length >= 3) {
+    const found = await Promise.all(tracks.map(async (t) => {
+      try {
+        const v = await ytSearch(`${t.artistName} ${t.trackName} official music video`, key, 1);
+        if (!v.length) return null;
+        return { ...v[0], title: `${t.trackName} — ${t.artistName}`, preview: t.previewUrl };
+      } catch { return null; }
+    }));
+    const seen = new Set();
+    const items = found.filter((i) => i && !seen.has(i.videoId) && seen.add(i.videoId));
+    if (items.length >= 3) return { items: items.slice(0, 10), demo: false };
+  }
+  // 폴백: 무드 키워드로 공식 MV 직접 검색
+  const items = await ytSearch(profile.query, key, 10);
   if (!items.length) { const e = new Error('empty'); e.kind = 'empty'; throw e; }
   return { items, demo: false };
 }
 
-/* iTunes Search API — CORS 회피를 위해 JSONP 사용 (키 불필요) */
-function searchItunes(term) {
+/* iTunes Search API — CORS 회피를 위해 JSONP 사용 (키 불필요)
+   무드 키워드로 실제 발매 곡들을 추려 반환 */
+function searchItunesTracks(term, limit = 10) {
   return new Promise((resolve) => {
     const cb = '__mycup_it_' + Math.random().toString(36).slice(2);
     const script = document.createElement('script');
-    const timer = setTimeout(done, 8000);
-    function done(track) {
+    const timer = setTimeout(() => done([]), 8000);
+    function done(tracks) {
       clearTimeout(timer);
       delete window[cb];
       script.remove();
-      resolve(track || null);
+      resolve(tracks);
     }
     window[cb] = (data) => {
-      const t = (data && data.results || []).find((r) => r.previewUrl);
-      done(t ? { trackName: t.trackName, artistName: t.artistName,
-                 previewUrl: t.previewUrl, artwork: t.artworkUrl100 } : null);
+      const list = ((data && data.results) || [])
+        .filter((r) => r.previewUrl)
+        .map((r) => ({ trackName: r.trackName, artistName: r.artistName,
+                       previewUrl: r.previewUrl, artwork: r.artworkUrl100 }));
+      done(list.slice(0, limit));
     };
     script.src = 'https://itunes.apple.com/search'
-      + `?term=${encodeURIComponent(term)}&media=music&entity=song&limit=12&country=KR&callback=${cb}`;
-    script.onerror = () => done(null);
+      + `?term=${encodeURIComponent(term)}&media=music&entity=song&limit=${limit + 5}&country=KR&callback=${cb}`;
+    script.onerror = () => done([]);
     document.head.appendChild(script);
   });
+}
+
+function searchItunes(term) {
+  return searchItunesTracks(term, 1).then((a) => a[0] || null);
 }
 
 /* ════════════════════════════════════════════════
@@ -377,19 +420,27 @@ function enterPlay(autostart = true) {
   swatch.style.background = mixHex(p.color, '#ffffff', 0.78); // 옅은 음료 틴트 위 그래픽
   swatch.style.opacity = '1';
   $('swatch-emoji').textContent = p.emoji || '🥤';
-  $('press-track').textContent = state.itunes
-    ? `${state.itunes.trackName} — ${state.itunes.artistName}`
-    : '미리듣기 트랙 없음';
 
   renderUpNext();
   renderReceipt();
   playCurrent(autostart);
 }
 
+/* 현재 곡의 iTunes 30초 프리뷰 (곡별 프리뷰 우선, 없으면 블렌드 대표 트랙) */
+function currentPreview() {
+  const t = state.queue[state.qIndex];
+  if (t && t.preview) return { url: t.preview, label: t.title };
+  if (state.itunes && state.itunes.previewUrl)
+    return { url: state.itunes.previewUrl, label: `${state.itunes.trackName} — ${state.itunes.artistName}` };
+  return null;
+}
+
 async function playCurrent(autostart = true) {
   const track = state.queue[state.qIndex];
   if (!track) return;
   $('now-playing').textContent = `♪ ${track.title} · ${track.channel}`;
+  const pv = currentPreview();
+  $('press-track').textContent = pv ? pv.label : '미리듣기 트랙 없음';
   $('progress-fill').style.width = '0%';
   $('progress-head').style.left = '0%';
   $('pantone-swatch').style.opacity = '1'; // 재생 전엔 음료 그래픽 노출
@@ -467,11 +518,13 @@ function setupLongPress() {
   let timer = null;
 
   const start = () => {
+    const pv = currentPreview();
+    if (!pv) return;
     state.pressing = true;
     card.classList.add('pressed');
     state.wasPlaying = playerPlaying();
     if (state.player && state.player.pauseVideo) state.player.pauseVideo();
-    previewAudio.src = state.itunes.previewUrl;
+    previewAudio.src = pv.url;
     previewAudio.currentTime = 0;
     previewAudio.play().catch(() => toast('미리듣기를 재생할 수 없어요'));
   };
@@ -485,7 +538,7 @@ function setupLongPress() {
   };
 
   card.addEventListener('pointerdown', () => {
-    if (!state.itunes || !state.itunes.previewUrl) return;
+    if (!currentPreview()) return;
     timer = setTimeout(start, 350);
   });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) =>
@@ -507,6 +560,7 @@ function saveCurrentBlend() {
     name: p.name, emoji: p.emoji, code: p.code, color: p.color, sub: p.sub,
     sliders: p.sliders, hot: p.hot, vibe: p.vibe,
     videoId: t.videoId, videoTitle: t.title, channel: t.channel, thumb: t.thumb,
+    preview: t.preview || null, // 저장 곡 자체의 iTunes 30초 프리뷰
     itunes: state.itunes, demo: state.demo,
     starred: false,
   });
@@ -582,7 +636,8 @@ async function openSaved(item) {
     query: drink ? drink.query : `${item.vibe || 'chill'} music playlist`,
     itunesTerm: drink ? drink.itunesTerm : '',
   };
-  const savedTrack = { videoId: item.videoId, title: item.videoTitle, channel: item.channel, thumb: item.thumb };
+  const savedTrack = { videoId: item.videoId, title: item.videoTitle, channel: item.channel,
+                       thumb: item.thumb, preview: item.preview || null };
   state.queue = [savedTrack];
   state.qIndex = 0;
   state.itunes = item.itunes || null;
@@ -594,7 +649,7 @@ async function openSaved(item) {
   try {
     const yt = await searchYouTube(state.profile);
     if (!state.savedMode || state.queue[0].videoId !== savedTrack.videoId) return; // 화면 이탈 시 무시
-    const extra = yt.items.filter((v) => v.videoId !== savedTrack.videoId).slice(0, 5);
+    const extra = yt.items.filter((v) => v.videoId !== savedTrack.videoId).slice(0, 9); // 저장곡 포함 10곡
     state.queue = [savedTrack, ...extra];
     state.demo = yt.demo;
     renderUpNext();
