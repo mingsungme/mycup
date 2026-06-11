@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0e0e0c" />
+<title>My Cup — Mood-to-Drink Music Player</title>
+<link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ════════ SCR-01 · 온보딩 스플래시 ════════ -->
+  <section class="screen scr-splash active" id="scr-splash">
+    <div class="splash-bg"></div>
+    <div class="splash-inner">
+      <p class="splash-quote">crafted with<br/>love, peace.</p>
+      <h1 class="splash-logo"><span>my</span><span class="logo-gap"></span><span>cup</span></h1>
+      <div class="splash-cup">
+        <div class="steam"><i></i><i></i><i></i></div>
+        <div class="splash-cup-glyph">☕</div>
+        <span class="splash-badge">MATCHA DIFFERENT.</span>
+      </div>
+      <button class="btn-primary splash-enter" id="btn-enter">Start Blending&nbsp;&nbsp;→</button>
+      <p class="splash-fine">By entering, you agree to our mindful brewing rituals.</p>
+    </div>
+  </section>
+
+  <!-- ════════ SCR-02 · 메인 커스텀 ════════ -->
+  <section class="screen scr-order" id="scr-order">
+    <header class="topbar">
+      <span class="topbar-title"><span class="cup-ico">☕</span> My Cup</span>
+      <button class="icon-btn" id="btn-settings" aria-label="설정">⚙</button>
+    </header>
+
+    <div class="order-scroll">
+      <div class="atmosphere">
+        <span class="label-caps">ATMOSPHERE</span>
+        <p class="atmosphere-title" id="atmosphere-title">Today: Rainy Matcha Mood</p>
+      </div>
+
+      <div class="cup-stage">
+        <div class="cup-steam" id="cup-steam"><i></i><i></i><i></i></div>
+        <div class="cup">
+          <div class="cup-fill" id="cup-fill"></div>
+          <div class="cup-ice" id="cup-ice"><i></i><i></i><i></i></div>
+          <div class="cup-glyph">☕</div>
+        </div>
+        <p class="cup-name" id="cup-name">CLASSIC LATTE&nbsp;&nbsp;<em id="cup-code">555 C</em></p>
+      </div>
+
+      <div class="sliders" id="sliders">
+        <div class="slider-row">
+          <input type="range" class="vslider" id="sl-sweet" min="0" max="100" value="50" />
+          <span class="slider-label">SWEET</span>
+          <span class="slider-val" id="val-sweet">50</span>
+        </div>
+        <div class="slider-row">
+          <input type="range" class="vslider" id="sl-temp" min="0" max="100" value="50" />
+          <span class="slider-label">TEMP</span>
+          <span class="slider-val" id="val-temp">50</span>
+        </div>
+        <div class="slider-row">
+          <input type="range" class="vslider" id="sl-body" min="0" max="100" value="50" />
+          <span class="slider-label">BODY</span>
+          <span class="slider-val" id="val-body">50</span>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-blend" id="btn-blend">Blend My Cup ✨</button>
+      <p class="blend-eta">Estimated brewing time: 0:03</p>
+    </div>
+  </section>
+
+  <!-- ════════ SCR-03 · 블렌딩 로딩 ════════ -->
+  <section class="screen scr-loading" id="scr-loading">
+    <span class="label-caps loading-caps">BREWING YOUR MIX</span>
+    <div class="brew-art" id="brew-art">
+      <div class="brew-swirl"></div>
+      <div class="brew-cup">☕</div>
+    </div>
+    <p class="brew-msg" id="brew-msg">원두를 고르는 중...</p>
+    <div class="brew-bar"><div class="brew-bar-fill" id="brew-bar-fill"></div></div>
+
+    <div class="brew-error hidden" id="brew-error">
+      <p id="brew-error-msg">플레이리스트 매칭에 실패했어요.</p>
+      <div class="brew-error-actions">
+        <button class="btn-primary" id="btn-retry">재시도</button>
+        <button class="btn-ghost" id="btn-reset-sliders">슬라이더 초기화</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCR-04 / SCR-06 · 재생 화면 ════════ -->
+  <section class="screen scr-play" id="scr-play">
+    <header class="topbar">
+      <button class="icon-btn" id="btn-play-back" aria-label="뒤로">‹</button>
+      <span class="topbar-title serif" id="play-title">My Cup</span>
+      <span class="topbar-spacer"></span>
+    </header>
+
+    <div class="play-scroll">
+      <!-- 팬톤 칩 카드 + 유튜브 플레이어 -->
+      <div class="pantone-card" id="pantone-card">
+        <div class="pantone-media">
+          <div id="yt-player"></div>
+          <div class="pantone-swatch" id="pantone-swatch"><span id="swatch-emoji">🥤</span></div>
+          <div class="press-overlay" id="press-overlay">
+            <span class="label-caps">♪ iTunes 30s PREVIEW</span>
+            <p id="press-track">—</p>
+          </div>
+        </div>
+        <div class="pantone-label">
+          <p class="pantone-name" id="pantone-name">LEMON TEA <em id="pantone-code">106 C</em></p>
+          <p class="pantone-sub label-caps" id="pantone-sub">REFRESHING · CITRUS · SUMMER BLEND</p>
+        </div>
+      </div>
+      <p class="press-hint label-caps">카드를 길게 누르면 iTunes 30초 미리듣기 ♪</p>
+
+      <!-- 진행바 -->
+      <div class="progress-wrap">
+        <div class="progress-track" id="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div class="progress-head" id="progress-head">☁</div>
+        </div>
+        <div class="progress-times">
+          <span id="time-cur">0:00</span><span id="time-dur">0:00</span>
+        </div>
+      </div>
+
+      <!-- 컨트롤 -->
+      <div class="controls">
+        <button class="ctrl-btn" id="btn-prev" aria-label="이전">⏮</button>
+        <button class="ctrl-btn ctrl-main" id="btn-toggle" aria-label="재생/일시정지">▶</button>
+        <button class="ctrl-btn" id="btn-next" aria-label="다음">⏭</button>
+      </div>
+
+      <p class="now-playing" id="now-playing">—</p>
+
+      <button class="btn-glass" id="btn-save">＋ 라이브러리에 저장</button>
+
+      <!-- Coming Up Next -->
+      <div class="upnext" id="upnext-sec">
+        <div class="upnext-head">
+          <h3 class="serif">Coming Up Next</h3>
+          <span class="chip-soft" id="upnext-count"></span>
+        </div>
+        <ul class="upnext-list" id="upnext-list"></ul>
+      </div>
+
+      <!-- 브루잉 영수증 -->
+      <div class="receipt" id="receipt">
+        <div class="receipt-cup">☕</div>
+        <p class="receipt-title">BREWING RECEIPT</p>
+        <p class="receipt-batch label-caps" id="receipt-batch">#BATCH-000-MOOD</p>
+        <div class="receipt-rows" id="receipt-rows"></div>
+        <div class="receipt-music">
+          <p class="label-caps receipt-music-cap">MUSIC NOTES</p>
+          <div class="receipt-rows" id="receipt-music-rows"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCR-05 · 라이브러리 ════════ -->
+  <section class="screen scr-library" id="scr-library">
+    <header class="topbar">
+      <span class="topbar-title"><span class="cup-ico">☕</span> My Blends</span>
+      <select class="sort-select" id="sort-select" aria-label="정렬">
+        <option value="recent">최신순</option>
+        <option value="name">이름순</option>
+      </select>
+    </header>
+
+    <div class="lib-scroll">
+      <div class="lib-grid" id="lib-grid"></div>
+      <div class="lib-empty hidden" id="lib-empty">
+        <p class="serif">아직 저장된 블렌드가 없어요</p>
+        <p>슬라이더로 나만의 음료를 제조하고<br/>플레이리스트를 저장해 보세요.</p>
+        <button class="btn-primary" id="btn-go-order">Blend My Cup ✨</button>
+      </div>
+    </div>
+
+    <!-- NOW BREWING 미니 플레이어 -->
+    <div class="miniplayer hidden" id="miniplayer">
+      <div class="mini-progress"><div class="mini-progress-fill" id="mini-progress-fill"></div></div>
+      <div class="mini-body">
+        <div class="mini-art" id="mini-art">🍵</div>
+        <div class="mini-meta" id="mini-meta">
+          <span class="label-caps mini-cap">NOW BREWING</span>
+          <p class="mini-name serif" id="mini-name">—</p>
+        </div>
+        <button class="mini-btn" id="btn-mini-toggle" aria-label="재생/일시정지">❚❚</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 하단 탭바 ════════ -->
+  <nav class="tabbar hidden" id="tabbar">
+    <button class="tab" data-go="order"><span class="tab-ico">📖</span>Order</button>
+    <button class="tab" data-go="play"><span class="tab-ico">▶</span>Play</button>
+    <button class="tab" data-go="library"><span class="tab-ico">🗂</span>Library</button>
+  </nav>
+
+  <!-- ════════ ⚙ 설정 모달 ════════ -->
+  <div class="modal hidden" id="modal-settings">
+    <div class="modal-card">
+      <h3 class="serif">⚙ API 설정</h3>
+      <p class="modal-desc">YouTube Data API v3 키를 입력하세요.<br/>
+        키는 <b>이 브라우저의 localStorage에만</b> 저장됩니다.<br/>
+        <span class="modal-fine">GCP Console → YouTube Data API v3 사용 설정 → API 키 발급<br/>
+        (iTunes 30초 미리듣기는 키가 필요 없어요. 키가 없으면 데모 모드로 동작합니다.)</span>
+      </p>
+      <input type="password" id="input-yt-key" placeholder="AIza... (YouTube API Key)" autocomplete="off" />
+      <div class="modal-actions">
+        <button class="btn-ghost" id="btn-key-clear">키 삭제</button>
+        <button class="btn-primary" id="btn-key-save">저장</button>
+      </div>
+      <button class="modal-close" id="btn-settings-close" aria-label="닫기">✕</button>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast hidden" id="toast"></div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
