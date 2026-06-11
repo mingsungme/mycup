@@ -27,11 +27,21 @@ python -m http.server 5500
 ## 플레이리스트 매칭 로직
 1. 슬라이더 3축(당도/온도/바디) 조합 → **음료 매트릭스 18종**에서 음료 프로필 결정
    (예: HOT+진함+당도낮음 = ☕ COFFEE)
-2. 음료별 무드 검색어로 YouTube Data API 호출 —
-   **공식 뮤직비디오가 존재하는 음원 10곡**을 추려 플레이리스트 구성
-   (`videoCategoryId=10` 음악 카테고리 + `videoEmbeddable=true` + `maxResults=10`,
-   컴필레이션/믹스 영상이 아니라 개별 공식 음원 단위)
-3. 곡이 끝나면 자동으로 다음 곡 재생, Coming Up Next에서 선택 이동 가능
+2. **컵 사이즈 = 플레이리스트 용량 필터** (oz당 1.25곡)
+
+   | 사이즈 | 용량 | 곡수 | 분량 |
+   |---|---|---|---|
+   | Short | 8oz | 10곡 | 약 40분 |
+   | Tall (기본) | 12oz | 15곡 | 약 60분 |
+   | Grande | 16oz | 20곡 | 약 80분 |
+   | Venti | 20oz | 25곡 | 약 95분 |
+
+3. **선곡 엔진**: Gemini API가 음료 프로필 + 곡수에 맞는 실제 발매곡 리스트 생성
+   (키 없거나 실패 시 → iTunes Search 선곡으로 자동 폴백)
+4. **곡마다 YouTube Data API로 공식 뮤직비디오 검색·매칭** —
+   컴필레이션/믹스 영상이 아니라 개별 공식 음원 단위
+   (`videoCategoryId=10` 음악 카테고리 + `videoEmbeddable=true`)
+5. 곡이 끝나면 자동으로 다음 곡 재생, Coming Up Next에서 선택 이동 가능
 
 ## 핵심 인터랙션
 - **롱프레스 하이브리드 재생**: 재생 화면의 팬톤 카드를 길게 누르면
@@ -44,6 +54,9 @@ python -m http.server 5500
 - **YouTube Data API v3**: 키를 코드에 넣지 마세요. 앱 안 **⚙ 설정**에서 입력하면
   localStorage에만 저장됩니다. (발급: GCP Console → YouTube Data API v3 사용 설정 → API 키)
   - 키가 없으면 무드별로 큐레이션된 공식 뮤직비디오 음원으로 **데모 모드** 동작
+  - 할당량 참고: 곡당 검색 100유닛 → Tall 1회 ≈ 1,500유닛 (기본 일일 10,000유닛)
+- **Gemini API** (선곡 엔진, 선택): aistudio.google.com/apikey 에서 발급 → ⚙ 설정에 입력
+  - 키가 없으면 iTunes 선곡으로 자동 폴백
 - **iTunes Search API**: 키 불필요 (JSONP 호출)
 - `js/config.js`에 직접 넣을 수도 있으나, 그 경우 저장소에 커밋 금지
 

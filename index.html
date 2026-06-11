@@ -71,8 +71,18 @@
         </div>
       </div>
 
+      <div class="sizes-wrap">
+        <span class="label-caps sizes-cap">CUP SIZE</span>
+        <div class="sizes" id="sizes">
+          <button class="size-chip" data-size="short"><b>Short</b><span>8oz</span><i>10곡 · 40분</i></button>
+          <button class="size-chip active" data-size="tall"><b>Tall</b><span>12oz</span><i>15곡 · 60분</i></button>
+          <button class="size-chip" data-size="grande"><b>Grande</b><span>16oz</span><i>20곡 · 80분</i></button>
+          <button class="size-chip" data-size="venti"><b>Venti</b><span>20oz</span><i>25곡 · 95분</i></button>
+        </div>
+      </div>
+
       <button class="btn-primary btn-blend" id="btn-blend">Blend My Cup ✨</button>
-      <p class="blend-eta">Estimated brewing time: 0:03</p>
+      <p class="blend-eta" id="blend-eta">15 tracks · about 60 min</p>
     </div>
   </section>
 
@@ -210,12 +220,13 @@
   <div class="modal hidden" id="modal-settings">
     <div class="modal-card">
       <h3 class="serif">⚙ API 설정</h3>
-      <p class="modal-desc">YouTube Data API v3 키를 입력하세요.<br/>
-        키는 <b>이 브라우저의 localStorage에만</b> 저장됩니다.<br/>
-        <span class="modal-fine">GCP Console → YouTube Data API v3 사용 설정 → API 키 발급<br/>
-        (iTunes 30초 미리듣기는 키가 필요 없어요. 키가 없으면 데모 모드로 동작합니다.)</span>
+      <p class="modal-desc">키는 <b>이 브라우저의 localStorage에만</b> 저장됩니다.<br/>
+        <span class="modal-fine">YouTube: GCP Console → YouTube Data API v3 사용 설정 → API 키 발급<br/>
+        Gemini(선곡 엔진): aistudio.google.com/apikey 에서 발급 — 없으면 iTunes 선곡으로 폴백<br/>
+        (iTunes 30초 미리듣기는 키가 필요 없어요. YouTube 키가 없으면 데모 모드로 동작합니다.)</span>
       </p>
-      <input type="password" id="input-yt-key" placeholder="AIza... (YouTube API Key)" autocomplete="off" />
+      <input type="password" id="input-yt-key" placeholder="AIza... (YouTube Data API Key)" autocomplete="off" />
+      <input type="password" id="input-gemini-key" placeholder="AIza... (Gemini API Key — 선택)" autocomplete="off" />
       <div class="modal-actions">
         <button class="btn-ghost" id="btn-key-clear">키 삭제</button>
         <button class="btn-primary" id="btn-key-save">저장</button>

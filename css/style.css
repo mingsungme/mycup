@@ -188,6 +188,7 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
   padding: 0 var(--margin-m) 110px;
   display: flex; flex-direction: column; align-items: center;
 }
+.order-scroll > * { flex-shrink: 0; } /* 콘텐츠가 길어져도 압축 대신 스크롤 */
 .atmosphere { text-align: center; margin-bottom: var(--sp-md); }
 .atmosphere .label-caps { color: var(--secondary); }
 .atmosphere-title {
@@ -269,6 +270,28 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 }
 .slider-label { font-size: 10px; font-weight: 700; letter-spacing: .15em; color: var(--on-surface-variant); }
 .slider-val { font-size: 12px; color: var(--outline); margin-top: -8px; }
+
+/* 컵 사이즈 선택 */
+.sizes-wrap { width: 100%; margin-bottom: var(--sp-md); text-align: center; }
+.sizes-cap { display: block; margin-bottom: var(--sp-sm); color: var(--secondary); }
+.sizes { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-base); }
+.size-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 4px 9px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--glass-line);
+  background: var(--glass-bg);
+  color: var(--on-surface-variant);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.size-chip b { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.size-chip span { font-size: 10px; letter-spacing: .08em; }
+.size-chip i { font-style: normal; font-size: 9px; color: var(--outline); letter-spacing: .02em; }
+.size-chip.active {
+  background: var(--primary); color: var(--on-primary);
+  border-color: var(--primary);
+}
+.size-chip.active i { color: var(--on-primary-container); }
 
 .btn-blend { width: 100%; }
 .blend-eta { font-size: 12px; color: var(--on-primary-container); margin-top: var(--sp-sm); text-align: center; }
