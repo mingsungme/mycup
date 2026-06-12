@@ -1082,8 +1082,9 @@ function init() {
   $('btn-save').addEventListener('click', saveCurrentBlend);
   setupLongPress();
 
-  // NOW BREWING 미니 플레이어
+  // NOW BREWING 플레이어 바
   $('btn-mini-toggle').addEventListener('click', togglePlayback);
+  $('btn-mini-next').addEventListener('click', nextTrack);
   $('mini-meta').addEventListener('click', () => showScreen('play'));
 
   // 탭바
