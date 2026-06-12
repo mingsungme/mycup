@@ -385,7 +385,7 @@ async function blend() {
     state.engine = yt.engine || (yt.demo ? 'demo' : 'itunes');
     state.itunes = it;
     state.savedMode = false;
-    enterPlay();
+    enterPlay(false); // 플리 생성 후 자동재생 ✕ — ▶ 눌러야 시작
     if (yt.demo) toast('데모 모드 — ⚙ 설정에서 YouTube API 키를 입력하면 실시간 매칭돼요', 3600);
   } catch (e) {
     clearInterval(msgTimer);
@@ -445,7 +445,8 @@ function onPlayerState(e) {
   const playing = e.data === YT.PlayerState.PLAYING;
   $('btn-toggle').textContent = playing ? '❚❚' : '▶';
   $('btn-mini-toggle').textContent = playing ? '❚❚' : '▶';
-  if (playing) $('pantone-swatch').style.opacity = '0'; // 재생 시작 시 음료 그래픽 → 영상
+  // 영상은 노출하지 않음 — 음료 카드 위 이퀄라이저로만 재생 상태 표시
+  document.querySelector('.pantone-media').classList.toggle('playing', playing);
   if (e.data === YT.PlayerState.ENDED) nextTrack();
 }
 
@@ -513,7 +514,7 @@ async function playCurrent(autostart = true) {
   $('press-track').textContent = pv ? pv.label : '미리듣기 트랙 없음';
   $('progress-fill').style.width = '0%';
   $('progress-head').style.left = '0%';
-  $('pantone-swatch').style.opacity = '1'; // 재생 전엔 음료 그래픽 노출
+  $('pantone-swatch').style.opacity = '1'; // 영상 대신 항상 음료 그래픽 카드 노출
   $('btn-toggle').textContent = '▶';
   renderUpNext();
   updateMiniPlayer();
