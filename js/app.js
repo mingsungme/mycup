@@ -256,7 +256,8 @@ async function geminiPickTracks(profile, count) {
     `장르 무드: ${profile.itunesTerm}\n\n` +
     `이 무드에 어울리는, 실제로 발매되었고 YouTube에 공식 뮤직비디오가 있는 곡 ${count}곡을 골라주세요.\n` +
     `규칙: 같은 아티스트 최대 2곡, 한국·해외 곡을 적절히 섞고, 존재하지 않는 곡은 절대 포함하지 마세요.\n` +
-    `JSON 배열로만 답하세요: [{"artist":"아티스트","title":"곡명"}, ...]`;
+    `videoId는 그 곡의 공식 뮤직비디오 YouTube 영상 ID(11자)를 정확히 아는 경우에만 넣고, 불확실하면 null로 두세요.\n` +
+    `JSON 배열로만 답하세요: [{"artist":"아티스트","title":"곡명","videoId":"YouTube영상ID 또는 null"}, ...]`;
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(gkey)}`,
     {
@@ -275,22 +276,60 @@ async function geminiPickTracks(profile, count) {
   return (Array.isArray(list) ? list : [])
     .filter((t) => t && t.artist && t.title)
     .slice(0, count)
-    .map((t) => ({ artistName: t.artist, trackName: t.title, previewUrl: null }));
+    .map((t) => ({ artistName: t.artist, trackName: t.title, previewUrl: null,
+                   videoId: (typeof t.videoId === 'string' && /^[\w-]{11}$/.test(t.videoId)) ? t.videoId : null }));
 }
 
-/* 핵심 매칭: Gemini(선곡) → 폴백 iTunes(선곡) → 곡마다 YouTube 공식 MV 검색
+/* ── YouTube 쿼터를 쓰지 않는 보조 도구들 ──────────
+   1) 썸네일 검증: 영상 ID가 유효하면 mqdefault가 320px,
+      무효하면 120px 플레이스홀더가 옴 (Data API 호출 없음)
+   2) 매칭 캐시: 한 번 찾은 곡↔영상 ID는 localStorage에 저장해 재검색 방지 */
+const LS_VCACHE = 'mycup_video_cache';
+
+function validateVideoId(id) {
+  return new Promise((resolve) => {
+    if (!id || !/^[\w-]{11}$/.test(id)) return resolve(false);
+    const img = new Image();
+    const timer = setTimeout(() => resolve(false), 5000);
+    img.onload = () => { clearTimeout(timer); resolve(img.naturalWidth > 130); };
+    img.onerror = () => { clearTimeout(timer); resolve(false); };
+    img.src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+  });
+}
+
+function vcacheGet(k) {
+  try { return (JSON.parse(localStorage.getItem(LS_VCACHE)) || {})[k] || null; }
+  catch { return null; }
+}
+function vcacheSet(k, v) {
+  try {
+    const c = JSON.parse(localStorage.getItem(LS_VCACHE)) || {};
+    c[k] = v;
+    localStorage.setItem(LS_VCACHE, JSON.stringify(c));
+  } catch { /* 저장 실패해도 동작에는 지장 없음 */ }
+}
+
+/* 핵심 매칭: 선곡은 Gemini/iTunes, 재생은 YouTube.
+   YouTube Data API '검색'은 쿼터(곡당 100유닛)를 크게 먹으므로 최후 보조로만 사용:
+   1) 매칭 캐시 조회 (쿼터 0)
+   2) Gemini가 준 videoId를 썸네일로 검증 (쿼터 0)
+   3) 둘 다 없을 때만 YouTube 검색 (쿼터 소모) → 실패 시 iTunes 30초 프리뷰
    곡수는 컵 사이즈(Short 10 / Tall 15 / Grande 20 / Venti 25)로 결정 */
 async function searchYouTube(profile) {
   const key = getApiKey();
+  const gkey = getGeminiKey();
   const count = (SIZES[profile.size] || SIZES.tall).tracks;
-  if (!key) return { items: demoQueue(profile, count), demo: true, engine: 'demo' };
+  // YouTube '재생'은 쿼터를 안 쓰므로, Gemini 키만 있어도 풀 곡 재생 가능
+  if (!key && !gkey) return { items: demoQueue(profile, count), demo: true, engine: 'demo' };
 
   let tracks = [];
   let engine = 'itunes';
-  try {
-    tracks = await geminiPickTracks(profile, count);
-    if (tracks.length) engine = 'gemini';
-  } catch { /* Gemini 실패 → iTunes 폴백 */ }
+  if (gkey) {
+    try {
+      tracks = await geminiPickTracks(profile, count);
+      if (tracks.length) engine = 'gemini';
+    } catch { /* Gemini 실패 → iTunes 폴백 */ }
+  }
   if (!tracks.length) {
     tracks = await searchItunesTracks(profile.itunesTerm || profile.query, count);
   }
@@ -298,17 +337,29 @@ async function searchYouTube(profile) {
   let quotaBlocked = false;
   if (tracks.length >= 3) {
     const found = await Promise.all(tracks.map(async (t) => {
-      // 프리뷰는 YouTube와 무관하게 확보 (쿼터 소진 시 프리뷰 모드 재료)
+      // 30초 프리뷰는 YouTube와 무관하게 확보 (키 불필요)
       const preview = t.previewUrl ||
         await searchItunesTracks(`${t.artistName} ${t.trackName}`, 1)
           .then((a) => (a[0] ? a[0].previewUrl : null)).catch(() => null);
-      try {
-        const v = await ytSearch(`${t.artistName} ${t.trackName} official music video`, key, 1);
-        if (v.length) return { ...v[0], title: `${t.trackName} — ${t.artistName}`, preview };
-      } catch (e) {
-        if (e.kind === 'quota') quotaBlocked = true;
+
+      const cacheKey = `${t.artistName}|${t.trackName}`.toLowerCase();
+      // 1) 캐시 → 2) Gemini videoId(썸네일 검증) → 3) YouTube 검색(쿼터 소모)
+      let videoId = vcacheGet(cacheKey);
+      if (!videoId && t.videoId && await validateVideoId(t.videoId)) videoId = t.videoId;
+      if (!videoId && key && !quotaBlocked) {
+        try {
+          const v = await ytSearch(`${t.artistName} ${t.trackName} official music video`, key, 1);
+          if (v.length) videoId = v[0].videoId;
+        } catch (e) {
+          if (e.kind === 'quota') quotaBlocked = true;
+        }
       }
-      // YouTube 매칭 실패 → 30초 프리뷰 전용 트랙으로라도 큐에 포함
+      if (videoId) {
+        vcacheSet(cacheKey, videoId);
+        return { videoId, title: `${t.trackName} — ${t.artistName}`, channel: t.artistName,
+                 thumb: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`, preview };
+      }
+      // 영상 매칭 실패 → 30초 프리뷰 전용 트랙으로라도 큐에 포함
       return preview
         ? { videoId: null, title: `${t.trackName} — ${t.artistName}`,
             channel: t.artistName, thumb: t.artwork || '', preview }
@@ -326,15 +377,17 @@ async function searchYouTube(profile) {
                engine: allPreview ? 'itunes-preview' : engine };
     }
   }
-  // 폴백: 무드 키워드로 공식 MV 직접 검색 (쿼터 소진 시 데모 큐레이션)
-  try {
-    const items = await ytSearch(profile.query, key, Math.min(count, 50));
-    if (!items.length) { const e = new Error('empty'); e.kind = 'empty'; throw e; }
-    return { items, demo: false, engine: 'youtube' };
-  } catch (e) {
-    if (e.kind === 'quota' || quotaBlocked) return { items: demoQueue(profile, count), demo: true, engine: 'demo' };
-    throw e;
+  // 폴백: 무드 키워드로 공식 MV 직접 검색 (키 없거나 쿼터 소진이면 데모 큐레이션)
+  if (key && !quotaBlocked) {
+    try {
+      const items = await ytSearch(profile.query, key, Math.min(count, 50));
+      if (!items.length) { const e = new Error('empty'); e.kind = 'empty'; throw e; }
+      return { items, demo: false, engine: 'youtube' };
+    } catch (e) {
+      if (e.kind !== 'quota') throw e;
+    }
   }
+  return { items: demoQueue(profile, count), demo: true, engine: 'demo' };
 }
 
 /* iTunes Search API — CORS 회피를 위해 JSONP 사용 (키 불필요)

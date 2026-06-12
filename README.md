@@ -36,10 +36,15 @@ python -m http.server 5500
    | Grande | 16oz | 20곡 | 약 80분 |
    | Venti | 20oz | 25곡 | 약 95분 |
 
-3. **선곡 엔진**: Gemini API가 음료 프로필 + 곡수에 맞는 실제 발매곡 리스트 생성
+3. **선곡 엔진**: Gemini API가 음료 프로필 + 곡수에 맞는 실제 발매곡 리스트와
+   **공식 MV YouTube videoId까지 함께** 생성
    (키 없거나 실패 시 → iTunes Search 선곡으로 자동 폴백)
-4. **곡마다 YouTube Data API로 공식 뮤직비디오 검색·매칭** —
-   컴필레이션/믹스 영상이 아니라 개별 공식 음원 단위
+4. **영상 매칭 — YouTube 검색 쿼터 최소화 설계**:
+   ① localStorage 매칭 캐시 조회 (쿼터 0)
+   ② Gemini가 준 videoId를 썸네일 핑으로 검증 (쿼터 0, 환각 ID 자동 탈락)
+   ③ 그래도 없는 곡만 YouTube Data API 검색 (곡당 100유닛, 최후 보조)
+   — Gemini 키가 있으면 YouTube 검색 없이도 풀 곡 재생이 가능
+   (YouTube *재생*은 Data API 쿼터를 쓰지 않음)
    (`videoCategoryId=10` 음악 카테고리 + `videoEmbeddable=true`)
 5. 플리 생성 직후엔 자동재생하지 않고 ▶ 대기 (저장곡 재생도 동일)
 6. 재생 화면에는 **뮤직비디오 영상 대신 음료 그래픽 카드만 표시** —
