@@ -195,25 +195,25 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 /* ════════ SCR-02 커스텀 ════════ */
 .order-scroll {
   flex: 1; overflow-y: auto;
-  padding: 0 var(--margin-m) 110px;
+  padding: 0 var(--margin-m) 88px;
   display: flex; flex-direction: column; align-items: center;
 }
 .order-scroll > * { flex-shrink: 0; } /* 콘텐츠가 길어져도 압축 대신 스크롤 */
-.atmosphere { text-align: center; margin-bottom: var(--sp-md); }
+.atmosphere { text-align: center; margin-bottom: var(--sp-sm); }
 .atmosphere .label-caps { color: var(--secondary); }
 .atmosphere-title {
-  font-family: var(--serif); font-size: 24px; line-height: 30px;
-  font-weight: 600; letter-spacing: -0.02em; margin-top: var(--sp-xs);
+  font-family: var(--serif); font-size: 20px; line-height: 26px;
+  font-weight: 600; letter-spacing: -0.02em; margin-top: 2px;
 }
 
-.cup-stage { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: var(--sp-md); }
-.cup-steam { display: flex; gap: 8px; height: 34px; align-items: flex-end; opacity: 0; transition: opacity .4s; }
+.cup-stage { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: var(--sp-sm); }
+.cup-steam { display: flex; gap: 8px; height: 24px; align-items: flex-end; opacity: 0; transition: opacity .4s; }
 .cup-steam.on { opacity: 1; }
 .cup {
   position: relative;
-  width: 132px; height: 158px;
+  width: 104px; height: 122px;
   border: 3px solid rgba(255,255,255,.22);
-  border-radius: 10px 10px 44px 44px;
+  border-radius: 10px 10px 36px 36px;
   overflow: hidden;
   background: rgba(255,255,255,.03);
 }
@@ -231,38 +231,38 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px;
   background: rgba(255,255,255,.25);
 }
-.cup-ice { position: absolute; inset: 0; display: flex; gap: 8px; justify-content: center; padding-top: 52px; opacity: 0; transition: opacity .35s; }
+.cup-ice { position: absolute; inset: 0; display: flex; gap: 6px; justify-content: center; padding-top: 38px; opacity: 0; transition: opacity .35s; }
 .cup-ice.on { opacity: 1; }
 .cup-ice i {
-  width: 18px; height: 18px; border-radius: 5px;
+  width: 14px; height: 14px; border-radius: 4px;
   background: rgba(255,255,255,.5);
   border: 1px solid rgba(255,255,255,.7);
   transform: rotate(12deg);
 }
-.cup-ice i:nth-child(2) { transform: rotate(-18deg) translateY(14px); }
-.cup-ice i:nth-child(3) { transform: rotate(30deg) translateY(4px); }
+.cup-ice i:nth-child(2) { transform: rotate(-18deg) translateY(11px); }
+.cup-ice i:nth-child(3) { transform: rotate(30deg) translateY(3px); }
 .cup-glyph {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 30px; opacity: .35; mix-blend-mode: luminosity;
+  font-size: 24px; opacity: .35; mix-blend-mode: luminosity;
 }
 .cup-name {
-  margin-top: var(--sp-sm);
-  font-size: 13px; font-weight: 700; letter-spacing: .12em;
+  margin-top: var(--sp-base);
+  font-size: 12px; font-weight: 700; letter-spacing: .12em;
 }
 .cup-name em { font-style: normal; color: var(--on-surface-variant); font-weight: 400; }
 
 .sliders {
   display: flex; gap: var(--sp-sm); justify-content: space-evenly;
-  width: 100%; margin-bottom: var(--sp-md);
+  width: 100%; margin-bottom: var(--sp-sm);
   overflow: hidden;
 }
-.slider-row { display: flex; flex-direction: column; align-items: center; gap: var(--sp-sm); }
+.slider-row { display: flex; flex-direction: column; align-items: center; gap: var(--sp-base); }
 .vslider {
   -webkit-appearance: none; appearance: none;
-  width: 150px; height: 4px;
+  width: 116px; height: 4px;
   transform: rotate(-90deg);
-  margin: 73px -45px;           /* 150px 트랙 회전 보정 → 레이아웃 박스 60px로 축소 */
+  margin: 56px -28px;           /* 116px 트랙 회전 보정 → 레이아웃 박스 60px로 축소 */
   background: var(--sc-highest);
   border-radius: var(--r-full);
   outline: none;
@@ -279,15 +279,15 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
   background: var(--secondary); border: 4px solid var(--surface);
 }
 .slider-label { font-size: 10px; font-weight: 700; letter-spacing: .15em; color: var(--on-surface-variant); }
-.slider-val { font-size: 12px; color: var(--outline); margin-top: -8px; }
+.slider-val { font-size: 11px; color: var(--outline); margin-top: -6px; }
 
 /* 컵 사이즈 선택 */
-.sizes-wrap { width: 100%; margin-bottom: var(--sp-md); text-align: center; }
-.sizes-cap { display: block; margin-bottom: var(--sp-sm); color: var(--secondary); }
+.sizes-wrap { width: 100%; margin-bottom: var(--sp-sm); text-align: center; }
+.sizes-cap { display: block; margin-bottom: var(--sp-base); color: var(--secondary); }
 .sizes { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-base); }
 .size-chip {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 10px 4px 9px;
+  padding: 8px 4px 7px;
   border-radius: var(--r-md);
   border: 1px solid var(--glass-line);
   background: var(--glass-bg);
@@ -304,7 +304,7 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 .size-chip.active i { color: var(--on-primary-container); }
 
 .btn-blend { width: 100%; }
-.blend-eta { font-size: 12px; color: var(--on-primary-container); margin-top: var(--sp-sm); text-align: center; }
+.blend-eta { font-size: 11px; color: var(--on-primary-container); margin-top: var(--sp-base); text-align: center; }
 
 /* ════════ SCR-03 로딩 ════════ */
 .scr-loading { align-items: center; justify-content: center; padding: var(--margin-m); text-align: center; }
