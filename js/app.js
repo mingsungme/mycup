@@ -86,6 +86,7 @@ function showScreen(name) {
     tabbar.classList.add('hidden');
   }
   if (name === 'library') { renderLibrary(); updateMiniPlayer(); }
+  else if (libEditMode) setLibEditMode(false); // 라이브러리를 떠나면 편집 모드 종료
 }
 
 /* ════════════════════════════════════════════════
@@ -789,10 +790,28 @@ function sortedLib() {
           ...lib.filter((i) => !i.starred).sort(cmp)];
 }
 
+let libEditMode = false;
+
+function setLibEditMode(on) {
+  libEditMode = on;
+  $('btn-lib-edit').textContent = on ? '완료' : '편집';
+  $('btn-lib-edit').classList.toggle('on', on);
+  $('lib-grid').classList.toggle('editing', on);
+}
+
+function deleteBlend(id) {
+  const lib = loadLib().filter((i) => i.id !== id);
+  saveLib(lib);
+  renderLibrary();
+  toast('블렌드를 삭제했어요');
+  if (!lib.length) setLibEditMode(false);
+}
+
 function renderLibrary() {
   const grid = $('lib-grid');
   const items = sortedLib();
   grid.innerHTML = '';
+  grid.classList.toggle('editing', libEditMode);
   $('lib-empty').classList.toggle('hidden', items.length > 0);
 
   items.forEach((item) => {
@@ -801,6 +820,7 @@ function renderLibrary() {
     // 팬톤 칩 그래픽 카드: 음료 고유색 틴트 + 음료 그래픽 (유튜브 썸네일 ✕)
     const tint = mixHex(item.color || '#c9a06a', '#ffffff', 0.78);
     card.innerHTML = `
+      <button class="lib-del" aria-label="삭제">✕</button>
       <button class="lib-star${item.starred ? ' on' : ''}" aria-label="즐겨찾기">${item.starred ? '★' : '☆'}</button>
       <div class="lib-swatch" style="background:${tint}">
         <span class="lib-emoji">${item.emoji || '🥤'}</span>
@@ -812,6 +832,10 @@ function renderLibrary() {
     card.querySelector('.lib-name').textContent = item.name;
     card.querySelector('.lib-code').textContent =
       `${item.code} · ${new Date(item.savedAt).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}`;
+    card.querySelector('.lib-del').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteBlend(item.id);
+    });
     card.querySelector('.lib-star').addEventListener('click', (e) => {
       e.stopPropagation();
       const lib = loadLib();
@@ -819,7 +843,10 @@ function renderLibrary() {
       if (target) { target.starred = !target.starred; saveLib(lib); }
       renderLibrary();
     });
-    card.addEventListener('click', () => openSaved(item));
+    card.addEventListener('click', () => {
+      if (libEditMode) return; // 편집 모드에선 재생 진입 방지
+      openSaved(item);
+    });
     grid.appendChild(card);
   });
 }
@@ -946,6 +973,7 @@ function init() {
   });
   $('btn-go-order').addEventListener('click', () => showScreen('order'));
   $('sort-select').addEventListener('change', renderLibrary);
+  $('btn-lib-edit').addEventListener('click', () => setLibEditMode(!libEditMode));
 
   // ⚙ 설정 모달
   $('btn-settings').addEventListener('click', () => {

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-<link rel="stylesheet" href="css/style.css?v=7" />
+<link rel="stylesheet" href="css/style.css?v=8" />
 </head>
 <body>
 <div class="app" id="app">
@@ -182,10 +182,13 @@
   <section class="screen scr-library" id="scr-library">
     <header class="topbar">
       <span class="topbar-title"><span class="cup-ico">☕</span> My Blends</span>
-      <select class="sort-select" id="sort-select" aria-label="정렬">
-        <option value="recent">최신순</option>
-        <option value="name">이름순</option>
-      </select>
+      <div class="lib-head-actions">
+        <button class="btn-lib-edit" id="btn-lib-edit">편집</button>
+        <select class="sort-select" id="sort-select" aria-label="정렬">
+          <option value="recent">최신순</option>
+          <option value="name">이름순</option>
+        </select>
+      </div>
     </header>
 
     <div class="lib-scroll">
@@ -241,7 +244,7 @@
   <div class="toast hidden" id="toast"></div>
 </div>
 
-<script src="js/config.js?v=7"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/config.js?v=8"></script>
+<script src="js/app.js?v=8"></script>
 </body>
 </html>

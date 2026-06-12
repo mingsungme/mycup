@@ -64,20 +64,22 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 .app {
   position: relative;
   width: 100%; max-width: 430px;
-  min-height: 100dvh;
+  height: 100dvh;               /* 뷰포트에 정확히 고정 — 화면별 크기 제각각 방지 */
   background: var(--surface);
   overflow: hidden;
   box-shadow: 0 0 60px rgba(0,0,0,.6);
 }
 
-/* ── 스크린 공통 ──────────────────────────────── */
+/* ── 스크린 공통 (페이드 전환으로 자연스럽게 연결) ── */
 .screen {
   position: absolute; inset: 0;
-  display: none;
+  display: flex;
   flex-direction: column;
   background: var(--surface);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .22s ease, visibility .22s;
 }
-.screen.active { display: flex; }
+.screen.active { opacity: 1; visibility: visible; pointer-events: auto; }
 
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
@@ -508,7 +510,7 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
   outline: none;
 }
 .sort-select option { background: var(--sc-high); }
-.lib-scroll { flex: 1; overflow-y: auto; padding: var(--sp-xs) var(--margin-m) 110px; }
+.lib-scroll { flex: 1; overflow-y: auto; padding: var(--sp-xs) var(--margin-m) 170px; } /* 미니플레이어+탭바 여유 */
 .lib-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-sm); }
 .lib-card {
   position: relative;
@@ -552,6 +554,32 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
   display: flex; align-items: center; justify-content: center;
 }
 .lib-star.on { color: var(--tertiary-container); }
+/* 편집 모드: 카드 삭제 */
+.lib-del {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(147, 0, 10, .85);
+  color: #fff; font-size: 13px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+.lib-grid.editing .lib-del { display: flex; }
+.lib-grid.editing .lib-card { animation: wiggle 1.4s ease-in-out infinite; }
+.lib-grid.editing .lib-card:nth-child(2n) { animation-delay: .2s; }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-0.7deg); }
+  75% { transform: rotate(0.7deg); }
+}
+.btn-lib-edit {
+  border: 1px solid var(--glass-line);
+  background: var(--glass-bg);
+  color: var(--on-surface);
+  border-radius: var(--r-full);
+  padding: 8px 14px; font-size: 13px; font-weight: 600;
+}
+.btn-lib-edit.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.lib-head-actions { display: flex; gap: var(--sp-base); align-items: center; }
 .lib-pin {
   grid-column: 1 / -1;
   margin: var(--sp-base) 0 0;
@@ -562,7 +590,8 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 
 /* ── NOW BREWING 미니 플레이어 ── */
 .miniplayer {
-  position: absolute; left: var(--margin-m); right: var(--margin-m); bottom: 84px;
+  position: absolute; left: var(--margin-m); right: var(--margin-m);
+  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
   background: rgba(235, 225, 214, .92);
   -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   border-radius: var(--r-md);
@@ -594,15 +623,14 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
   flex: 0 0 auto;
 }
 
-/* ════════ 탭바 ════════ */
+/* ════════ 탭바 — 하단 고정 도킹 바 (콘텐츠 겹침 방지) ════════ */
 .tabbar {
-  position: absolute; left: var(--margin-m); right: var(--margin-m); bottom: 18px;
+  position: absolute; left: 0; right: 0; bottom: 0;
   display: flex; justify-content: space-around; align-items: center;
-  background: rgba(19, 20, 17, .72);
+  background: rgba(14, 14, 12, .94);
   -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px);
-  border: 1px solid var(--glass-line);
-  border-radius: var(--r-full);
-  padding: 8px;
+  border-top: 1px solid var(--glass-line);
+  padding: 8px 8px calc(10px + env(safe-area-inset-bottom, 0px));
   z-index: 30;
 }
 .tab {
@@ -666,5 +694,5 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 /* 데스크탑에서 모바일 프레임 느낌 */
 @media (min-width: 480px) {
   body { padding: 24px 0; }
-  .app { border-radius: 36px; min-height: calc(100dvh - 48px); border: 1px solid var(--glass-line); }
+  .app { border-radius: 36px; height: calc(100dvh - 48px); border: 1px solid var(--glass-line); }
 }
