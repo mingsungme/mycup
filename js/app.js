@@ -260,26 +260,37 @@ async function geminiPickTracks(profile, count) {
     `가급적 공식 뮤직비디오가 유명한(조회수 높은) 곡 위주로 골라주세요 — videoId를 정확히 아는 곡이 우선입니다.\n` +
     `videoId는 그 곡의 공식 뮤직비디오 YouTube 영상 ID(11자)를 정확히 아는 경우에만 넣고, 불확실하면 null로 두세요.\n` +
     `JSON 배열로만 답하세요: [{"artist":"아티스트","title":"곡명","videoId":"YouTube영상ID 또는 null"}, ...]`;
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(gkey)}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },
-      }),
-    });
-  if (!res.ok) throw new Error(`Gemini API 오류 (HTTP ${res.status})`);
-  const data = await res.json();
-  const text = data.candidates && data.candidates[0] &&
-               data.candidates[0].content.parts.map((p) => p.text || '').join('');
-  const list = JSON.parse(text);
-  return (Array.isArray(list) ? list : [])
-    .filter((t) => t && t.artist && t.title)
-    .slice(0, count)
-    .map((t) => ({ artistName: t.artist, trackName: t.title, previewUrl: null,
-                   videoId: (typeof t.videoId === 'string' && /^[\w-]{11}$/.test(t.videoId)) ? t.videoId : null }));
+  // 모델 폴백: 한도(429)·미지원(404)이면 다음 모델 시도
+  const models = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+  let lastErr = null;
+  for (const model of models) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(gkey)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },
+        }),
+      });
+    if (!res.ok) {
+      lastErr = new Error(`Gemini API 오류 (HTTP ${res.status})`);
+      lastErr.status = res.status;
+      if (res.status === 429 || res.status === 404) continue;
+      throw lastErr;
+    }
+    const data = await res.json();
+    const text = data.candidates && data.candidates[0] &&
+                 data.candidates[0].content.parts.map((p) => p.text || '').join('');
+    const list = JSON.parse(text);
+    return (Array.isArray(list) ? list : [])
+      .filter((t) => t && t.artist && t.title)
+      .slice(0, count)
+      .map((t) => ({ artistName: t.artist, trackName: t.title, previewUrl: null,
+                     videoId: (typeof t.videoId === 'string' && /^[\w-]{11}$/.test(t.videoId)) ? t.videoId : null }));
+  }
+  throw lastErr || new Error('Gemini 응답 없음');
 }
 
 /* ── YouTube 쿼터를 쓰지 않는 보조 도구들 ──────────
@@ -326,12 +337,15 @@ async function searchYouTube(profile) {
 
   let tracks = [];
   let engine = 'itunes';
+  let geminiFail = null;
   if (gkey) {
     try {
       // ID 검증 탈락분을 대비해 여유분(+6)까지 요청 — 최종 큐는 count로 자름
       tracks = await geminiPickTracks(profile, Math.min(count + 6, 40));
       if (tracks.length) engine = 'gemini';
-    } catch { /* Gemini 실패 → iTunes 폴백 */ }
+    } catch (e) {
+      geminiFail = e.status || 'error'; // iTunes 폴백 + 사유는 토스트로 안내
+    }
   }
   if (!tracks.length) {
     tracks = await searchItunesTracks(profile.itunesTerm || profile.query, count);
@@ -379,7 +393,7 @@ async function searchYouTube(profile) {
     if (items.length >= 3) {
       const allPreview = items.every((i) => !i.videoId);
       return { items: items.slice(0, count), demo: false,
-               engine: allPreview ? 'itunes-preview' : engine };
+               engine: allPreview ? 'itunes-preview' : engine, geminiFail };
     }
   }
   // 폴백: 무드 키워드로 공식 MV 직접 검색 (키 없거나 쿼터 소진이면 데모 큐레이션)
@@ -463,7 +477,12 @@ async function blend() {
     state.itunes = it;
     state.savedMode = false;
     enterPlay(false); // 플리 생성 후 자동재생 ✕ — ▶ 눌러야 시작
-    if (yt.engine === 'itunes-preview')
+    if (yt.geminiFail === 429)
+      toast('Gemini 크레딧 소진(429) — ai.studio/projects에서 충전/새 프로젝트 필요'
+            + (yt.engine === 'itunes-preview' ? ' · 지금은 30초 프리뷰로 재생해요' : ''), 5200);
+    else if (yt.geminiFail)
+      toast(`Gemini 선곡 실패(${yt.geminiFail}) — iTunes 선곡으로 대체했어요`, 4200);
+    else if (yt.engine === 'itunes-preview')
       toast('YouTube 검색 할당량 소진 — iTunes 30초 프리뷰 모드로 재생해요 ♪', 4200);
     else if (yt.demo) toast('데모 모드 — ⚙ 설정에서 YouTube API 키를 입력하면 실시간 매칭돼요', 3600);
   } catch (e) {
