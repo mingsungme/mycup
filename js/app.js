@@ -257,6 +257,7 @@ async function geminiPickTracks(profile, count) {
     `장르 무드: ${profile.itunesTerm}\n\n` +
     `이 무드에 어울리는, 실제로 발매되었고 YouTube에 공식 뮤직비디오가 있는 곡 ${count}곡을 골라주세요.\n` +
     `규칙: 같은 아티스트 최대 2곡, 한국·해외 곡을 적절히 섞고, 존재하지 않는 곡은 절대 포함하지 마세요.\n` +
+    `가급적 공식 뮤직비디오가 유명한(조회수 높은) 곡 위주로 골라주세요 — videoId를 정확히 아는 곡이 우선입니다.\n` +
     `videoId는 그 곡의 공식 뮤직비디오 YouTube 영상 ID(11자)를 정확히 아는 경우에만 넣고, 불확실하면 null로 두세요.\n` +
     `JSON 배열로만 답하세요: [{"artist":"아티스트","title":"곡명","videoId":"YouTube영상ID 또는 null"}, ...]`;
   const res = await fetch(
@@ -327,7 +328,8 @@ async function searchYouTube(profile) {
   let engine = 'itunes';
   if (gkey) {
     try {
-      tracks = await geminiPickTracks(profile, count);
+      // ID 검증 탈락분을 대비해 여유분(+6)까지 요청 — 최종 큐는 count로 자름
+      tracks = await geminiPickTracks(profile, Math.min(count + 6, 40));
       if (tracks.length) engine = 'gemini';
     } catch { /* Gemini 실패 → iTunes 폴백 */ }
   }
@@ -367,11 +369,13 @@ async function searchYouTube(profile) {
         : null;
     }));
     const seen = new Set();
-    const items = found.filter((i) => {
+    const deduped = found.filter((i) => {
       if (!i) return false;
       const k = i.videoId || `p:${i.title}`;
       return !seen.has(k) && seen.add(k);
     });
+    // 풀곡(YT 매칭 성공) 우선, 부족분만 30초 프리뷰로 채움
+    const items = [...deduped.filter((i) => i.videoId), ...deduped.filter((i) => !i.videoId)];
     if (items.length >= 3) {
       const allPreview = items.every((i) => !i.videoId);
       return { items: items.slice(0, count), demo: false,
