@@ -157,8 +157,8 @@ function pickDrink(s) {
 function buildProfile(s) {
   const hot = s.temp >= 50;
   const drink = pickDrink(s);
-  const code = `${Math.round(s.sweet / 10)}${Math.round(s.temp / 10)}${Math.round(s.body / 10)}`.padStart(3, '0')
-             + (hot ? ' C' : ' U');
+  const d = (v) => Math.min(9, Math.round(v / 10)); // 100일 때 두 자리(10)가 되지 않게 0~9로 클램프
+  const code = `${d(s.sweet)}${d(s.temp)}${d(s.body)}` + (hot ? ' C' : ' U');
   // 컵 비주얼용 컬러: 음료 고유색을 당도(밝게)·바디(진하게)로 살짝 변조
   const cupColor = mixHex(mixHex(drink.color, '#ffffff', (s.sweet / 100) * 0.18),
                           '#1f1b14', (s.body / 100) * 0.12);
