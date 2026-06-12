@@ -60,6 +60,19 @@ body {
 .hidden { display: none !important; }
 button { font-family: var(--sans); cursor: pointer; border: none; background: none; color: inherit; }
 
+/* Lucide 아이콘 — 부모 font-size 기준 1em, 텍스트 베이스라인 정렬 */
+svg.lucide {
+  width: 1em; height: 1em;
+  vertical-align: -0.125em;
+  flex: 0 0 auto;
+}
+.ctrl-main svg.lucide { width: 26px; height: 26px; }
+.ctrl-main svg.lucide, .upnext-play svg.lucide, .tab.active svg.lucide { fill: currentColor; }
+.mini-btn svg.lucide { width: 17px; height: 17px; fill: currentColor; }
+.lib-star.on svg.lucide { fill: currentColor; }
+.splash-cup-glyph svg.lucide, .brew-cup svg.lucide { stroke-width: 1.25; }
+.progress-head svg.lucide { fill: var(--tertiary-container); color: var(--tertiary-container); }
+
 /* ── 모바일 프레임 ─────────────────────────────── */
 .app {
   position: relative;

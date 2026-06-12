@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-<link rel="stylesheet" href="css/style.css?v=12" />
+<link rel="stylesheet" href="css/style.css?v=13" />
 </head>
 <body>
 <div class="app" id="app">
@@ -22,10 +22,10 @@
       <h1 class="splash-logo"><span>my</span><span class="logo-gap"></span><span>cup</span></h1>
       <div class="splash-cup">
         <div class="steam"><i></i><i></i><i></i></div>
-        <div class="splash-cup-glyph">☕</div>
+        <div class="splash-cup-glyph"><i data-lucide="coffee"></i></div>
         <span class="splash-badge">MATCHA DIFFERENT.</span>
       </div>
-      <button class="btn-primary splash-enter" id="btn-enter">Start Blending&nbsp;&nbsp;→</button>
+      <button class="btn-primary splash-enter" id="btn-enter">Start Blending&nbsp;&nbsp;<i data-lucide="arrow-right"></i></button>
       <p class="splash-fine">By entering, you agree to our mindful brewing rituals.</p>
     </div>
   </section>
@@ -33,8 +33,8 @@
   <!-- ════════ SCR-02 · 메인 커스텀 ════════ -->
   <section class="screen scr-order" id="scr-order">
     <header class="topbar">
-      <span class="topbar-title"><span class="cup-ico">☕</span> My Cup</span>
-      <button class="icon-btn" id="btn-settings" aria-label="설정">⚙</button>
+      <span class="topbar-title"><span class="cup-ico"><i data-lucide="coffee"></i></span> My Cup</span>
+      <button class="icon-btn" id="btn-settings" aria-label="설정"><i data-lucide="settings-2"></i></button>
     </header>
 
     <div class="order-scroll">
@@ -48,7 +48,7 @@
         <div class="cup">
           <div class="cup-fill" id="cup-fill"></div>
           <div class="cup-ice" id="cup-ice"><i></i><i></i><i></i></div>
-          <div class="cup-glyph">☕</div>
+          <div class="cup-glyph"><i data-lucide="coffee"></i></div>
         </div>
         <p class="cup-name" id="cup-name">CLASSIC LATTE&nbsp;&nbsp;<em id="cup-code">555 C</em></p>
       </div>
@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <button class="btn-primary btn-blend" id="btn-blend">Blend My Cup ✨</button>
+      <button class="btn-primary btn-blend" id="btn-blend">Blend My Cup&nbsp;<i data-lucide="sparkles"></i></button>
       <p class="blend-eta" id="blend-eta">15 tracks · about 60 min</p>
     </div>
   </section>
@@ -91,7 +91,7 @@
     <span class="label-caps loading-caps">BREWING YOUR MIX</span>
     <div class="brew-art" id="brew-art">
       <div class="brew-swirl"></div>
-      <div class="brew-cup">☕</div>
+      <div class="brew-cup"><i data-lucide="coffee"></i></div>
     </div>
     <p class="brew-msg" id="brew-msg">원두를 고르는 중...</p>
     <div class="brew-bar"><div class="brew-bar-fill" id="brew-bar-fill"></div></div>
@@ -108,7 +108,7 @@
   <!-- ════════ SCR-04 / SCR-06 · 재생 화면 ════════ -->
   <section class="screen scr-play" id="scr-play">
     <header class="topbar">
-      <button class="icon-btn" id="btn-play-back" aria-label="뒤로">‹</button>
+      <button class="icon-btn" id="btn-play-back" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
       <span class="topbar-title serif" id="play-title">My Cup</span>
       <span class="topbar-spacer"></span>
     </header>
@@ -122,7 +122,7 @@
             <div class="eq" id="eq"><i></i><i></i><i></i></div>
           </div>
           <div class="press-overlay" id="press-overlay">
-            <span class="label-caps">♪ iTunes 30s PREVIEW</span>
+            <span class="label-caps"><i data-lucide="music"></i> iTunes 30s PREVIEW</span>
             <p id="press-track">—</p>
           </div>
         </div>
@@ -131,13 +131,13 @@
           <p class="pantone-sub label-caps" id="pantone-sub">REFRESHING · CITRUS · SUMMER BLEND</p>
         </div>
       </div>
-      <p class="press-hint label-caps">카드·목록을 길게 누르면(웹: 호버) iTunes 30초 미리듣기 ♪</p>
+      <p class="press-hint label-caps">카드·목록을 길게 누르면(웹: 호버) iTunes 30초 미리듣기</p>
 
       <!-- 진행바 -->
       <div class="progress-wrap">
         <div class="progress-track" id="progress-track">
           <div class="progress-fill" id="progress-fill"></div>
-          <div class="progress-head" id="progress-head">☁</div>
+          <div class="progress-head" id="progress-head"><i data-lucide="cloud"></i></div>
         </div>
         <div class="progress-times">
           <span id="time-cur">0:00</span><span id="time-dur">0:00</span>
@@ -146,14 +146,14 @@
 
       <!-- 컨트롤 -->
       <div class="controls">
-        <button class="ctrl-btn" id="btn-prev" aria-label="이전">⏮</button>
-        <button class="ctrl-btn ctrl-main" id="btn-toggle" aria-label="재생/일시정지">▶</button>
-        <button class="ctrl-btn" id="btn-next" aria-label="다음">⏭</button>
+        <button class="ctrl-btn" id="btn-prev" aria-label="이전"><i data-lucide="skip-back"></i></button>
+        <button class="ctrl-btn ctrl-main" id="btn-toggle" aria-label="재생/일시정지"><i data-lucide="play"></i></button>
+        <button class="ctrl-btn" id="btn-next" aria-label="다음"><i data-lucide="skip-forward"></i></button>
       </div>
 
       <p class="now-playing" id="now-playing">—</p>
 
-      <button class="btn-glass" id="btn-save">＋ 라이브러리에 저장</button>
+      <button class="btn-glass" id="btn-save"><i data-lucide="plus"></i> 라이브러리에 저장</button>
 
       <!-- Coming Up Next -->
       <div class="upnext" id="upnext-sec">
@@ -166,7 +166,7 @@
 
       <!-- 브루잉 영수증 -->
       <div class="receipt" id="receipt">
-        <div class="receipt-cup">☕</div>
+        <div class="receipt-cup"><i data-lucide="coffee"></i></div>
         <p class="receipt-title">BREWING RECEIPT</p>
         <p class="receipt-batch label-caps" id="receipt-batch">#BATCH-000-MOOD</p>
         <div class="receipt-rows" id="receipt-rows"></div>
@@ -181,7 +181,7 @@
   <!-- ════════ SCR-05 · 라이브러리 ════════ -->
   <section class="screen scr-library" id="scr-library">
     <header class="topbar">
-      <span class="topbar-title"><span class="cup-ico">☕</span> My Blends</span>
+      <span class="topbar-title"><span class="cup-ico"><i data-lucide="coffee"></i></span> My Blends</span>
       <div class="lib-head-actions">
         <button class="btn-lib-edit" id="btn-lib-edit">편집</button>
         <select class="sort-select" id="sort-select" aria-label="정렬">
@@ -196,12 +196,12 @@
       <div class="lib-empty hidden" id="lib-empty">
         <p class="serif">아직 저장된 블렌드가 없어요</p>
         <p>슬라이더로 나만의 음료를 제조하고<br/>플레이리스트를 저장해 보세요.</p>
-        <button class="btn-primary" id="btn-go-order">Blend My Cup ✨</button>
+        <button class="btn-primary" id="btn-go-order">Blend My Cup&nbsp;<i data-lucide="sparkles"></i></button>
       </div>
     </div>
 
     <!-- 편집 모드 종료 버튼 -->
-    <button class="edit-done hidden" id="btn-edit-done">✓ 편집 완료</button>
+    <button class="edit-done hidden" id="btn-edit-done"><i data-lucide="check"></i> 편집 완료</button>
 
     <!-- NOW BREWING 미니 플레이어 -->
     <div class="miniplayer hidden" id="miniplayer">
@@ -212,22 +212,22 @@
           <span class="label-caps mini-cap">NOW BREWING</span>
           <p class="mini-name serif" id="mini-name">—</p>
         </div>
-        <button class="mini-btn" id="btn-mini-toggle" aria-label="재생/일시정지">❚❚</button>
+        <button class="mini-btn" id="btn-mini-toggle" aria-label="재생/일시정지"><i data-lucide="pause"></i></button>
       </div>
     </div>
   </section>
 
   <!-- ════════ 하단 탭바 ════════ -->
   <nav class="tabbar hidden" id="tabbar">
-    <button class="tab" data-go="order"><span class="tab-ico">📖</span>Order</button>
-    <button class="tab" data-go="play"><span class="tab-ico">▶</span>Play</button>
-    <button class="tab" data-go="library"><span class="tab-ico">🗂</span>Library</button>
+    <button class="tab" data-go="order"><span class="tab-ico"><i data-lucide="book-open"></i></span>Order</button>
+    <button class="tab" data-go="play"><span class="tab-ico"><i data-lucide="play"></i></span>Play</button>
+    <button class="tab" data-go="library"><span class="tab-ico"><i data-lucide="library"></i></span>Library</button>
   </nav>
 
   <!-- ════════ ⚙ 설정 모달 ════════ -->
   <div class="modal hidden" id="modal-settings">
     <div class="modal-card">
-      <h3 class="serif">⚙ API 설정</h3>
+      <h3 class="serif"><i data-lucide="settings-2"></i> API 설정</h3>
       <p class="modal-desc">키는 <b>이 브라우저의 localStorage에만</b> 저장됩니다.<br/>
         <span class="modal-fine">YouTube: GCP Console → YouTube Data API v3 사용 설정 → API 키 발급<br/>
         Gemini(선곡 엔진): aistudio.google.com/apikey 에서 발급 — 없으면 iTunes 선곡으로 폴백<br/>
@@ -239,7 +239,7 @@
         <button class="btn-ghost" id="btn-key-clear">키 삭제</button>
         <button class="btn-primary" id="btn-key-save">저장</button>
       </div>
-      <button class="modal-close" id="btn-settings-close" aria-label="닫기">✕</button>
+      <button class="modal-close" id="btn-settings-close" aria-label="닫기"><i data-lucide="x"></i></button>
     </div>
   </div>
 
@@ -247,7 +247,8 @@
   <div class="toast hidden" id="toast"></div>
 </div>
 
-<script src="js/config.js?v=12"></script>
-<script src="js/app.js?v=12"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="js/config.js?v=13"></script>
+<script src="js/app.js?v=13"></script>
 </body>
 </html>

@@ -72,6 +72,12 @@ function toTitleCase(s) {
   return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/* ── Lucide 아이콘 (이모지 아이콘 금지 — iOS 외 환경 렌더 일관성) ── */
+const icon = (name) => `<i data-lucide="${name}"></i>`;
+function refreshIcons() {
+  if (window.lucide) window.lucide.createIcons();
+}
+
 /* ── 화면 전환 ────────────────────────────────── */
 const TABS = ['order', 'play', 'library'];
 function showScreen(name) {
@@ -256,7 +262,8 @@ async function geminiPickTracks(profile, count) {
     `당도 ${s.sweet}% / 온도 ${s.temp}% (${profile.hot ? 'HOT' : 'COLD'}) / 바디 ${s.body}%\n` +
     `장르 무드: ${profile.itunesTerm}\n\n` +
     `이 무드에 어울리는, 실제로 발매되었고 YouTube에 공식 뮤직비디오가 있는 곡 ${count}곡을 골라주세요.\n` +
-    `규칙: 같은 아티스트 최대 2곡, 한국·해외 곡을 적절히 섞고, 존재하지 않는 곡은 절대 포함하지 마세요.\n` +
+    `규칙: 같은 아티스트 최대 2곡, 같은 앨범에서 최대 2곡, 같은 곡의 다른 버전(리믹스/어쿠스틱/inst/live 등)은 절대 중복 금지.\n` +
+    `한국·해외 곡을 적절히 섞고, 존재하지 않는 곡은 절대 포함하지 마세요.\n` +
     `가급적 공식 뮤직비디오가 유명한(조회수 높은) 곡 위주로 골라주세요 — videoId를 정확히 아는 곡이 우선입니다.\n` +
     `videoId는 그 곡의 공식 뮤직비디오 YouTube 영상 ID(11자)를 정확히 아는 경우에만 넣고, 불확실하면 null로 두세요.\n` +
     `JSON 배열로만 답하세요: [{"artist":"아티스트","title":"곡명","videoId":"YouTube영상ID 또는 null"}, ...]`;
@@ -348,8 +355,11 @@ async function searchYouTube(profile) {
     }
   }
   if (!tracks.length) {
-    tracks = await searchItunesTracks(profile.itunesTerm || profile.query, count);
+    // 중복 제거로 줄어들 것을 감안해 넉넉히 받음
+    tracks = await searchItunesTracks(profile.itunesTerm || profile.query, count + 12);
   }
+  // 같은 앨범 최대 2곡 + 같은 곡 버전 1개 규칙 적용, 매칭 비용은 count+4로 제한
+  tracks = dedupeTracks(tracks).slice(0, count + 4);
 
   let quotaBlocked = false;
   if (tracks.length >= 3) {
@@ -426,7 +436,8 @@ function searchItunesTracks(term, limit = 10) {
       const list = ((data && data.results) || [])
         .filter((r) => r.previewUrl)
         .map((r) => ({ trackName: r.trackName, artistName: r.artistName,
-                       previewUrl: r.previewUrl, artwork: r.artworkUrl100 }));
+                       previewUrl: r.previewUrl, artwork: r.artworkUrl100,
+                       collectionName: r.collectionName || '' }));
       done(list.slice(0, limit));
     };
     script.src = 'https://itunes.apple.com/search'
@@ -438,6 +449,27 @@ function searchItunesTracks(term, limit = 10) {
 
 function searchItunes(term) {
   return searchItunesTracks(term, 1).then((a) => a[0] || null);
+}
+
+/* 플리 중복 규칙: 같은 곡의 다른 버전(remix/acoustic/inst 등)은 1개만,
+   같은 앨범에서는 최대 2곡까지만 */
+function dedupeTracks(tracks) {
+  const seenVersion = new Set();
+  const albumCount = {};
+  return tracks.filter((t) => {
+    // 괄호/대시 이후 수식어 제거한 '원곡 제목' 기준으로 버전 판별
+    const base = (t.trackName || '').toLowerCase()
+      .split(/[\(\[\-–—~/]/)[0].replace(/\s+/g, ' ').trim();
+    const vKey = `${(t.artistName || '').toLowerCase().trim()}|${base}`;
+    if (seenVersion.has(vKey)) return false;
+    const album = (t.collectionName || '').toLowerCase().trim();
+    if (album) {
+      if ((albumCount[album] || 0) >= 2) return false;
+      albumCount[album] = (albumCount[album] || 0) + 1;
+    }
+    seenVersion.add(vKey);
+    return true;
+  });
 }
 
 /* ════════════════════════════════════════════════
@@ -483,8 +515,8 @@ async function blend() {
     else if (yt.geminiFail)
       toast(`Gemini 선곡 실패(${yt.geminiFail}) — iTunes 선곡으로 대체했어요`, 4200);
     else if (yt.engine === 'itunes-preview')
-      toast('YouTube 검색 할당량 소진 — iTunes 30초 프리뷰 모드로 재생해요 ♪', 4200);
-    else if (yt.demo) toast('데모 모드 — ⚙ 설정에서 YouTube API 키를 입력하면 실시간 매칭돼요', 3600);
+      toast('YouTube 검색 할당량 소진 — iTunes 30초 프리뷰 모드로 재생해요', 4200);
+    else if (yt.demo) toast('데모 모드 — 설정에서 YouTube API 키를 입력하면 실시간 매칭돼요', 3600);
   } catch (e) {
     clearInterval(msgTimer);
     const msgEl = $('brew-error-msg');
@@ -558,9 +590,10 @@ function togglePlayback() {
 }
 function syncPlayUi() {
   const playing = isPlaying();
-  $('btn-toggle').textContent = playing ? '❚❚' : '▶';
-  $('btn-mini-toggle').textContent = playing ? '❚❚' : '▶';
+  $('btn-toggle').innerHTML = icon(playing ? 'pause' : 'play');
+  $('btn-mini-toggle').innerHTML = icon(playing ? 'pause' : 'play');
   document.querySelector('.pantone-media').classList.toggle('playing', playing);
+  refreshIcons();
 }
 previewAudio.addEventListener('play', syncPlayUi);
 previewAudio.addEventListener('pause', syncPlayUi);
@@ -570,10 +603,11 @@ previewAudio.addEventListener('ended', () => {
 
 function onPlayerState(e) {
   const playing = e.data === YT.PlayerState.PLAYING;
-  $('btn-toggle').textContent = playing ? '❚❚' : '▶';
-  $('btn-mini-toggle').textContent = playing ? '❚❚' : '▶';
+  $('btn-toggle').innerHTML = icon(playing ? 'pause' : 'play');
+  $('btn-mini-toggle').innerHTML = icon(playing ? 'pause' : 'play');
   // 영상은 노출하지 않음 — 음료 카드 위 이퀄라이저로만 재생 상태 표시
   document.querySelector('.pantone-media').classList.toggle('playing', playing);
+  refreshIcons();
   if (e.data === YT.PlayerState.ENDED) nextTrack();
 }
 
@@ -618,7 +652,9 @@ function enterPlay(autostart = true) {
 
   showScreen('play');
   state.saved = false;
-  $('btn-save').textContent = state.savedMode ? '✓ 라이브러리에 저장된 블렌드' : '＋ 라이브러리에 저장';
+  $('btn-save').innerHTML = state.savedMode
+    ? icon('check') + ' 라이브러리에 저장된 블렌드'
+    : icon('plus') + ' 라이브러리에 저장';
   $('btn-save').disabled = state.savedMode;
 
   $('play-title').textContent = toTitleCase(p.name);
@@ -647,15 +683,16 @@ function currentPreview() {
 async function playCurrent(autostart = true) {
   const track = state.queue[state.qIndex];
   if (!track) return;
-  $('now-playing').textContent = `♪ ${track.title} · ${track.channel}`;
+  $('now-playing').textContent = `${track.title} · ${track.channel}`;
   const pv = currentPreview();
   $('press-track').textContent = pv ? pv.label : '미리듣기 트랙 없음';
   $('progress-fill').style.width = '0%';
   $('progress-head').style.left = '0%';
   $('pantone-swatch').style.opacity = '1'; // 영상 대신 항상 음료 그래픽 카드 노출
-  $('btn-toggle').textContent = '▶';
+  $('btn-toggle').innerHTML = icon('play');
   renderUpNext();
   updateMiniPlayer();
+  refreshIcons();
 
   if (track.videoId) {
     if (!state.pressing) previewAudio.pause(); // 프리뷰 모드 잔여 오디오 정지
@@ -695,7 +732,7 @@ function renderUpNext() {
       <div class="upnext-meta">
         <p class="upnext-title"></p>
         <p class="upnext-ch"></p>
-      </div><span>▶</span>`;
+      </div><span class="upnext-play">${icon('play')}</span>`;
     li.querySelector('.upnext-title').textContent = t.title;
     li.querySelector('.upnext-ch').textContent = t.channel;
     li.addEventListener('click', () => { state.qIndex = i; playCurrent(); });
@@ -703,6 +740,7 @@ function renderUpNext() {
     list.appendChild(li);
   });
   $('upnext-sec').classList.toggle('hidden', state.queue.length <= 1);
+  refreshIcons();
 }
 
 const ENGINE_LABELS = {
@@ -741,7 +779,8 @@ function updateMiniPlayer() {
   mp.classList.remove('hidden');
   $('mini-art').textContent = state.profile.emoji || '🥤';
   $('mini-name').textContent = toTitleCase(state.profile.name);
-  $('btn-mini-toggle').textContent = isPlaying() ? '❚❚' : '▶';
+  $('btn-mini-toggle').innerHTML = icon(isPlaying() ? 'pause' : 'play');
+  refreshIcons();
 }
 
 /* ── 피크(peek): 목록 항목 호버(웹)/롱프레스(모바일) → 30초 미리듣기 ──
@@ -856,9 +895,10 @@ function saveCurrentBlend() {
   });
   saveLib(lib);
   state.saved = true;
-  $('btn-save').textContent = '✓ 저장됨';
+  $('btn-save').innerHTML = icon('check') + ' 저장됨';
   $('btn-save').disabled = true;
-  toast('라이브러리에 저장됐어요 ☕');
+  refreshIcons();
+  toast('라이브러리에 저장됐어요');
 }
 
 function sortedLib() {
@@ -904,8 +944,8 @@ function renderLibrary() {
     // 팬톤 칩 그래픽 카드: 음료 고유색 틴트 + 음료 그래픽 (유튜브 썸네일 ✕)
     const tint = mixHex(item.color || '#c9a06a', '#ffffff', 0.78);
     card.innerHTML = `
-      <button class="lib-del" aria-label="삭제">✕</button>
-      <button class="lib-star${item.starred ? ' on' : ''}" aria-label="즐겨찾기">${item.starred ? '★' : '☆'}</button>
+      <button class="lib-del" aria-label="삭제">${icon('x')}</button>
+      <button class="lib-star${item.starred ? ' on' : ''}" aria-label="즐겨찾기">${icon('star')}</button>
       <div class="lib-swatch" style="background:${tint}">
         <span class="lib-emoji">${item.emoji || '🥤'}</span>
       </div>
@@ -935,6 +975,7 @@ function renderLibrary() {
     attachPeek(card, () => (libEditMode ? null : (item.preview || (item.itunes && item.itunes.previewUrl) || null)));
     grid.appendChild(card);
   });
+  refreshIcons();
 }
 
 /* 저장 당시 음료 이름으로 매트릭스에서 검색 키워드 복원 */
@@ -1050,7 +1091,7 @@ function init() {
     t.addEventListener('click', () => {
       const go = t.dataset.go;
       if (go === 'play' && !state.queue.length) {
-        toast('먼저 슬라이더로 블렌드를 만들어 보세요 ☕');
+        toast('먼저 슬라이더로 블렌드를 만들어 보세요');
         showScreen('order');
         return;
       }
@@ -1090,7 +1131,9 @@ function init() {
 
   // 네트워크 상태
   window.addEventListener('offline', () => toast('오프라인 상태예요 — 재생/매칭이 제한됩니다'));
-  window.addEventListener('online', () => toast('다시 온라인이 됐어요 ✨'));
+  window.addEventListener('online', () => toast('다시 온라인이 됐어요'));
+
+  refreshIcons(); // Lucide 아이콘 초기 렌더
 }
 
 document.addEventListener('DOMContentLoaded', init);
