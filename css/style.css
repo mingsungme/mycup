@@ -475,6 +475,17 @@ button { font-family: var(--sans); cursor: pointer; border: none; background: no
 }
 .upnext-item:active, .upnext-item.playing { background: var(--sc-high); }
 .upnext-item.playing { border-color: rgba(243,229,108,.4); }
+/* 피크(30초 미리듣기) 중 표시 */
+.upnext-item.peeking {
+  border-color: var(--secondary);
+  background: rgba(229, 190, 181, .12);
+  box-shadow: 0 0 0 1px var(--secondary);
+}
+.upnext-item.peeking .upnext-title::before { content: '♪ '; color: var(--secondary); }
+.lib-card.peeking {
+  outline: 2px solid var(--secondary); outline-offset: 1px;
+  transform: scale(1.02);
+}
 .upnext-thumb {
   width: 46px; height: 46px; border-radius: var(--r-def);
   object-fit: cover; flex: 0 0 auto; background: var(--sc-highest);

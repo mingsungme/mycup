@@ -699,6 +699,7 @@ function renderUpNext() {
     li.querySelector('.upnext-title').textContent = t.title;
     li.querySelector('.upnext-ch').textContent = t.channel;
     li.addEventListener('click', () => { state.qIndex = i; playCurrent(); });
+    attachPeek(li, () => t.preview || null); // 호버/롱프레스 → 30초 미리듣기
     list.appendChild(li);
   });
   $('upnext-sec').classList.toggle('hidden', state.queue.length <= 1);
@@ -741,6 +742,64 @@ function updateMiniPlayer() {
   $('mini-art').textContent = state.profile.emoji || '🥤';
   $('mini-name').textContent = toTitleCase(state.profile.name);
   $('btn-mini-toggle').textContent = isPlaying() ? '❚❚' : '▶';
+}
+
+/* ── 피크(peek): 목록 항목 호버(웹)/롱프레스(모바일) → 30초 미리듣기 ──
+   메인 재생을 잠시 멈추고 해당 곡의 iTunes 프리뷰를 재생, 떼면 복귀 */
+const peekAudio = new Audio();
+peekAudio.preload = 'none';
+const peek = { active: false, wasMain: false, el: null, timer: null, suppressClick: false };
+
+function peekStart(el, url) {
+  if (!url || peek.active) return;
+  peek.active = true;
+  peek.el = el;
+  el.classList.add('peeking');
+  peek.wasMain = isPlaying();
+  if (isAudioMode()) previewAudio.pause();
+  else if (state.player && state.player.pauseVideo) { try { state.player.pauseVideo(); } catch {} }
+  peekAudio.src = url;
+  peekAudio.currentTime = 0;
+  peekAudio.play().catch(() => {});
+}
+
+function peekEnd() {
+  clearTimeout(peek.timer);
+  if (!peek.active) return;
+  peek.active = false;
+  if (peek.el) { peek.el.classList.remove('peeking'); peek.el = null; }
+  peekAudio.pause();
+  if (peek.wasMain) {
+    if (isAudioMode()) previewAudio.play().catch(() => {});
+    else if (state.player && state.player.playVideo) { try { state.player.playVideo(); } catch {} }
+  }
+}
+peekAudio.addEventListener('ended', peekEnd);
+
+function attachPeek(el, getUrl) {
+  el.addEventListener('pointerenter', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    clearTimeout(peek.timer);
+    peek.timer = setTimeout(() => peekStart(el, getUrl()), 300); // 호버 0.3초 후
+  });
+  el.addEventListener('pointerleave', peekEnd);
+  el.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    clearTimeout(peek.timer);
+    peek.timer = setTimeout(() => {
+      peek.suppressClick = true; // 롱프레스 후 손 뗄 때 클릭(재생 진입) 방지
+      peekStart(el, getUrl());
+    }, 350);
+  });
+  ['pointerup', 'pointercancel'].forEach((ev) => el.addEventListener(ev, peekEnd));
+  el.addEventListener('click', (e) => {
+    if (peek.suppressClick) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      peek.suppressClick = false;
+    }
+  }, true);
+  el.addEventListener('contextmenu', (e) => e.preventDefault());
 }
 
 /* ── 롱프레스: YouTube 일시정지 ↔ iTunes 30초 ── */
@@ -872,6 +931,8 @@ function renderLibrary() {
       if (libEditMode) return; // 편집 모드에선 재생 진입 방지
       openSaved(item);
     });
+    // 호버(웹)/롱프레스(모바일) → 저장 곡 30초 미리듣기 (편집 모드 제외)
+    attachPeek(card, () => (libEditMode ? null : (item.preview || (item.itunes && item.itunes.previewUrl) || null)));
     grid.appendChild(card);
   });
 }
