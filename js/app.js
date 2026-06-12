@@ -713,7 +713,7 @@ function renderReceipt() {
 function updateMiniPlayer() {
   const mp = $('miniplayer');
   if (!mp) return;
-  if (!state.profile || !state.queue.length) { mp.classList.add('hidden'); return; }
+  if (libEditMode || !state.profile || !state.queue.length) { mp.classList.add('hidden'); return; }
   mp.classList.remove('hidden');
   $('mini-art').textContent = state.profile.emoji || '🥤';
   $('mini-name').textContent = toTitleCase(state.profile.name);
@@ -797,6 +797,8 @@ function setLibEditMode(on) {
   $('btn-lib-edit').textContent = on ? '완료' : '편집';
   $('btn-lib-edit').classList.toggle('on', on);
   $('lib-grid').classList.toggle('editing', on);
+  $('btn-edit-done').classList.toggle('hidden', !on); // 하단 큰 종료 버튼
+  updateMiniPlayer(); // 편집 중엔 미니플레이어 자리 양보
 }
 
 function deleteBlend(id) {
@@ -974,6 +976,7 @@ function init() {
   $('btn-go-order').addEventListener('click', () => showScreen('order'));
   $('sort-select').addEventListener('change', renderLibrary);
   $('btn-lib-edit').addEventListener('click', () => setLibEditMode(!libEditMode));
+  $('btn-edit-done').addEventListener('click', () => setLibEditMode(false));
 
   // ⚙ 설정 모달
   $('btn-settings').addEventListener('click', () => {
