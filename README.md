@@ -58,6 +58,10 @@ python -m http.server 5500
   localStorage에만 저장됩니다. (발급: GCP Console → YouTube Data API v3 사용 설정 → API 키)
   - 키가 없으면 무드별로 큐레이션된 공식 뮤직비디오 음원으로 **데모 모드** 동작
   - 할당량 참고: 곡당 검색 100유닛 → Tall 1회 ≈ 1,500유닛 (기본 일일 10,000유닛)
+  - **할당량 소진(403) 시 자동 폴백**: 선곡된 곡들의 iTunes **30초 프리뷰 모드**로 전환해
+    재생 지속 (영수증 SOURCE에 "iTunes 30s Preview" 표시, 30초 끝나면 자동 다음 곡).
+    프리뷰도 불가하면 데모 큐레이션으로 폴백. YouTube *재생*은 할당량을 쓰지 않으므로
+    저장곡·데모곡 재생은 쿼터 0이어도 정상 동작
 - **Gemini API** (선곡 엔진, 선택): aistudio.google.com/apikey 에서 발급 → ⚙ 설정에 입력
   - 키가 없으면 iTunes 선곡으로 자동 폴백
 - **iTunes Search API**: 키 불필요 (JSONP 호출)

@@ -295,27 +295,46 @@ async function searchYouTube(profile) {
     tracks = await searchItunesTracks(profile.itunesTerm || profile.query, count);
   }
 
+  let quotaBlocked = false;
   if (tracks.length >= 3) {
     const found = await Promise.all(tracks.map(async (t) => {
+      // 프리뷰는 YouTube와 무관하게 확보 (쿼터 소진 시 프리뷰 모드 재료)
+      const preview = t.previewUrl ||
+        await searchItunesTracks(`${t.artistName} ${t.trackName}`, 1)
+          .then((a) => (a[0] ? a[0].previewUrl : null)).catch(() => null);
       try {
-        const [v, preview] = await Promise.all([
-          ytSearch(`${t.artistName} ${t.trackName} official music video`, key, 1),
-          t.previewUrl ? Promise.resolve(t.previewUrl)
-                       : searchItunesTracks(`${t.artistName} ${t.trackName}`, 1)
-                           .then((a) => (a[0] ? a[0].previewUrl : null)),
-        ]);
-        if (!v.length) return null;
-        return { ...v[0], title: `${t.trackName} — ${t.artistName}`, preview };
-      } catch { return null; }
+        const v = await ytSearch(`${t.artistName} ${t.trackName} official music video`, key, 1);
+        if (v.length) return { ...v[0], title: `${t.trackName} — ${t.artistName}`, preview };
+      } catch (e) {
+        if (e.kind === 'quota') quotaBlocked = true;
+      }
+      // YouTube 매칭 실패 → 30초 프리뷰 전용 트랙으로라도 큐에 포함
+      return preview
+        ? { videoId: null, title: `${t.trackName} — ${t.artistName}`,
+            channel: t.artistName, thumb: t.artwork || '', preview }
+        : null;
     }));
     const seen = new Set();
-    const items = found.filter((i) => i && !seen.has(i.videoId) && seen.add(i.videoId));
-    if (items.length >= 3) return { items: items.slice(0, count), demo: false, engine };
+    const items = found.filter((i) => {
+      if (!i) return false;
+      const k = i.videoId || `p:${i.title}`;
+      return !seen.has(k) && seen.add(k);
+    });
+    if (items.length >= 3) {
+      const allPreview = items.every((i) => !i.videoId);
+      return { items: items.slice(0, count), demo: false,
+               engine: allPreview ? 'itunes-preview' : engine };
+    }
   }
-  // 폴백: 무드 키워드로 공식 MV 직접 검색
-  const items = await ytSearch(profile.query, key, Math.min(count, 50));
-  if (!items.length) { const e = new Error('empty'); e.kind = 'empty'; throw e; }
-  return { items, demo: false, engine: 'youtube' };
+  // 폴백: 무드 키워드로 공식 MV 직접 검색 (쿼터 소진 시 데모 큐레이션)
+  try {
+    const items = await ytSearch(profile.query, key, Math.min(count, 50));
+    if (!items.length) { const e = new Error('empty'); e.kind = 'empty'; throw e; }
+    return { items, demo: false, engine: 'youtube' };
+  } catch (e) {
+    if (e.kind === 'quota' || quotaBlocked) return { items: demoQueue(profile, count), demo: true, engine: 'demo' };
+    throw e;
+  }
 }
 
 /* iTunes Search API — CORS 회피를 위해 JSONP 사용 (키 불필요)
@@ -386,7 +405,9 @@ async function blend() {
     state.itunes = it;
     state.savedMode = false;
     enterPlay(false); // 플리 생성 후 자동재생 ✕ — ▶ 눌러야 시작
-    if (yt.demo) toast('데모 모드 — ⚙ 설정에서 YouTube API 키를 입력하면 실시간 매칭돼요', 3600);
+    if (yt.engine === 'itunes-preview')
+      toast('YouTube 검색 할당량 소진 — iTunes 30초 프리뷰 모드로 재생해요 ♪', 4200);
+    else if (yt.demo) toast('데모 모드 — ⚙ 설정에서 YouTube API 키를 입력하면 실시간 매칭돼요', 3600);
   } catch (e) {
     clearInterval(msgTimer);
     const msgEl = $('brew-error-msg');
@@ -441,6 +462,35 @@ function playerPlaying() {
          state.player.getPlayerState && state.player.getPlayerState() === YT.PlayerState.PLAYING;
 }
 
+/* 현재 곡이 iTunes 프리뷰 전용(videoId 없음)인지 — 쿼터 소진 폴백 모드 */
+function isAudioMode() {
+  const t = state.queue[state.qIndex];
+  return !!(t && !t.videoId && t.preview);
+}
+function isPlaying() {
+  return isAudioMode() ? !previewAudio.paused : playerPlaying();
+}
+function togglePlayback() {
+  if (isAudioMode()) {
+    previewAudio.paused ? previewAudio.play().catch(() => {}) : previewAudio.pause();
+  } else {
+    if (!state.player || !state.playerReady) return;
+    playerPlaying() ? state.player.pauseVideo() : state.player.playVideo();
+  }
+  setTimeout(updateMiniPlayer, 300);
+}
+function syncPlayUi() {
+  const playing = isPlaying();
+  $('btn-toggle').textContent = playing ? '❚❚' : '▶';
+  $('btn-mini-toggle').textContent = playing ? '❚❚' : '▶';
+  document.querySelector('.pantone-media').classList.toggle('playing', playing);
+}
+previewAudio.addEventListener('play', syncPlayUi);
+previewAudio.addEventListener('pause', syncPlayUi);
+previewAudio.addEventListener('ended', () => {
+  if (isAudioMode() && !state.pressing) nextTrack(); // 프리뷰 모드: 30초 끝나면 다음 곡
+});
+
 function onPlayerState(e) {
   const playing = e.data === YT.PlayerState.PLAYING;
   $('btn-toggle').textContent = playing ? '❚❚' : '▶';
@@ -453,6 +503,17 @@ function onPlayerState(e) {
 function startProgress() {
   clearInterval(state.progressTimer);
   state.progressTimer = setInterval(() => {
+    if (isAudioMode()) {
+      const dur = previewAudio.duration || 30;
+      const cur = previewAudio.currentTime || 0;
+      const pct = Math.min(100, (cur / dur) * 100);
+      $('progress-fill').style.width = `${pct}%`;
+      $('progress-head').style.left = `${pct}%`;
+      $('time-cur').textContent = fmt(cur);
+      $('time-dur').textContent = `${fmt(dur)} · 30s PREVIEW`;
+      $('mini-progress-fill').style.width = `${pct}%`;
+      return;
+    }
     if (!state.playerReady || !state.player || !state.player.getDuration) return;
     const dur = state.player.getDuration() || 0;
     const cur = state.player.getCurrentTime() || 0;
@@ -518,7 +579,18 @@ async function playCurrent(autostart = true) {
   $('btn-toggle').textContent = '▶';
   renderUpNext();
   updateMiniPlayer();
-  await ensurePlayer(track.videoId, autostart);
+
+  if (track.videoId) {
+    if (!state.pressing) previewAudio.pause(); // 프리뷰 모드 잔여 오디오 정지
+    await ensurePlayer(track.videoId, autostart);
+  } else if (track.preview) {
+    // iTunes 30초 프리뷰 모드 (YouTube 쿼터 소진 폴백)
+    if (state.player && state.player.pauseVideo) { try { state.player.pauseVideo(); } catch {} }
+    previewAudio.src = track.preview;
+    previewAudio.currentTime = 0;
+    if (autostart) previewAudio.play().catch(() => {});
+    startProgress();
+  }
 }
 
 function nextTrack() {
@@ -560,6 +632,7 @@ const ENGINE_LABELS = {
   itunes: 'iTunes Curation',
   youtube: 'YouTube Match',
   demo: 'Demo Curation',
+  'itunes-preview': 'iTunes 30s Preview',
 };
 
 function renderReceipt() {
@@ -590,7 +663,7 @@ function updateMiniPlayer() {
   mp.classList.remove('hidden');
   $('mini-art').textContent = state.profile.emoji || '🥤';
   $('mini-name').textContent = toTitleCase(state.profile.name);
-  $('btn-mini-toggle').textContent = playerPlaying() ? '❚❚' : '▶';
+  $('btn-mini-toggle').textContent = isPlaying() ? '❚❚' : '▶';
 }
 
 /* ── 롱프레스: YouTube 일시정지 ↔ iTunes 30초 ── */
@@ -619,7 +692,7 @@ function setupLongPress() {
   };
 
   card.addEventListener('pointerdown', () => {
-    if (!currentPreview()) return;
+    if (isAudioMode() || !currentPreview()) return; // 프리뷰 모드에선 이미 프리뷰 재생 중
     timer = setTimeout(start, 350);
   });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) =>
@@ -781,19 +854,21 @@ function init() {
     showScreen('order');
   });
 
-  // 재생 컨트롤
-  $('btn-toggle').addEventListener('click', () => {
-    if (!state.player || !state.playerReady) return;
-    playerPlaying() ? state.player.pauseVideo() : state.player.playVideo();
-  });
+  // 재생 컨트롤 (곡별로 YouTube / iTunes 프리뷰 자동 선택)
+  $('btn-toggle').addEventListener('click', togglePlayback);
   $('btn-next').addEventListener('click', nextTrack);
   $('btn-prev').addEventListener('click', prevTrack);
   $('progress-track').addEventListener('click', (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    if (isAudioMode()) {
+      previewAudio.currentTime = ratio * (previewAudio.duration || 30);
+      return;
+    }
     if (!state.player || !state.playerReady || !state.player.getDuration) return;
     const dur = state.player.getDuration();
     if (!dur || dur > LIVE_THRESHOLD) return; // 라이브 스트림은 시킹 불가
-    const rect = e.currentTarget.getBoundingClientRect();
-    state.player.seekTo(((e.clientX - rect.left) / rect.width) * dur, true);
+    state.player.seekTo(ratio * dur, true);
   });
   $('btn-play-back').addEventListener('click', () =>
     showScreen(state.savedMode ? 'library' : 'order'));
@@ -801,11 +876,7 @@ function init() {
   setupLongPress();
 
   // NOW BREWING 미니 플레이어
-  $('btn-mini-toggle').addEventListener('click', () => {
-    if (!state.player || !state.playerReady) return;
-    playerPlaying() ? state.player.pauseVideo() : state.player.playVideo();
-    setTimeout(updateMiniPlayer, 300);
-  });
+  $('btn-mini-toggle').addEventListener('click', togglePlayback);
   $('mini-meta').addEventListener('click', () => showScreen('play'));
 
   // 탭바
