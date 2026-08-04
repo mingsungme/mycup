@@ -472,6 +472,24 @@ function dedupeTracks(tracks) {
   });
 }
 
+/* YouTube 순수 검색/데모 경로로 채워진 곡은 iTunes 프리뷰가 없음 —
+   백그라운드로 제목 정리 후 iTunes 검색해서 채워넣음(피크 프리뷰용, UI는 안 막음) */
+function cleanTitleForSearch(title) {
+  return (title || '')
+    .replace(/[\(\[][^)\]]*(official|video|audio|lyric|mv|m\/v)[^)\]]*[\)\]]/gi, '')
+    .trim();
+}
+async function prefetchPreviews(queue) {
+  await Promise.all(queue.map(async (t) => {
+    if (t.preview) return;
+    try {
+      const term = cleanTitleForSearch(t.title) || `${t.channel || ''} ${t.title || ''}`;
+      const res = await searchItunesTracks(term, 1);
+      if (res[0] && res[0].previewUrl) t.preview = res[0].previewUrl;
+    } catch { /* 프리뷰 없어도 재생 자체엔 지장 없음 */ }
+  }));
+}
+
 /* ════════════════════════════════════════════════
    3) SCR-03 블렌딩 — 매칭 + 로딩 애니메이션
    ════════════════════════════════════════════════ */
@@ -503,6 +521,7 @@ async function blend() {
     await delay(350);
 
     state.queue = yt.items;
+    prefetchPreviews(state.queue); // 피크 프리뷰용 iTunes URL 백그라운드 보강
     state.qIndex = 0;
     state.demo = yt.demo;
     state.engine = yt.engine || (yt.demo ? 'demo' : 'itunes');
@@ -1028,6 +1047,7 @@ async function openSaved(item) {
     const cap = (SIZES[state.profile.size] || SIZES.tall).tracks - 1;
     const extra = yt.items.filter((v) => v.videoId !== savedTrack.videoId).slice(0, cap); // 저장곡 포함 용량만큼
     state.queue = [savedTrack, ...extra];
+    prefetchPreviews(extra); // 피크 프리뷰용 iTunes URL 백그라운드 보강 (저장곡은 이미 있으면 스킵)
     state.demo = yt.demo;
     state.engine = yt.engine || 'itunes';
     renderUpNext();
@@ -1158,6 +1178,7 @@ function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 }
 const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent);
+const isSamsungInternet = () => /SamsungBrowser/.test(navigator.userAgent);
 
 function initInstall() {
   const btn = $('btn-install');
@@ -1187,13 +1208,15 @@ function initInstall() {
     }
     if (isIOS()) {
       toast('Safari 하단 공유 버튼 → "홈 화면에 추가"를 눌러주세요.', 4000);
+    } else if (isSamsungInternet()) {
+      toast('삼성 인터넷 메뉴(≡) → "홈 화면에 추가"를 눌러주세요.', 4000);
     } else {
       toast('이 브라우저에서는 설치를 지원하지 않아요. Chrome으로 열어보세요.', 4000);
     }
   });
 
-  // iOS Safari는 beforeinstallprompt가 없어 항상 안내 버튼을 보여준다
-  if (isIOS()) btn.classList.remove('hidden');
+  // iOS Safari·삼성 인터넷은 beforeinstallprompt가 없어 항상 안내 버튼을 보여준다
+  if (isIOS() || isSamsungInternet()) btn.classList.remove('hidden');
 }
 
 if ('serviceWorker' in navigator) {

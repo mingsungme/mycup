@@ -278,9 +278,9 @@ svg.lucide {
 .slider-row { display: flex; flex-direction: column; align-items: center; gap: var(--sp-base); }
 .vslider {
   -webkit-appearance: none; appearance: none;
-  width: 116px; height: 4px;
+  width: 150px; height: 4px;
   transform: rotate(-90deg);
-  margin: 56px -28px;           /* 116px 트랙 회전 보정 → 레이아웃 박스 60px로 축소 */
+  margin: 72px -45px;           /* 150px 트랙 회전 보정 → 레이아웃 박스 60px로 축소 */
   background: var(--sc-highest);
   border-radius: var(--r-full);
   outline: none;
@@ -642,8 +642,10 @@ svg.lucide {
 
 /* ── NOW BREWING 플레이어 바 — 탭바 위 전체 폭 도킹 ── */
 .miniplayer {
-  position: absolute; left: 0; right: 0;
+  /* 탭바와 같은 이유로 fixed — .app 기준 absolute면 dvh/바디 스크롤에 탭바랑 어긋날 수 있음 */
+  position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  width: 100%; max-width: 430px;
   background: rgba(235, 225, 214, .96);
   -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   overflow: hidden;
@@ -681,7 +683,10 @@ svg.lucide {
 
 /* ════════ 탭바 — 하단 고정 도킹 바 (콘텐츠 겹침 방지) ════════ */
 .tabbar {
-  position: absolute; left: 0; right: 0; bottom: 0;
+  /* absolute(.app 기준) 대신 fixed(뷰포트 기준) — 모바일 브라우저 동적 툴바로 인한
+     dvh 오차·바디 스크롤에도 항상 화면 맨 아래에 고정되도록 */
+  position: fixed; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 100%; max-width: 430px;
   display: flex; justify-content: space-around; align-items: center;
   background: rgba(14, 14, 12, .94);
   -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px);
@@ -763,6 +768,8 @@ svg.lucide {
 @media (min-width: 480px) {
   body { padding: 24px 0; }
   .app { border-radius: 36px; height: calc(100dvh - 48px); border: 1px solid var(--glass-line); }
+  .tabbar { bottom: 24px; } /* body 패딩만큼 띄워서 앱 카드 하단에 맞춤 */
+  .miniplayer { bottom: calc(64px + 24px); }
 }
 
 /* 데스크탑 와이드: 900px 이상이면 항상 넓게(화면별 토글 없음 — 전환 시 폭이 덜컹거리지 않도록).
@@ -785,7 +792,7 @@ svg.lucide {
   .lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 
   /* 탭바가 860px 전체로 늘어나 3개 버튼이 멀어지는 것 방지 — 폰 폭만큼만 유지하고 중앙 정렬 */
-  .tabbar { left: 50%; right: auto; width: 380px; transform: translateX(-50%); }
+  .tabbar { width: 380px; }
 
   /* Order 화면: 슬라이더 옆에 CUP SIZE·Blend 버튼을 나란히 배치 (ATMOSPHERE 제목은 위에 그대로 유지) */
   .order-row {
