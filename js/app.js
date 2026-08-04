@@ -808,6 +808,22 @@ const peekAudio = new Audio();
 peekAudio.preload = 'none';
 const peek = { active: false, wasMain: false, el: null, timer: null, suppressClick: false };
 
+/* 뗐다 붙였다 할 때 뚝뚝 끊기지 않도록 볼륨 페이드 (시작은 조용히, 끝은 빠르게 사라짐) */
+function fadeVolume(audio, from, to, duration, onDone) {
+  clearInterval(audio._fadeTimer);
+  const steps = 10;
+  let i = 0;
+  audio.volume = from;
+  audio._fadeTimer = setInterval(() => {
+    i++;
+    audio.volume = Math.min(1, Math.max(0, from + (to - from) * (i / steps)));
+    if (i >= steps) {
+      clearInterval(audio._fadeTimer);
+      if (onDone) onDone();
+    }
+  }, duration / steps);
+}
+
 /* 브라우저 자동재생 정책 대응: 마우스 호버(pointerenter)는 "사용자 제스처"로 인정되지 않아
    peekAudio.play()가 조용히 막힘. 페이지에서 첫 실제 클릭/터치가 일어나는 순간 무음 클립으로
    한 번 재생→정지해서 이 오디오 엘리먼트를 "재생 허용"으로 활성화해둔다(같은 엘리먼트는 이후
@@ -834,7 +850,8 @@ function peekStart(el, url) {
   else if (state.player && state.player.pauseVideo) { try { state.player.pauseVideo(); } catch {} }
   peekAudio.src = url;
   peekAudio.currentTime = 0;
-  peekAudio.play().catch(() => {});
+  peekAudio.volume = 0;
+  peekAudio.play().then(() => fadeVolume(peekAudio, 0, 1, 180)).catch(() => {});
 }
 
 function peekEnd() {
@@ -842,7 +859,7 @@ function peekEnd() {
   if (!peek.active) return;
   peek.active = false;
   if (peek.el) { peek.el.classList.remove('peeking'); peek.el = null; }
-  peekAudio.pause();
+  fadeVolume(peekAudio, peekAudio.volume, 0, 120, () => peekAudio.pause());
   if (peek.wasMain) {
     if (isAudioMode()) previewAudio.play().catch(() => {});
     else if (state.player && state.player.playVideo) { try { state.player.playVideo(); } catch {} }
