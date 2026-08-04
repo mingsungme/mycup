@@ -83,8 +83,6 @@ const TABS = ['order', 'play', 'library'];
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
   $(`scr-${name}`).classList.add('active');
-  // 데스크탑 와이드 레이아웃은 Order·Play·Library 화면에서만 (스플래시/로딩은 폰 프레임 유지)
-  $('app').classList.toggle('wide-screen', name === 'order' || name === 'play' || name === 'library');
   const tabbar = $('tabbar');
   if (TABS.includes(name)) {
     tabbar.classList.remove('hidden');
@@ -973,8 +971,6 @@ function renderLibrary() {
       if (libEditMode) return; // 편집 모드에선 재생 진입 방지
       openSaved(item);
     });
-    // 호버(웹)/롱프레스(모바일) → 저장 곡 30초 미리듣기 (편집 모드 제외)
-    attachPeek(card, () => (libEditMode ? null : (item.preview || (item.itunes && item.itunes.previewUrl) || null)));
     grid.appendChild(card);
   });
   refreshIcons();
