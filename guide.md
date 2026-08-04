@@ -15,6 +15,12 @@ mycup/
 ├── js/
 │   ├── config.js       # API 키 플레이스홀더 (커밋 금지 / 빈 값 유지)
 │   └── app.js          # 전체 로직 (음료 매트릭스·API 매칭·재생·라이브러리)
+├── manifest.json        # PWA 매니페스트 (앱 이름·아이콘·standalone 모드)
+├── sw.js                 # 설치 조건 충족용 서비스워커 (네트워크 우선, 오프라인 폴백)
+├── icons/
+│   ├── icon.svg          # 앱 아이콘 (favicon·PWA 아이콘 공용)
+│   ├── icon-maskable.svg # 안드로이드 마스커블 아이콘
+│   └── drinks/           # 음료별 일러스트 SVG (진행 중 — 아직 커피·망고 스무디 시안만, 앱에 미연결)
 ├── .claude/launch.json # 프리뷰 서버(python http.server 5500)
 ├── README.md           # 사용자용 실행 안내
 └── guide.md            # ← 이 문서
@@ -79,11 +85,36 @@ python -m http.server 5500    # → http://localhost:5500
 
 ### 4-1. 음료 매트릭스 (슬라이더 3축 → 18종)
 - 축: **당도(SWEET) · 온도(TEMP) · 바디(BODY)** — *얼음 슬라이더는 제거됨*
-- `DRINKS[hot|cold][바디 3단계][당도 3단계]` = 18종
-  (예: HOT·진함·당도낮음 → ☕ COFFEE / COLD·가벼움·당도낮음 → 🥝 KIWI JUICE)
-- 각 음료: 이름·그래픽·고유색·무드 키워드(YouTube/iTunes 검색어) 보유
+- `DRINKS[hot|cold][바디 3단계][당도 3단계]` = 18종. 각 음료는 이름·그래픽(emoji)·고유색(hex)·
+  무드 서브카피·음악 무드(vibe)·YouTube/iTunes 검색어를 가짐 (정의: `js/app.js`의 `DRINKS` 상수)
+- 슬라이더 값 → 구간 매핑: 0~33 LOW · 34~66 MID · 67~100 HIGH (`level3()`), 온도는 50 미만 COLD / 이상 HOT
 - 온도 ≤35 → 컵에 얼음 표시, 온도 ≥65 → 스팀
 - 팬톤 코드: 슬라이더 값 → 3자리(각 0~9 클램프) + HOT은 ` C` / COLD는 ` U`
+
+| 온도 | 바디 | 당도 | 음료 | 컬러 | 무드 | 음악 장르(vibe) |
+|---|---|---|---|---|---|---|
+| HOT | Light | Low | 🌿 GREEN TEA | `#9caf6f` | CALM · ZEN · LEAF BLEND | warm acoustic |
+| HOT | Light | Mid | 🌼 CHAMOMILE | `#d9c47a` | SOFT · FLORAL · EVENING BLEND | warm acoustic |
+| HOT | Light | High | 🍯 HONEY YUZU TEA | `#e0a83e` | SWEET · CITRUS · WARM BLEND | warm acoustic |
+| HOT | Medium | Low | 🍵 MATCHA LATTE | `#88a764` | EARTHY · SMOOTH · GREEN BLEND | chill lofi beats |
+| HOT | Medium | Mid | 🫖 CHAI LATTE | `#b07b4a` | SPICED · COZY · MILK BLEND | cozy jazz |
+| HOT | Medium | High | 🍮 CARAMEL LATTE | `#c98e4f` | SWEET · BUTTERY · COZY BLEND | warm acoustic |
+| HOT | Heavy | Low | ☕ COFFEE | `#3f2d22` | INTENSE · DARK · ROASTED BLEND | cozy jazz |
+| HOT | Heavy | Mid | 🥛 FLAT WHITE | `#a07852` | SMOOTH · VELVET · MILK BLEND | cozy jazz |
+| HOT | Heavy | High | 🍫 HOT CHOCOLATE | `#6e4a33` | SWEET · RICH · COCOA BLEND | cozy jazz |
+| COLD | Light | Low | 🥝 KIWI JUICE | `#9bbf3b` | TANGY · GREEN · FRESH BLEND | fresh indie pop |
+| COLD | Light | Mid | 🍋 LEMONADE | `#dede8d` | ZESTY · SPARKLING · SUMMER BLEND | fresh indie pop |
+| COLD | Light | High | 🍊 ORANGE JUICE | `#f5a637` | BRIGHT · CITRUS · MORNING BLEND | fresh indie pop |
+| COLD | Medium | Low | 🥬 GREEN JUICE | `#4f8f46` | CLEAN · CRISP · DETOX BLEND | fresh indie pop |
+| COLD | Medium | Mid | 🍑 PEACH ICED TEA | `#e8a06a` | BREEZY · FRUITY · AFTERNOON BLEND | fresh indie pop |
+| COLD | Medium | High | 🥭 MANGO SMOOTHIE | `#f3b04e` | TROPICAL · SWEET · SUNNY BLEND | fresh indie pop |
+| COLD | Heavy | Low | 🧊 COLD BREW | `#3a2a20` | BOLD · SLOW · DARK BLEND | chill lofi beats |
+| COLD | Heavy | Mid | 🥤 ICED LATTE | `#b9986e` | CHILL · SMOOTH · STUDY BLEND | chill lofi beats |
+| COLD | Heavy | High | 🫐 BERRY SMOOTHIE | `#a64d79` | SWEET · BERRY · VELVET BLEND | chill lofi beats |
+
+> 음악 무드(vibe) 4종(`cozy jazz` / `warm acoustic` / `chill lofi beats` / `fresh indie pop`)은
+> Gemini 프롬프트의 장르 힌트이자, 데모 모드(API 키 없음)에서 쓰는 `DEMO_SETS`의 키이기도 함 — 새 음료를
+> 추가할 때 vibe를 기존 4종 중 하나로 맞추거나, `DEMO_SETS`에 새 세트를 함께 추가해야 데모 모드가 깨지지 않음.
 
 ### 4-2. 컵 사이즈 = 플레이리스트 용량 필터 (oz당 1.25곡)
 | 사이즈 | 용량 | 곡수 | 분량 |
@@ -153,6 +184,25 @@ python -m http.server 5500    # → http://localhost:5500
 - **화면 전환**: 나가는 화면 즉시 숨김 + 들어오는 화면만 페이드인(겹침 방지)
 - **좁은 화면 대응**: 헤더 타이틀 말줄임, 360px 이하 미디어쿼리, 핀치줌 차단
 - 정적 자원 캐시버스팅: `?v=N` (수정 시 `index.html`에서 일괄 증가)
+
+### 6-1. 데스크톱 반응형(와이드 레이아웃)
+- 기본은 폰 프레임(`max-width: 430px`, 480px 이상에서 카드처럼 중앙 도킹) — 대부분 화면은 그대로 유지
+- **Play(SCR-04/06)·Library(SCR-05) 화면만** 900px 이상에서 넓은 2단 레이아웃으로 전환
+  (`showScreen()`이 `#app`에 `wide-screen` 클래스 토글 → `@media (min-width:900px) .app.wide-screen`)
+  - Play: `.play-main`(팬톤 카드·컨트롤) / `.play-side`(Coming Up Next·영수증) 2컬럼. 모바일에서는
+    `display:contents`라 레이아웃에 관여하지 않고 원래대로 세로 스택
+  - Library: `.lib-grid`가 `auto-fill`로 컬럼 수 자동 증가
+  - `.tabbar`는 와이드에서도 폰 폭(380px)으로 고정 + 중앙 정렬 — 안 그러면 900px대에서 탭 3개가
+    지나치게 멀어짐 (실제로 겪은 버그, 고정폭 처리로 해결)
+- Order/Splash/Loading 화면은 아직 폰 프레임 그대로 — 와이드 대상 포함 여부 미정
+
+### 6-2. 설치(PWA)
+- `manifest.json`(standalone·아이콘) + `sw.js`(서비스워커) + 스플래시 화면의 **"앱처럼 설치하기"** 버튼(`#btn-install`)
+- `beforeinstallprompt` 이벤트로 설치 가능 여부 판단 → 지원 브라우저(Chrome/Edge 등)에서만 버튼 노출,
+  이미 설치됐거나 미지원이면 자동 숨김. iOS Safari는 API가 없어 "공유 → 홈 화면에 추가" 안내 토스트로 대체
+- `sw.js`는 **네트워크 우선**(온라인이면 항상 최신 파일, 오프라인일 때만 캐시 폴백) — 캐시 우선으로
+  하면 개발 중 수정사항이 반영 안 되는 문제가 있었음(실제로 겪음, `?v=N` 캐시버스팅과는 별개 이슈)
+- 아이콘: `icons/icon.svg`(favicon 겸용) / `icons/icon-maskable.svg`(안드로이드 마스커블)
 
 ---
 
