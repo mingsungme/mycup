@@ -807,3 +807,17 @@ svg.lucide {
   .sizes-wrap { width: 100%; }
   .btn-blend { width: 100%; }
 }
+
+/* ════════ 호버 상태 (임시) — 마우스 있는 기기에만, 터치 기기 sticky-hover 방지.
+   Figma 디자인 확정되면 이 블록 통째로 교체 예정 ════════ */
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover { opacity: .92; }
+  .btn-ghost:hover, .btn-glass:hover { background: rgba(255,255,255,.10); }
+  .icon-btn:hover { background: rgba(255,255,255,.12); }
+  .size-chip:not(.active):hover { border-color: var(--secondary); color: var(--on-surface); }
+  .ctrl-btn:hover { opacity: 1; }
+  .tab:not(.active):hover { color: var(--on-surface); }
+  .lib-card:hover { transform: scale(1.02); }
+  .upnext-item:hover { background: var(--sc-high); }
+  .mini-btn:hover { background: rgba(31,27,20,.1); }
+}
