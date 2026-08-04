@@ -147,8 +147,9 @@ python -m http.server 5500    # → http://localhost:5500
 - 데모 모드 진입 조건: YouTube·Gemini 키가 **둘 다** 없을 때만
 
 ### 4-5. 30초 프리뷰 = 피크(peek) 기능
-- Coming Up Next 목록·라이브러리 카드에서
-  **웹: 호버 0.3초 / 모바일: 롱프레스 0.35초** → 해당 곡 30초 프리뷰 잠깐 재생
+- **Coming Up Next 목록에서만** — 카드(라이브러리 그리드 타일)를 눌러 재생 화면에 들어간 뒤,
+  그 안의 각 곡 항목을 **웹: 호버 0.3초 / 모바일: 롱프레스 0.35초** → 해당 곡 30초 프리뷰 잠깐 재생
+- 라이브러리 그리드 카드 자체는 호버 프리뷰 없음 — 클릭하면 바로 재생 화면(SCR-06)으로 진입
 - 떼면 메인 재생 복귀, 롱프레스 후 클릭(재생 진입)은 억제
 - 재생 화면 팬톤 카드 롱프레스 = 현재 곡 프리뷰 (별도 유지)
 
@@ -186,15 +187,20 @@ python -m http.server 5500    # → http://localhost:5500
 - 정적 자원 캐시버스팅: `?v=N` (수정 시 `index.html`에서 일괄 증가)
 
 ### 6-1. 데스크톱 반응형(와이드 레이아웃)
-- 기본은 폰 프레임(`max-width: 430px`, 480px 이상에서 카드처럼 중앙 도킹) — 대부분 화면은 그대로 유지
-- **Play(SCR-04/06)·Library(SCR-05) 화면만** 900px 이상에서 넓은 2단 레이아웃으로 전환
-  (`showScreen()`이 `#app`에 `wide-screen` 클래스 토글 → `@media (min-width:900px) .app.wide-screen`)
-  - Play: `.play-main`(팬톤 카드·컨트롤) / `.play-side`(Coming Up Next·영수증) 2컬럼. 모바일에서는
-    `display:contents`라 레이아웃에 관여하지 않고 원래대로 세로 스택
-  - Library: `.lib-grid`가 `auto-fill`로 컬럼 수 자동 증가
+- 기본은 폰 프레임(`max-width: 430px`, 480px 이상에서 카드처럼 중앙 도킹)
+- **900px 이상이면 화면 구분 없이 항상 `.app`이 넓어짐**(`max-width: 860px`, 순수 미디어쿼리 —
+  화면별 JS 토글 없음. 화면 전환할 때마다 폭이 늘었다 줄었다 덜컹거리는 걸 막기 위해 이 방식으로 통일함)
+  - Order(SCR-02): `.order-row`가 2컬럼 — 왼쪽 `.order-main`(컵 비주얼·슬라이더), 오른쪽
+    `.order-side`(CUP SIZE·Blend 버튼)
+  - Play(SCR-04/06): `.play-main`(팬톤 카드·컨트롤) / `.play-side`(Coming Up Next·영수증) 2컬럼
+  - Library(SCR-05): `.lib-grid`가 `auto-fill`로 컬럼 수 자동 증가
+  - Splash(SCR-01)·Loading(SCR-03): 2컬럼 없이 **내용만 계속 430px 폭으로 중앙 고정**
+    (`splash-inner`/`scr-loading`에 `max-width:430px; margin:0 auto` 상시 적용 — 프레임은 넓어져도
+    로고·문구가 화면 양끝으로 벌어지지 않게)
+  - 위 `-main`/`-side`/`-row` wrapper들은 모바일에서 `display:contents`라 레이아웃에 관여하지 않고
+    원래대로 세로 스택
   - `.tabbar`는 와이드에서도 폰 폭(380px)으로 고정 + 중앙 정렬 — 안 그러면 900px대에서 탭 3개가
     지나치게 멀어짐 (실제로 겪은 버그, 고정폭 처리로 해결)
-- Order/Splash/Loading 화면은 아직 폰 프레임 그대로 — 와이드 대상 포함 여부 미정
 
 ### 6-2. 설치(PWA)
 - `manifest.json`(standalone·아이콘) + `sw.js`(서비스워커) + 스플래시 화면의 **"앱처럼 설치하기"** 버튼(`#btn-install`)

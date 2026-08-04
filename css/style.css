@@ -158,7 +158,7 @@ svg.lucide {
 .splash-inner {
   position: relative; z-index: 1;
   display: flex; flex-direction: column; align-items: center;
-  width: 100%; padding: var(--sp-lg) var(--margin-m);
+  width: 100%; max-width: 430px; margin: 0 auto; padding: var(--sp-lg) var(--margin-m);
   text-align: center;
 }
 .splash-quote {
@@ -325,7 +325,10 @@ svg.lucide {
 .blend-eta { font-size: 11px; color: var(--on-primary-container); margin-top: var(--sp-base); text-align: center; }
 
 /* ════════ SCR-03 로딩 ════════ */
-.scr-loading { align-items: center; justify-content: center; padding: var(--margin-m); text-align: center; }
+.scr-loading {
+  align-items: center; justify-content: center; padding: var(--margin-m); text-align: center;
+  max-width: 430px; margin: 0 auto;
+}
 .loading-caps { margin-bottom: var(--sp-md); }
 .brew-art {
   position: relative; width: 230px; height: 230px;
@@ -503,10 +506,6 @@ svg.lucide {
   box-shadow: 0 0 0 1px var(--secondary);
 }
 .upnext-item.peeking .upnext-title::before { content: '♪ '; color: var(--secondary); }
-.lib-card.peeking {
-  outline: 2px solid var(--secondary); outline-offset: 1px;
-  transform: scale(1.02);
-}
 .upnext-thumb {
   width: 46px; height: 46px; border-radius: var(--r-def);
   object-fit: cover; flex: 0 0 auto; background: var(--sc-highest);
@@ -766,38 +765,38 @@ svg.lucide {
   .app { border-radius: 36px; height: calc(100dvh - 48px); border: 1px solid var(--glass-line); }
 }
 
-/* 데스크탑 와이드: Play·Library 화면만 넓게(2단) — 나머지 화면은 폰 프레임 유지 */
+/* 데스크탑 와이드: 900px 이상이면 항상 넓게(화면별 토글 없음 — 전환 시 폭이 덜컹거리지 않도록).
+   Order/Play/Library는 내부를 2단으로, Splash/Loading은 프레임만 넓어지고 내용은 계속
+   폰 폭으로 중앙 정렬(splash-inner/scr-loading의 max-width는 base 스타일에 항상 적용됨) */
 @media (min-width: 900px) {
-  .app.wide-screen { max-width: 860px; }
+  .app { max-width: 860px; }
 
-  .app.wide-screen .play-scroll {
+  .play-scroll {
     flex-direction: row; align-items: flex-start; justify-content: center;
     gap: var(--sp-lg);
     padding: var(--sp-md) var(--margin-m) var(--sp-lg);
   }
-  .app.wide-screen .play-main,
-  .app.wide-screen .play-side {
+  .play-main, .play-side {
     display: flex; flex-direction: column; align-items: center;
     width: 380px; flex: 0 0 380px;
   }
-  .app.wide-screen .upnext { margin-top: 0; }
+  .upnext { margin-top: 0; }
 
-  .app.wide-screen .lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 
   /* 탭바가 860px 전체로 늘어나 3개 버튼이 멀어지는 것 방지 — 폰 폭만큼만 유지하고 중앙 정렬 */
-  .app.wide-screen .tabbar { left: 50%; right: auto; width: 380px; transform: translateX(-50%); }
+  .tabbar { left: 50%; right: auto; width: 380px; transform: translateX(-50%); }
 
   /* Order 화면: 슬라이더 옆에 CUP SIZE·Blend 버튼을 나란히 배치 (ATMOSPHERE 제목은 위에 그대로 유지) */
-  .app.wide-screen .order-row {
+  .order-row {
     display: flex; flex-direction: row; align-items: flex-start; justify-content: center;
     gap: var(--sp-lg); width: 100%; margin-top: var(--sp-md);
   }
-  .app.wide-screen .order-main,
-  .app.wide-screen .order-side {
+  .order-main, .order-side {
     display: flex; flex-direction: column; align-items: center;
     width: 340px; flex: 0 0 340px;
   }
-  .app.wide-screen .order-side { justify-content: center; padding-top: var(--sp-xl); }
-  .app.wide-screen .sizes-wrap { width: 100%; }
-  .app.wide-screen .btn-blend { width: 100%; }
+  .order-side { justify-content: center; padding-top: var(--sp-xl); }
+  .sizes-wrap { width: 100%; }
+  .btn-blend { width: 100%; }
 }
