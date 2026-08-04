@@ -789,6 +789,22 @@ const peekAudio = new Audio();
 peekAudio.preload = 'none';
 const peek = { active: false, wasMain: false, el: null, timer: null, suppressClick: false };
 
+/* 브라우저 자동재생 정책 대응: 마우스 호버(pointerenter)는 "사용자 제스처"로 인정되지 않아
+   peekAudio.play()가 조용히 막힘. 페이지에서 첫 실제 클릭/터치가 일어나는 순간 무음 클립으로
+   한 번 재생→정지해서 이 오디오 엘리먼트를 "재생 허용"으로 활성화해둔다(같은 엘리먼트는 이후
+   src가 바뀌어도 계속 허용됨 — 크롬 정책) */
+const SILENT_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+function primeAudioOnce() {
+  const unlock = () => {
+    peekAudio.src = SILENT_WAV;
+    peekAudio.play().then(() => peekAudio.pause()).catch(() => {});
+    previewAudio.src = SILENT_WAV;
+    previewAudio.play().then(() => previewAudio.pause()).catch(() => {});
+    document.removeEventListener('pointerdown', unlock);
+  };
+  document.addEventListener('pointerdown', unlock, { once: true });
+}
+
 function peekStart(el, url) {
   if (!url || peek.active) return;
   peek.active = true;
@@ -1023,6 +1039,7 @@ async function openSaved(item) {
    6) 초기화 & 이벤트 바인딩
    ════════════════════════════════════════════════ */
 function init() {
+  primeAudioOnce();
   // SCR-01 → SCR-02
   $('btn-enter').addEventListener('click', () => showScreen('order'));
   document.addEventListener('keydown', (e) => {
