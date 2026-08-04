@@ -83,6 +83,8 @@ const TABS = ['order', 'play', 'library'];
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
   $(`scr-${name}`).classList.add('active');
+  // 데스크탑 와이드 레이아웃은 Order·Play·Library 화면에서만 (스플래시/로딩은 폰 프레임 유지)
+  $('app').classList.toggle('wide-screen', name === 'order' || name === 'play' || name === 'library');
   const tabbar = $('tabbar');
   if (TABS.includes(name)) {
     tabbar.classList.remove('hidden');
@@ -1134,7 +1136,57 @@ function init() {
   window.addEventListener('offline', () => toast('오프라인 상태예요 — 재생/매칭이 제한됩니다'));
   window.addEventListener('online', () => toast('다시 온라인이 됐어요'));
 
+  initInstall();
   refreshIcons(); // Lucide 아이콘 초기 렌더
+}
+
+/* ── 앱처럼 설치하기 (PWA) ────────────────────── */
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent);
+
+function initInstall() {
+  const btn = $('btn-install');
+  if (!btn || isStandalone()) return;
+
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    btn.classList.remove('hidden');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    btn.classList.add('hidden');
+    toast('설치 완료! 홈 화면에서 바로 열 수 있어요.');
+  });
+
+  btn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (outcome === 'accepted') btn.classList.add('hidden');
+      return;
+    }
+    if (isIOS()) {
+      toast('Safari 하단 공유 버튼 → "홈 화면에 추가"를 눌러주세요.', 4000);
+    } else {
+      toast('이 브라우저에서는 설치를 지원하지 않아요. Chrome으로 열어보세요.', 4000);
+    }
+  });
+
+  // iOS Safari는 beforeinstallprompt가 없어 항상 안내 버튼을 보여준다
+  if (isIOS()) btn.classList.remove('hidden');
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -1,0 +1,15 @@
+{
+  "name": "My Cup — Mood-to-Drink Music Player",
+  "short_name": "My Cup",
+  "description": "음료 레시피 슬라이더로 무드를 제조하면 그 프로필에 맞는 음악 플레이리스트를 매칭해 재생·기록하는 앱",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#131411",
+  "theme_color": "#131411",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
