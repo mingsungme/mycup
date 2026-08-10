@@ -154,6 +154,17 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 .featlist .f-d{font-size:.85rem;color:var(--text-tertiary);margin-top:.35rem;}
 @media (max-width:760px){.featlist{grid-template-columns:1fr;}}
 
+/* ── Process (case study) ── */
+.process{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;margin-top:2.6rem;}
+.case{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;}
+.case .tag{font-size:.72rem;font-weight:700;color:var(--text-tertiary);letter-spacing:.06em;text-transform:uppercase;}
+.case h3{font-family:var(--serif);font-weight:700;font-size:1.25rem;margin-top:.5rem;text-wrap:balance;}
+.case .step{margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid var(--border);}
+.case .step:first-of-type{margin-top:1.3rem;}
+.case .step .k{font-size:.72rem;font-weight:700;color:var(--rose);letter-spacing:.08em;}
+.case .step .v{font-size:.87rem;color:var(--text-secondary);margin-top:.4rem;line-height:1.65;}
+@media (max-width:760px){.process{grid-template-columns:1fr;}}
+
 /* ── Live demo iframe ── */
 .demo-wrap{display:flex;justify-content:center;margin-top:2.6rem;}
 .pocframe{width:min(360px,80vw);aspect-ratio:390/780;border-radius:34px;overflow:hidden;
@@ -199,6 +210,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   <a href="#logic" aria-label="Drink Logic"></a>
   <a href="#design" aria-label="Design System"></a>
   <a href="#features" aria-label="Features"></a>
+  <a href="#process" aria-label="Process"></a>
   <a href="#demo" aria-label="Live Demo"></a>
   <a href="#assets" aria-label="Graphic Assets"></a>
   <a href="#craft" aria-label="Craft"></a>
@@ -339,7 +351,31 @@ mark{background:none;color:var(--yellow);font-weight:700;}
       <div><div class="f-t">컵 사이즈 = 재생 시간</div><div class="f-d">사이즈를 고르면 플레이리스트 길이도 함께 정해져요 (Tall = 15곡 · 60분)</div></div>
       <div><div class="f-t">내 컬렉션</div><div class="f-d">마음에 든 블렌드를 저장하고 즐겨찾기로 고정해요</div></div>
       <div><div class="f-t">어디서든, 설치까지</div><div class="f-d">모바일 우선이지만 데스크톱에서도 넓게, 홈 화면에 앱처럼 설치도 가능해요</div></div>
-      <div><div class="f-t">오디오 자동재생 대응</div><div class="f-d">브라우저 제스처 정책 때문에 막히던 호버 프리뷰를, 첫 클릭 시 무음 클립으로 미리 활성화해 우회</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ PROCESS ══════ -->
+<section class="slide" id="process">
+  <div class="wrap">
+    <span class="eyebrow">Process</span>
+    <h2>완벽한 결과보다, 판단의 과정</h2>
+    <p class="lede">한 번에 맞은 적은 별로 없습니다. 실제로 다시 진단하고, 다시 뜯어고친 두 장면입니다.</p>
+    <div class="process">
+      <div class="case">
+        <div class="tag">Case 1 — 슬라이드 덱 재설계</div>
+        <h3>"구리다"는 피드백부터 시작</h3>
+        <div class="step"><div class="k">BEFORE</div><div class="v">매 장 "eyebrow + 헤드라인 + 카드그리드" 동일 구조 반복. 표지도 텍스트뿐인 밋밋한 구성</div></div>
+        <div class="step"><div class="k">판단</div><div class="v">실제 참고 삼은 팀 프로젝트 덱을 직접 뜯어봄 — 작은 반복 요소(배지)만 오토레이아웃, 큰 레이아웃은 의도적 비대칭. 표지엔 진짜 앱 데이터(음료 색상 18종)로 키비주얼을 세움</div></div>
+        <div class="step"><div class="k">AFTER</div><div class="v">슬라이드마다 다른 앵커·강약. 색면이 캔버스 가장자리 밖으로 bleed</div></div>
+      </div>
+      <div class="case">
+        <div class="tag">Case 2 — "고쳤다"고 생각했던 버그</div>
+        <h3>호버 프리뷰가 계속 무음이었던 이유</h3>
+        <div class="step"><div class="k">BEFORE</div><div class="v">1차 진단: 브라우저 자동재생 정책이 마우스 호버를 "사용자 제스처"로 안 쳐줘서라고 판단, 오디오 프라이밍 로직을 추가해 배포</div></div>
+        <div class="step"><div class="k">판단</div><div class="v">그래도 안 됨. 모바일 롱프레스(의심할 여지 없는 진짜 제스처)조차 안 되는 걸 보고 재진단 — 코드를 다시 추적하니 애초에 일부 매칭 경로(YouTube 단독 검색·데모 모드)의 곡에는 iTunes 프리뷰 URL 자체가 붙지 않고 있었음</div></div>
+        <div class="step"><div class="k">AFTER</div><div class="v">블렌드 직후 백그라운드로 트랙마다 iTunes를 재검색해 URL을 채워넣도록 수정, 실제 오디오 재생까지 확인 후 종료</div></div>
+      </div>
     </div>
   </div>
 </section>
