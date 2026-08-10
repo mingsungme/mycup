@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Cup — UX/UI Portfolio</title>
+<meta name="description" content="My Cup — Mood-to-Drink Music Player. 3시간 타임어택으로 만든 개인 사이드 프로젝트 포트폴리오." />
+<style>
+/* ════════════════════════════════════════════════════════════
+   My Cup Portfolio — 다크 카페 무드 단일 테마(의도적 — 앱 자체가 다크 전용)
+   레이아웃 구조는 kms_slide_design_system.md 참고, 컬러/폰트/모티프는 mycup 고유
+   ════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#0e0e0c;
+  --surface:#131411;
+  --card:#1c1c19;
+  --card-high:#20201d;
+  --border:rgba(151,144,135,.16);
+  --text:#e5e2dd;
+  --text-secondary:#cec5bc;
+  --text-tertiary:#979087;
+  --rose:#e5beb5;
+  --rose-ink:#432a25;
+  --yellow:#f3e56c;
+  --yellow-ink:#3d3800;
+  --serif:'Noto Serif KR','Apple SD Gothic Neo','Batang',serif;
+  --sans:'Pretendard','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--sans);
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+  word-break:keep-all; overflow-wrap:break-word;
+  overflow-x:hidden;
+}
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-snap-type:y proximity;}
+  .slide{scroll-snap-align:start;}
+}
+
+/* 앰비언트 블롭 — body 고정, 스크롤해도 하나로 이어짐 */
+body::before,body::after{content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
+body::before{width:46rem;height:46rem;top:-14rem;right:-12rem;
+  background:radial-gradient(circle at 32% 32%, var(--rose) 0%, transparent 68%);
+  opacity:.14; filter:blur(60px);}
+body::after{width:40rem;height:40rem;bottom:-14rem;left:-12rem;
+  background:radial-gradient(circle at 68% 68%, var(--yellow) 0%, transparent 70%);
+  opacity:.10; filter:blur(60px);}
+
+.slide{position:relative;min-height:100svh;padding:5.5rem 1.5rem;display:flex;flex-direction:column;justify-content:center;}
+.wrap{max-width:900px;margin:0 auto;width:100%;position:relative;z-index:1;}
+
+/* 진행률 바 + 닷 내비 */
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--rose);z-index:50;width:0%;transition:width .1s linear;}
+.dotnav{position:fixed;right:1.6rem;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:.85rem;}
+.dotnav a{width:8px;height:8px;border-radius:50%;background:var(--border);display:block;transition:background .2s,transform .2s;}
+.dotnav a.active{background:var(--rose);transform:scale(1.4);}
+@media (max-width:900px){.dotnav{display:none;}}
+
+/* 공용 텍스트 요소 */
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);
+  display:inline-flex;align-items:center;gap:.5rem;margin-bottom:1.1rem;}
+.eyebrow::before{content:"";width:16px;height:1px;background:var(--rose);}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.9rem,4.2vw,3rem);line-height:1.25;text-wrap:balance;}
+.lede{font-size:1.05rem;color:var(--text-secondary);max-width:640px;margin-top:1rem;}
+mark{background:none;color:var(--yellow);font-weight:700;}
+
+/* ── Cover ── */
+.cover{align-items:flex-start;}
+.cover .kicker{display:inline-flex;padding:11px 20px;border:1px solid var(--border);border-radius:999px;
+  font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--rose);margin-bottom:2.2rem;}
+.cover .quote-line{font-family:var(--serif);font-style:italic;color:var(--text-tertiary);font-size:1.05rem;margin-bottom:2rem;}
+.cover h1{font-family:var(--serif);font-weight:700;font-size:clamp(3.4rem,11vw,7.5rem);letter-spacing:-.02em;
+  display:flex;width:100%;justify-content:space-between;max-width:820px;}
+.cover .sub{font-size:1.3rem;color:var(--text-secondary);margin-top:1rem;}
+.cover .scrolldown{position:absolute;bottom:2.5rem;left:1.5rem;font-size:.78rem;color:var(--text-tertiary);
+  display:flex;align-items:center;gap:.6rem;letter-spacing:.08em;}
+.cover .scrolldown i{width:1px;height:28px;background:linear-gradient(var(--text-tertiary),transparent);}
+
+/* ── Overview specs ── */
+.specs{margin-top:2.6rem;border-top:1px solid var(--border);}
+.spec-row{display:flex;gap:2rem;padding:1.4rem 0;border-bottom:1px solid var(--border);}
+.spec-row .k{flex:0 0 140px;font-size:.8rem;font-weight:700;letter-spacing:.08em;color:var(--rose);}
+.spec-row .v{flex:1;color:var(--text);}
+
+/* ── Motivation ── */
+.motivation blockquote{font-family:var(--serif);font-weight:700;font-size:clamp(1.9rem,4.6vw,3.1rem);line-height:1.35;}
+.motivation .lede{margin-top:1.8rem;}
+.motivation .tag{margin-top:1.6rem;font-size:.85rem;color:var(--text-tertiary);}
+
+/* ── Concept flow ── */
+.flowsteps{display:flex;align-items:center;gap:1.2rem;margin-top:3rem;flex-wrap:wrap;}
+.flowchip{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.6rem;min-width:160px;}
+.flowchip .n{font-size:.72rem;font-weight:700;letter-spacing:.1em;color:var(--text-tertiary);}
+.flowchip .t{font-family:var(--serif);font-weight:700;font-size:1.15rem;margin-top:.3rem;}
+.flowarrow{font-family:var(--serif);font-size:1.6rem;color:var(--text-tertiary);}
+
+/* ── Flow (6 screens) ── */
+.flowgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.6rem;}
+.flowgrid .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
+.flowgrid .num{font-family:var(--serif);font-weight:700;font-size:1.8rem;color:var(--rose);}
+.flowgrid .name{font-weight:700;margin-top:.6rem;}
+.flowgrid .desc{font-size:.85rem;color:var(--text-tertiary);margin-top:.3rem;}
+@media (max-width:760px){.flowgrid{grid-template-columns:1fr 1fr;}}
+
+/* ── Drink matrix ── */
+.matrixwrap{margin-top:2.6rem;overflow-x:auto;}
+.rmatrix{display:grid;grid-template-columns:110px repeat(3,1fr);gap:8px;min-width:600px;}
+.rmatrix .rowlabel{display:contents;}
+.rmatrix .axis{font-size:.72rem;font-weight:700;color:var(--text-tertiary);letter-spacing:.06em;
+  display:flex;align-items:center;}
+.rmatrix .cell{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.rmatrix .cell .sw{width:28px;height:28px;border-radius:8px;margin-bottom:.6rem;}
+.rmatrix .cell .nm{font-size:.85rem;font-weight:700;}
+.matrixnote{margin-top:1.2rem;font-size:.85rem;color:var(--text-tertiary);}
+
+/* ── Design system ── */
+.swrow{display:flex;gap:.9rem;margin-top:2.4rem;flex-wrap:wrap;}
+.sw{width:120px;}
+.sw .chip{width:120px;height:120px;border-radius:16px;border:1px solid var(--border);}
+.sw .lbl{font-size:.72rem;font-weight:700;margin-top:.6rem;letter-spacing:.04em;}
+.sw .hex{font-size:.72rem;color:var(--text-tertiary);font-family:var(--mono);}
+.typespecimen{display:flex;gap:1.4rem;margin-top:2rem;flex-wrap:wrap;}
+.typecard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.8rem;flex:1;min-width:260px;}
+.typecard .big{font-family:var(--serif);font-weight:700;font-size:3rem;}
+.typecard.sans .big{font-family:var(--sans);font-weight:700;}
+.typecard .label{font-size:.78rem;font-weight:700;color:var(--rose);letter-spacing:.08em;margin-top:.8rem;}
+
+/* ── Features ── */
+.feat-hero{background:var(--card);border:1px solid var(--rose);border-radius:20px;padding:2.4rem;margin-top:2.4rem;}
+.feat-hero .eyebrow{margin-bottom:.8rem;}
+.feat-hero h3{font-family:var(--serif);font-weight:700;font-size:1.7rem;}
+.feat-hero p{color:var(--text-secondary);margin-top:.8rem;max-width:560px;}
+.feat-hero .ref{margin-top:1.2rem;font-size:.8rem;color:var(--text-tertiary);}
+.mocklist{margin-top:1.6rem;display:flex;flex-direction:column;gap:.6rem;max-width:520px;}
+.mockrow{display:flex;align-items:center;gap:.8rem;padding:.9rem 1rem;border-radius:10px;background:rgba(255,255,255,.02);}
+.mockrow.peek{background:var(--card-high);outline:1px solid var(--rose);}
+.mockrow .dot{width:32px;height:32px;border-radius:8px;background:var(--text-tertiary);flex:0 0 auto;}
+.mockrow.peek .dot{background:var(--rose);}
+.mockrow .t{font-size:.9rem;}
+.featlist{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:2.6rem;}
+.featlist .f-t{font-weight:700;}
+.featlist .f-d{font-size:.85rem;color:var(--text-tertiary);margin-top:.35rem;}
+@media (max-width:760px){.featlist{grid-template-columns:1fr;}}
+
+/* ── Live demo iframe ── */
+.demo-wrap{display:flex;justify-content:center;margin-top:2.6rem;}
+.pocframe{width:min(360px,80vw);aspect-ratio:390/780;border-radius:34px;overflow:hidden;
+  border:6px solid #000;box-shadow:0 30px 70px rgba(0,0,0,.6);background:#000;}
+.pocframe iframe{width:100%;height:100%;border:0;}
+.demo-caption{text-align:center;margin-top:1.4rem;font-size:.85rem;color:var(--text-tertiary);}
+.demo-caption a{color:var(--rose);}
+
+/* ── Graphic assets placeholder ── */
+.shotgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.9rem;margin-top:2.4rem;}
+.shot{aspect-ratio:1/0.86;border:1.5px dashed var(--border);border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;padding:.6rem;}
+.shot svg{opacity:.4;}
+.shot .nm{font-size:.68rem;color:var(--text-tertiary);text-align:center;}
+
+/* ── Code craft ── */
+.codeblock{background:#0a0a09;border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;
+  font-family:var(--mono);font-size:.82rem;color:var(--text-secondary);overflow-x:auto;margin-top:2.2rem;line-height:1.7;
+  white-space:pre;}
+.codeblock .cm{color:var(--text-tertiary);}
+.codeblock .kw{color:var(--rose);}
+.codeblock .str{color:var(--yellow);}
+
+/* ── Closing ── */
+.closing{align-items:center;text-align:center;}
+.closing h2{max-width:600px;}
+.closing .links{margin-top:2.2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;}
+.closing a.btn{padding:.9rem 1.6rem;border-radius:999px;border:1px solid var(--border);color:var(--text);
+  text-decoration:none;font-size:.9rem;font-weight:700;transition:border-color .2s,color .2s;}
+.closing a.btn:hover,.closing a.btn:focus-visible{border-color:var(--rose);color:var(--rose);}
+.closing a.btn:focus-visible{outline:2px solid var(--rose);outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<nav class="dotnav" id="dotnav" aria-label="섹션 이동">
+  <a href="#cover" aria-label="Cover"></a>
+  <a href="#overview" aria-label="Overview"></a>
+  <a href="#motivation" aria-label="Motivation"></a>
+  <a href="#concept" aria-label="Concept"></a>
+  <a href="#flow" aria-label="Flow"></a>
+  <a href="#logic" aria-label="Drink Logic"></a>
+  <a href="#design" aria-label="Design System"></a>
+  <a href="#features" aria-label="Features"></a>
+  <a href="#demo" aria-label="Live Demo"></a>
+  <a href="#assets" aria-label="Graphic Assets"></a>
+  <a href="#craft" aria-label="Craft"></a>
+  <a href="#closing" aria-label="Closing"></a>
+</nav>
+
+<!-- ══════ COVER ══════ -->
+<section class="slide cover" id="cover">
+  <div class="wrap">
+    <span class="kicker">UX / UI PORTFOLIO · SIDE PROJECT</span>
+    <p class="quote-line">crafted with love, peace.</p>
+    <h1><span>my</span><span>cup</span></h1>
+    <p class="sub">Mood-to-Drink Music Player</p>
+  </div>
+  <div class="scrolldown"><i></i>SCROLL</div>
+</section>
+
+<!-- ══════ OVERVIEW ══════ -->
+<section class="slide" id="overview">
+  <div class="wrap">
+    <span class="eyebrow">Overview</span>
+    <h2>My Cup</h2>
+    <p class="lede">음료 레시피 슬라이더로 무드를 제조하면, 그 프로필에 맞는 음악 플레이리스트를 매칭해 재생·기록하는 모바일 웹앱.</p>
+    <div class="specs">
+      <div class="spec-row"><div class="k">개발 기간</div><div class="v">3시간 타임어택 — 개인 스피드 코딩 챌린지</div></div>
+      <div class="spec-row"><div class="k">제약 조건</div><div class="v">외부 DB 없이, 로컬스토리지 아카이빙만으로</div></div>
+      <div class="spec-row"><div class="k">핵심 루프</div><div class="v">커스텀 슬라이더 → YouTube+iTunes API 매칭 → 로컬 아카이빙</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ MOTIVATION ══════ -->
+<section class="slide motivation" id="motivation">
+  <div class="wrap">
+    <span class="eyebrow">Motivation</span>
+    <blockquote>지금 기분,<br />어떤 <mark>음료</mark>에 가까울까</blockquote>
+    <p class="lede">당도, 온도, 바디 — 기분을 음료 레시피로 옮기면, 그 음료에 어울리는 플레이리스트가 완성된다.</p>
+    <p class="tag">카페 무드 · 인스타 감성을 즐기는 사람들을 위한 사이드 프로젝트</p>
+  </div>
+</section>
+
+<!-- ══════ CONCEPT ══════ -->
+<section class="slide" id="concept">
+  <div class="wrap">
+    <span class="eyebrow">Concept</span>
+    <h2>무드를 음료로 제조하면,<br />그 프로필에 맞는 음악이 됩니다</h2>
+    <p class="lede">SWEET · TEMP · BODY — 세 개의 슬라이더가 하나의 음료 프로필을 만들고, 그 프로필이 곧 플레이리스트의 무드가 됩니다.</p>
+    <div class="flowsteps">
+      <div class="flowchip"><div class="n">INPUT</div><div class="t">SWEET · TEMP · BODY</div></div>
+      <span class="flowarrow">→</span>
+      <div class="flowchip"><div class="n">PROFILE</div><div class="t">음료 레시피</div></div>
+      <span class="flowarrow">→</span>
+      <div class="flowchip"><div class="n">OUTPUT</div><div class="t">매칭 플레이리스트</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ FLOW ══════ -->
+<section class="slide" id="flow">
+  <div class="wrap">
+    <span class="eyebrow">User Flow</span>
+    <h2>6단계 화면 흐름</h2>
+    <div class="flowgrid">
+      <div class="card"><div class="num">01</div><div class="name">스플래시</div><div class="desc">온보딩, "my cup" 진입</div></div>
+      <div class="card"><div class="num">02</div><div class="name">커스텀</div><div class="desc">슬라이더 3축으로 제조</div></div>
+      <div class="card"><div class="num">03</div><div class="name">블렌딩</div><div class="desc">조제 애니메이션 + 선곡</div></div>
+      <div class="card"><div class="num">04</div><div class="name">재생</div><div class="desc">팬톤 카드 + 컨트롤</div></div>
+      <div class="card"><div class="num">05</div><div class="name">라이브러리</div><div class="desc">저장한 블렌드 모음</div></div>
+      <div class="card"><div class="num">06</div><div class="name">저장곡 재생</div><div class="desc">카드 클릭 → 바로 재생</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ DRINK LOGIC ══════ -->
+<section class="slide" id="logic">
+  <div class="wrap">
+    <span class="eyebrow">Drink Logic</span>
+    <h2>슬라이더 3축 × 3단계 = 18가지 음료</h2>
+    <p class="lede">HOT 9종 예시 — COLD도 같은 구조로 9종이 더 있습니다.</p>
+    <div class="matrixwrap">
+      <div class="rmatrix">
+        <div class="axis"></div>
+        <div class="axis">당도 낮음</div><div class="axis">당도 중간</div><div class="axis">당도 높음</div>
+        <div class="axis">가벼움</div>
+        <div class="cell"><div class="sw" style="background:#9caf6f"></div><div class="nm">GREEN TEA</div></div>
+        <div class="cell"><div class="sw" style="background:#d9c47a"></div><div class="nm">CHAMOMILE</div></div>
+        <div class="cell"><div class="sw" style="background:#e0a83e"></div><div class="nm">HONEY YUZU TEA</div></div>
+        <div class="axis">중간</div>
+        <div class="cell"><div class="sw" style="background:#88a764"></div><div class="nm">MATCHA LATTE</div></div>
+        <div class="cell"><div class="sw" style="background:#b07b4a"></div><div class="nm">CHAI LATTE</div></div>
+        <div class="cell"><div class="sw" style="background:#c98e4f"></div><div class="nm">CARAMEL LATTE</div></div>
+        <div class="axis">진함</div>
+        <div class="cell"><div class="sw" style="background:#3f2d22"></div><div class="nm">COFFEE</div></div>
+        <div class="cell"><div class="sw" style="background:#a07852"></div><div class="nm">FLAT WHITE</div></div>
+        <div class="cell"><div class="sw" style="background:#6e4a33"></div><div class="nm">HOT CHOCOLATE</div></div>
+      </div>
+    </div>
+    <p class="matrixnote">가로: 당도 3단계 · 세로: 바디 3단계 · 온도 축(HOT/COLD)까지 더하면 총 18종</p>
+  </div>
+</section>
+
+<!-- ══════ DESIGN SYSTEM ══════ -->
+<section class="slide" id="design">
+  <div class="wrap">
+    <span class="eyebrow">Design System</span>
+    <h2>다크 카페 무드 × Pantone 칩</h2>
+    <div class="swrow">
+      <div class="sw"><div class="chip" style="background:#131411"></div><div class="lbl">SURFACE</div><div class="hex">#131411</div></div>
+      <div class="sw"><div class="chip" style="background:#e5beb5"></div><div class="lbl">SECONDARY</div><div class="hex">#E5BEB5</div></div>
+      <div class="sw"><div class="chip" style="background:#f3e56c"></div><div class="lbl">TERTIARY</div><div class="hex">#F3E56C</div></div>
+      <div class="sw"><div class="chip" style="background:#979087"></div><div class="lbl">OUTLINE</div><div class="hex">#979087</div></div>
+      <div class="sw"><div class="chip" style="background:#e5e2dd"></div><div class="lbl">ON-SURFACE</div><div class="hex">#E5E2DD</div></div>
+    </div>
+    <div class="typespecimen">
+      <div class="typecard"><div class="big">Aa 가</div><div class="label">DISPLAY · MaruBuri</div></div>
+      <div class="typecard sans"><div class="big">Aa 가</div><div class="label">BODY · Pretendard</div></div>
+    </div>
+    <p class="lede" style="margin-top:2rem;">Smoked Glass 카드 · 16px 라운드 · Pantone 코드 모티프(예: "555 C")</p>
+  </div>
+</section>
+
+<!-- ══════ FEATURES ══════ -->
+<section class="slide" id="features">
+  <div class="wrap">
+    <span class="eyebrow">Signature Interaction</span>
+    <div class="feat-hero">
+      <span class="eyebrow" style="margin-bottom:.4rem;">PEEK PREVIEW</span>
+      <h3>살짝 미리듣기</h3>
+      <p>곡 목록에 커서를 올리면(모바일은 길게 누르면) 30초만 미리 들려요. 손 떼면 원래 재생으로 자연스럽게 볼륨 페이드하며 복귀합니다.</p>
+      <p class="ref">음악 플레이어 앱 Flo의 프리뷰 인터랙션에서 착안 — 다만 "무드를 음료로 시각화"하는 컨셉 자체는 완전히 다른 방향으로 풀었습니다.</p>
+      <div class="mocklist">
+        <div class="mockrow"><div class="dot"></div><div class="t">트랙 1</div></div>
+        <div class="mockrow peek"><div class="dot"></div><div class="t">지금 미리듣는 중...</div></div>
+        <div class="mockrow"><div class="dot"></div><div class="t">트랙 3</div></div>
+      </div>
+    </div>
+    <div class="featlist">
+      <div><div class="f-t">컵 사이즈 = 재생 시간</div><div class="f-d">사이즈를 고르면 플레이리스트 길이도 함께 정해져요 (Tall = 15곡 · 60분)</div></div>
+      <div><div class="f-t">내 컬렉션</div><div class="f-d">마음에 든 블렌드를 저장하고 즐겨찾기로 고정해요</div></div>
+      <div><div class="f-t">어디서든, 설치까지</div><div class="f-d">모바일 우선이지만 데스크톱에서도 넓게, 홈 화면에 앱처럼 설치도 가능해요</div></div>
+      <div><div class="f-t">오디오 자동재생 대응</div><div class="f-d">브라우저 제스처 정책 때문에 막히던 호버 프리뷰를, 첫 클릭 시 무음 클립으로 미리 활성화해 우회</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ LIVE DEMO ══════ -->
+<section class="slide" id="demo">
+  <div class="wrap">
+    <span class="eyebrow">Live Prototype</span>
+    <h2>직접 눌러볼 수 있어요</h2>
+    <p class="lede">스크린샷이 아니라 실제로 배포된 앱입니다. 슬라이더를 움직이고, 블렌드하고, 곡을 미리 들어보세요.</p>
+    <div class="demo-wrap">
+      <div class="pocframe">
+        <iframe src="https://mingsungme.github.io/mycup/" title="My Cup 라이브 데모" loading="lazy"></iframe>
+      </div>
+    </div>
+    <p class="demo-caption">iframe이 안 보이면 → <a href="https://mingsungme.github.io/mycup/" target="_blank" rel="noopener">mingsungme.github.io/mycup</a> 에서 직접 열어보세요</p>
+  </div>
+</section>
+
+<!-- ══════ GRAPHIC ASSETS ══════ -->
+<section class="slide" id="assets">
+  <div class="wrap">
+    <span class="eyebrow">Graphic Assets</span>
+    <h2>이미지로 채워질 자리</h2>
+    <p class="lede">음료 비주얼 소싱 방식(스톡 이미지 · 생성형 AI)은 아직 미정 — 지금은 자리만 잡아둔 상태입니다.</p>
+    <div class="shotgrid" id="shotgrid"></div>
+  </div>
+</section>
+
+<!-- ══════ CRAFT ══════ -->
+<section class="slide" id="craft">
+  <div class="wrap">
+    <span class="eyebrow">Craft</span>
+    <h2>디자인 시안이 아니라, 동작하는 코드</h2>
+    <p class="lede">호버 프리뷰가 끊기지 않도록 볼륨을 페이드하는 로직 — 이 페이지의 모든 인터랙션은 실제로 배포된 앱 코드에서 그대로 가져온 것입니다.</p>
+    <div class="codeblock"><span class="cm">// 뗐다 붙였다 할 때 뚝 끊기지 않도록 볼륨 페이드</span>
+<span class="kw">function</span> fadeVolume(audio, from, to, duration, onDone) {
+  clearInterval(audio._fadeTimer);
+  <span class="kw">const</span> steps = <span class="str">10</span>;
+  <span class="kw">let</span> i = <span class="str">0</span>;
+  audio.volume = from;
+  audio._fadeTimer = setInterval(() =&gt; {
+    i++;
+    audio.volume = Math.min(<span class="str">1</span>, Math.max(<span class="str">0</span>, from + (to - from) * (i / steps)));
+    <span class="kw">if</span> (i &gt;= steps) { clearInterval(audio._fadeTimer); onDone?.(); }
+  }, duration / steps);
+}</div>
+  </div>
+</section>
+
+<!-- ══════ CLOSING ══════ -->
+<section class="slide closing" id="closing">
+  <div class="wrap">
+    <span class="eyebrow">Thanks</span>
+    <h2>MATCHA DIFFERENT.</h2>
+    <p class="lede" style="margin:0 auto;">읽어주셔서 고마워요. 이 프로젝트는 계속 다듬는 중입니다.</p>
+    <div class="links">
+      <a class="btn" href="https://mingsungme.github.io/mycup/" target="_blank" rel="noopener">라이브 데모 열기</a>
+      <a class="btn" href="https://github.com/mingsungme/mycup" target="_blank" rel="noopener">GitHub 저장소</a>
+    </div>
+  </div>
+</section>
+
+<script>
+// 그래픽 에셋 플레이스홀더 18개 생성
+(function(){
+  var drinks = ['GREEN TEA','CHAMOMILE','HONEY YUZU TEA','MATCHA LATTE','CHAI LATTE','CARAMEL LATTE',
+    'COFFEE','FLAT WHITE','HOT CHOCOLATE','KIWI JUICE','LEMONADE','ORANGE JUICE',
+    'GREEN JUICE','PEACH ICED TEA','MANGO SMOOTHIE','COLD BREW','ICED LATTE','BERRY SMOOTHIE'];
+  var grid = document.getElementById('shotgrid');
+  var svg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.6"/><path d="M3 18 L9 11 L13 15 L21 6 L21 18 Z"/></svg>';
+  drinks.forEach(function(name){
+    var el = document.createElement('div');
+    el.className = 'shot';
+    el.innerHTML = svg + '<span class="nm">' + name + '</span>';
+    grid.appendChild(el);
+  });
+})();
+
+// 진행률 바
+var progressEl = document.getElementById('progress');
+function updateProgress(){
+  var h = document.documentElement;
+  var scrolled = h.scrollTop;
+  var height = h.scrollHeight - h.clientHeight;
+  progressEl.style.width = (height > 0 ? (scrolled/height)*100 : 0) + '%';
+}
+document.addEventListener('scroll', updateProgress, {passive:true});
+updateProgress();
+
+// 닷 내비 활성 표시
+var dots = document.querySelectorAll('#dotnav a');
+var sections = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        dots.forEach(function(d){ d.classList.toggle('active', d.getAttribute('href') === '#' + id); });
+      }
+    });
+  }, {threshold:.5});
+  sections.forEach(function(s){ io.observe(s); });
+}
+</script>
+</body>
+</html>
