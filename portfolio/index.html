@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>My Cup — UX/UI Portfolio</title>
 <meta name="description" content="My Cup — Mood-to-Drink Music Player. 3시간 타임어택으로 만든 개인 사이드 프로젝트 포트폴리오." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="My Cup — UX/UI Portfolio" />
+<meta property="og:description" content="Mood-to-Drink Music Player. 3시간 타임어택으로 만든 개인 사이드 프로젝트 포트폴리오." />
+<meta property="og:url" content="https://mingsungme.github.io/mycup/portfolio/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="My Cup — UX/UI Portfolio" />
+<meta name="twitter:description" content="Mood-to-Drink Music Player. 3시간 타임어택으로 만든 개인 사이드 프로젝트 포트폴리오." />
+<!-- og:image 미정 — 그래픽 에셋 소싱 방식 결정되면 추가 (guide.md 8번 참고) -->
 <style>
 /* ════════════════════════════════════════════════════════════
    My Cup Portfolio — 다크 카페 무드 단일 테마(의도적 — 앱 자체가 다크 전용)
@@ -57,6 +65,7 @@ body::after{width:40rem;height:40rem;bottom:-14rem;left:-12rem;
 .dotnav{position:fixed;right:1.6rem;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:.85rem;}
 .dotnav a{width:8px;height:8px;border-radius:50%;background:var(--border);display:block;transition:background .2s,transform .2s;}
 .dotnav a.active{background:var(--rose);transform:scale(1.4);}
+.dotnav a:focus-visible{outline:2px solid var(--rose);outline-offset:4px;background:var(--rose);}
 @media (max-width:900px){.dotnav{display:none;}}
 
 /* 공용 텍스트 요소 */
