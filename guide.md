@@ -261,3 +261,7 @@ python -m http.server 5500    # → http://localhost:5500
   Figma 디자인 확정되면 교체 예정
 - **디자인 전면 리뉴얼** — Figma에서 진행 중. 토큰은 `mycup-tokens.csv`(Figma Variables 임포트용,
   루트에 있음)로 전달함. 화면은 Figma 크롬 플러그인으로 직접 임포트해서 작업 예정, 끝나면 CSS로 반영
+- **다음 단계 로드맵(계획)**: 디자인 리뉴얼(Figma→CSS 반영) 끝나면 순서대로
+  1) 그래픽 에셋 — 음료 18종 이미지(위 목록 참고) + 파비콘 PNG + OG 이미지
+  2) 모션 — 지금은 CSS 애니메이션(steam, wiggle, eq-bounce) 정도만 있음, 별도 모션 디자인 패스 예정
+  3) 소리 — UI 사운드 이펙트 등, 아직 범위 미정
