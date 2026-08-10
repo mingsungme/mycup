@@ -231,5 +231,33 @@ python -m http.server 5500    # → http://localhost:5500
 | `e3a2616` | 플리 중복 규칙(버전 1개·앨범 2곡) + 아이콘 Lucide 전환 |
 | `f452875` | 팬톤 코드 자릿수 버그 수정 |
 | `a233ed3` | 라이브러리 NOW BREWING 전체 폭 플레이어 바 |
+| `ec340d6` | PWA 설치 지원(manifest.json/sw.js/설치 버튼) |
+| `139a89f` | 데스크톱 와이드 반응형 통일(전 화면 900px+) + 라이브러리 카드 호버 프리뷰 제거 |
+| `74f2d39` | 호버 프리뷰 오디오 자동재생 정책 대응(1차 시도, 근본 원인은 아니었음) |
+| `4230880` | 모바일 실기기 버그 4종(슬라이더 길이, 삼성인터넷 설치안내, 탭바 fixed, **iTunes 프리뷰 URL 백그라운드 보강 — 이게 진짜 원인**) |
+| `19bb7d5` | 피크 프리뷰 볼륨 페이드 인/아웃 |
+| `75c487c` | 데스크톱용 임시 호버 상태(`@media (hover:hover)`) |
 
 > 리포: https://github.com/mingsungme/mycup
+> GitHub Pages 배포: https://mingsungme.github.io/mycup/ (main push마다 1분 내 자동 갱신, 서비스워커 네트워크 우선이라 재설치 불필요)
+> PRD(구글시트): https://docs.google.com/spreadsheets/d/1WsYZPGm14hrrMLUcVa_Uavlmv3VonhwXoFW_ELoX-fI/edit
+> 슬라이드 덱(포트폴리오): [deck-guide.md](deck-guide.md) 참고
+
+---
+
+## 8. 알려진 이슈 / TODO
+
+- **모바일 백그라운드(잠금화면) 재생 안 됨** — YouTube iframe은 모바일 브라우저가 화면 잠기거나 탭이
+  백그라운드로 가면 강제 일시정지시킴. 진짜 뮤직플레이어처럼 만들려면 Media Session API 연동이 필요하고,
+  YouTube 임베드는 플랫폼 자체 제약으로 완전 해결 안 될 수 있음 — 아직 미착수
+- **음료 그래픽 에셋(18종)** — 소싱 방식 미정(일러스트는 제외하기로 함, 스톡/생성형 검토 중). placeholder
+  자리는 잡아둠(`icons/drinks/`는 삭제됨 — 이전 벡터 시안 폐기)
+- **파비콘/PWA 아이콘 최종본** — 지금 `icons/icon.svg`는 배경 있는 임시 버전. 배경 없는 버전
+  `icons/icon-transparent.svg`는 만들어뒀으나 투명 PNG 변환은 실패(브라우저 canvas→base64 데이터가
+  너무 길어서 수동 전달 중 깨짐) — 직접 Figma나 다른 툴에서 SVG→PNG 내보내기 필요
+- **공유용 이미지(OG)** — 카톡/트위터 공유 미리보기용, 보류 상태. `index.html`에 관련 메타태그 없음
+- **라이트 모드** — 필요 여부 미정 (지금 다크 전용)
+- **버튼 호버 상태** — `css/style.css` 맨 아래 `@media (hover: hover)` 블록에 임시로 채워둠,
+  Figma 디자인 확정되면 교체 예정
+- **디자인 전면 리뉴얼** — Figma에서 진행 중. 토큰은 `mycup-tokens.csv`(Figma Variables 임포트용,
+  루트에 있음)로 전달함. 화면은 Figma 크롬 플러그인으로 직접 임포트해서 작업 예정, 끝나면 CSS로 반영

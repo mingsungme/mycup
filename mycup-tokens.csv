@@ -1,0 +1,35 @@
+Name,Value
+Color/Surface,#131411
+Color/Surface Bright,#3A3936
+Color/SC Lowest,#0E0E0C
+Color/SC Low,#1C1C19
+Color/SC,#20201D
+Color/SC High,#2A2A27
+Color/SC Highest,#353532
+Color/On Surface,#E5E2DD
+Color/On Surface Variant,#CEC5BC
+Color/Outline,#979087
+Color/Outline Variant,#4B463F
+Color/Primary,#FFFFFF
+Color/On Primary,#353028
+Color/Primary Container,#EBE1D6
+Color/On Primary Container,#6A635B
+Color/Secondary,#E5BEB5
+Color/On Secondary,#432A25
+Color/Secondary Container,#5C403A
+Color/Tertiary Container,#F3E56C
+Color/On Tertiary Container,#6F6600
+Color/Error,#FFB4AB
+Radius/SM,4
+Radius/Default,8
+Radius/MD,12
+Radius/LG,16
+Radius/XL,24
+Radius/Full,9999
+Spacing/XS,4
+Spacing/Base,8
+Spacing/SM,12
+Spacing/MD,24
+Spacing/LG,40
+Spacing/XL,64
+Spacing/Margin M,16
