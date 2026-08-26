@@ -376,6 +376,10 @@ svg.lucide {
 /* 모바일에서는 레이아웃에 관여하지 않음(자식이 그대로 play-scroll의 flex item) —
    데스크탑 와이드에서만 실제 2단 컬럼으로 전환 */
 .play-main, .play-side { display: contents; }
+/* 콘텐츠가 길어져도 압축 대신 스크롤 — .order-scroll과 같은 이유.
+   특히 overflow:hidden인 항목은 flex 자동 최소 크기가 0이라 그냥 두면 높이 0으로 눌린다
+   (실제로 겪은 버그: 곡 제목 #now-playing이 안 보였음). display:contents 래퍼 때문에 2단계로 지정. */
+.play-scroll > *, .play-scroll > * > * { flex-shrink: 0; }
 
 .pantone-card {
   width: 100%;
@@ -405,6 +409,16 @@ svg.lucide {
   font-size: 72px; line-height: 1;
   filter: drop-shadow(0 10px 18px rgba(31, 27, 20, .3));
 }
+
+/* 음료 그래픽 — 이모지 위에 덮는다. 로드 성공(.on) 전까지는 투명해서
+   에셋이 없거나 실패하면 뒤의 이모지가 그대로 보인다(폴백). */
+.drink-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0; transition: opacity .3s ease;
+}
+.drink-img.on { opacity: 1; }
 /* 재생 중 표시용 미니 이퀄라이저 (영상 대신 음료 카드만 보이므로) */
 .eq {
   position: absolute; right: 12px; bottom: 12px;
@@ -472,10 +486,18 @@ svg.lucide {
 }
 .ctrl-main:active { transform: scale(.94); }
 .now-playing {
-  font-size: 13px; color: var(--on-surface-variant);
-  text-align: center; margin-bottom: var(--sp-md);
+  width: 100%; text-align: center;
+  margin-bottom: var(--sp-sm);
+}
+.np-title {
+  font-size: 14px; font-weight: 600; color: var(--on-surface);
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.np-artist {
+  font-size: 12px; color: var(--on-surface-variant); margin-top: 2px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.np-artist:empty { display: none; }
 
 .upnext { width: 100%; margin-top: var(--sp-md); }
 .upnext-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-sm); }
@@ -654,6 +676,7 @@ svg.lucide {
 .mini-progress-fill { width: 0%; height: 100%; background: var(--tertiary-container); transition: width .4s linear; }
 .mini-body { display: flex; align-items: center; gap: var(--sp-sm); padding: 12px var(--margin-m); }
 .mini-art {
+  position: relative; overflow: hidden;
   width: 52px; height: 52px; border-radius: var(--r-md);
   background: #fff;
   display: flex; align-items: center; justify-content: center;
