@@ -10,20 +10,29 @@
 
 ```
 mycup/
-├── index.html          # 전체 화면(SCR-01~06) + 탭바 + 설정 모달
-├── css/style.css       # 디자인 토큰 + 전체 스타일
+├── index.html              # 전체 화면(SCR-01~06) + 탭바 + 설정 모달
+├── css/style.css           # 디자인 토큰 + 전체 스타일
 ├── js/
-│   ├── config.js       # API 키 플레이스홀더 (커밋 금지 / 빈 값 유지)
-│   └── app.js          # 전체 로직 (음료 매트릭스·API 매칭·재생·라이브러리)
-├── manifest.json        # PWA 매니페스트 (앱 이름·아이콘·standalone 모드)
-├── sw.js                 # 설치 조건 충족용 서비스워커 (네트워크 우선, 오프라인 폴백)
+│   ├── config.js           # API 키 플레이스홀더 (커밋 금지 / 빈 값 유지)
+│   └── app.js              # 전체 로직 (음료 매트릭스·API 매칭·재생·라이브러리)
+├── manifest.json           # PWA 매니페스트 (앱 이름·아이콘·standalone 모드)
+├── sw.js                   # 설치 조건 충족용 서비스워커 (네트워크 우선, 오프라인 폴백)
 ├── icons/
-│   ├── icon.svg          # 앱 아이콘 (favicon·PWA 아이콘 공용)
-│   ├── icon-maskable.svg # 안드로이드 마스커블 아이콘
-│   └── drinks/           # 음료별 일러스트 SVG (진행 중 — 아직 커피·망고 스무디 시안만, 앱에 미연결)
-├── .claude/launch.json # 프리뷰 서버(python http.server 5500)
-├── README.md           # 사용자용 실행 안내
-└── guide.md            # ← 이 문서
+│   ├── icon.svg            # 앱 아이콘 (favicon·PWA 아이콘 공용)
+│   ├── icon-maskable.svg   # 안드로이드 마스커블 아이콘
+│   └── icon-transparent.svg# 배경 없는 버전 (PNG 변환 대기 — 8번 참고)
+├── assets/drinks/          # 음료 그래픽 18종 × 3규격 (9-1 참고)
+│   ├── play/               #   1200×750  (16:10)  재생 카드
+│   ├── card/               #    600×516  (1:0.86) 라이브러리
+│   └── mini/               #    160×160  (1:1)    미니 플레이어
+├── tools/
+│   └── build-drink-assets.py # 마스터 → 위 3규격 크롭·리사이즈·WebP 변환
+├── portfolio/index.html    # 포트폴리오 페이지 (스크롤 덱)
+├── mycup-tokens.csv        # Figma Variables 임포트용 디자인 토큰
+├── .claude/launch.json     # 프리뷰 서버(python3 http.server 5500)
+├── README.md               # 사용자용 실행 안내
+├── deck-guide.md           # 포트폴리오 슬라이드 덱 가이드
+└── guide.md                # ← 이 문서
 ```
 
 ### 실행
