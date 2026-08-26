@@ -405,6 +405,16 @@ svg.lucide {
   font-size: 72px; line-height: 1;
   filter: drop-shadow(0 10px 18px rgba(31, 27, 20, .3));
 }
+
+/* 음료 그래픽 — 이모지 위에 덮는다. 로드 성공(.on) 전까지는 투명해서
+   에셋이 없거나 실패하면 뒤의 이모지가 그대로 보인다(폴백). */
+.drink-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0; transition: opacity .3s ease;
+}
+.drink-img.on { opacity: 1; }
 /* 재생 중 표시용 미니 이퀄라이저 (영상 대신 음료 카드만 보이므로) */
 .eq {
   position: absolute; right: 12px; bottom: 12px;
@@ -654,6 +664,7 @@ svg.lucide {
 .mini-progress-fill { width: 0%; height: 100%; background: var(--tertiary-container); transition: width .4s linear; }
 .mini-body { display: flex; align-items: center; gap: var(--sp-sm); padding: 12px var(--margin-m); }
 .mini-art {
+  position: relative; overflow: hidden;
   width: 52px; height: 52px; border-radius: var(--r-md);
   background: #fff;
   display: flex; align-items: center; justify-content: center;

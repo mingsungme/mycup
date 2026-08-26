@@ -107,43 +107,47 @@ function mixHex(a, b, t) {
 
 /* 음료 매트릭스: [HOT/COLD][바디 light/mid/heavy][당도 low/mid/high]
    커피뿐 아니라 차·주스·스무디·과일 음료까지 — 팬톤 칩 그래픽(emoji)·컬러·무드 포함 */
-const D = (name, emoji, color, sub, query, itunesTerm, vibe) =>
-  ({ name, emoji, color, sub, query, itunesTerm, vibe });
+const D = (name, slug, emoji, color, sub, query, itunesTerm, vibe) =>
+  ({ name, slug, emoji, color, sub, query, itunesTerm, vibe });
+
+/* 음료 그래픽 경로 — slug는 위 D()에 직접 박아둔다(이름에서 유추하면 이름 바꿀 때 조용히 깨짐).
+   variant: 'play'(16:10 재생 카드) | 'card'(1:0.86 라이브러리) | 'mini'(1:1 미니 플레이어) */
+const drinkImg = (slug, variant) => (slug ? `assets/drinks/${variant}/${slug}.webp` : '');
 
 /* query: 컴필레이션 영상이 아니라 '공식 뮤직비디오가 있는 음원'을 찾는 검색어 */
 const DRINKS = {
   hot: [
     [ // body: LIGHT
-      D('GREEN TEA', '🌿', '#9caf6f', 'CALM · ZEN · LEAF BLEND', 'calm piano ballad official music video', 'piano ambient', 'warm acoustic'),
-      D('CHAMOMILE', '🌼', '#d9c47a', 'SOFT · FLORAL · EVENING BLEND', 'soft acoustic ballad official music video', 'acoustic cafe', 'warm acoustic'),
-      D('HONEY YUZU TEA', '🍯', '#e0a83e', 'SWEET · CITRUS · WARM BLEND', 'sweet acoustic pop official music video', 'sweet acoustic pop', 'warm acoustic'),
+      D('GREEN TEA', 'green-tea', '🌿', '#9caf6f', 'CALM · ZEN · LEAF BLEND', 'calm piano ballad official music video', 'piano ambient', 'warm acoustic'),
+      D('CHAMOMILE', 'chamomile', '🌼', '#d9c47a', 'SOFT · FLORAL · EVENING BLEND', 'soft acoustic ballad official music video', 'acoustic cafe', 'warm acoustic'),
+      D('HONEY YUZU TEA', 'honey-yuzu-tea', '🍯', '#e0a83e', 'SWEET · CITRUS · WARM BLEND', 'sweet acoustic pop official music video', 'sweet acoustic pop', 'warm acoustic'),
     ],
     [ // body: MEDIUM
-      D('MATCHA LATTE', '🍵', '#88a764', 'EARTHY · SMOOTH · GREEN BLEND', 'mellow r&b official music video', 'chill lofi', 'chill lofi beats'),
-      D('CHAI LATTE', '🫖', '#b07b4a', 'SPICED · COZY · MILK BLEND', 'jazz soul official music video', 'jazz cafe', 'cozy jazz'),
-      D('CARAMEL LATTE', '🍮', '#c98e4f', 'SWEET · BUTTERY · COZY BLEND', 'city pop official music video', 'city pop', 'warm acoustic'),
+      D('MATCHA LATTE', 'matcha-latte', '🍵', '#88a764', 'EARTHY · SMOOTH · GREEN BLEND', 'mellow r&b official music video', 'chill lofi', 'chill lofi beats'),
+      D('CHAI LATTE', 'chai-latte', '🫖', '#b07b4a', 'SPICED · COZY · MILK BLEND', 'jazz soul official music video', 'jazz cafe', 'cozy jazz'),
+      D('CARAMEL LATTE', 'caramel-latte', '🍮', '#c98e4f', 'SWEET · BUTTERY · COZY BLEND', 'city pop official music video', 'city pop', 'warm acoustic'),
     ],
     [ // body: HEAVY
-      D('COFFEE', '☕', '#3f2d22', 'INTENSE · DARK · ROASTED BLEND', 'smooth jazz vocal official music video', 'jazz piano', 'cozy jazz'),
-      D('FLAT WHITE', '🥛', '#a07852', 'SMOOTH · VELVET · MILK BLEND', 'soul ballad official music video', 'smooth jazz', 'cozy jazz'),
-      D('HOT CHOCOLATE', '🍫', '#6e4a33', 'SWEET · RICH · COCOA BLEND', 'r&b soul official music video', 'soul r&b', 'cozy jazz'),
+      D('COFFEE', 'coffee', '☕', '#3f2d22', 'INTENSE · DARK · ROASTED BLEND', 'smooth jazz vocal official music video', 'jazz piano', 'cozy jazz'),
+      D('FLAT WHITE', 'flat-white', '🥛', '#a07852', 'SMOOTH · VELVET · MILK BLEND', 'soul ballad official music video', 'smooth jazz', 'cozy jazz'),
+      D('HOT CHOCOLATE', 'hot-chocolate', '🍫', '#6e4a33', 'SWEET · RICH · COCOA BLEND', 'r&b soul official music video', 'soul r&b', 'cozy jazz'),
     ],
   ],
   cold: [
     [ // body: LIGHT
-      D('KIWI JUICE', '🥝', '#9bbf3b', 'TANGY · GREEN · FRESH BLEND', 'indie pop official music video', 'indie pop', 'fresh indie pop'),
-      D('LEMONADE', '🍋', '#dede8d', 'ZESTY · SPARKLING · SUMMER BLEND', 'summer pop official music video', 'summer pop', 'fresh indie pop'),
-      D('ORANGE JUICE', '🍊', '#f5a637', 'BRIGHT · CITRUS · MORNING BLEND', 'upbeat pop official music video', 'happy pop', 'fresh indie pop'),
+      D('KIWI JUICE', 'kiwi-juice', '🥝', '#9bbf3b', 'TANGY · GREEN · FRESH BLEND', 'indie pop official music video', 'indie pop', 'fresh indie pop'),
+      D('LEMONADE', 'lemonade', '🍋', '#dede8d', 'ZESTY · SPARKLING · SUMMER BLEND', 'summer pop official music video', 'summer pop', 'fresh indie pop'),
+      D('ORANGE JUICE', 'orange-juice', '🍊', '#f5a637', 'BRIGHT · CITRUS · MORNING BLEND', 'upbeat pop official music video', 'happy pop', 'fresh indie pop'),
     ],
     [ // body: MEDIUM
-      D('GREEN JUICE', '🥬', '#4f8f46', 'CLEAN · CRISP · DETOX BLEND', 'chill house official music video', 'chill house', 'fresh indie pop'),
-      D('PEACH ICED TEA', '🍑', '#e8a06a', 'BREEZY · FRUITY · AFTERNOON BLEND', 'chill pop official music video', 'chill pop', 'fresh indie pop'),
-      D('MANGO SMOOTHIE', '🥭', '#f3b04e', 'TROPICAL · SWEET · SUNNY BLEND', 'tropical house official music video', 'tropical house', 'fresh indie pop'),
+      D('GREEN JUICE', 'green-juice', '🥬', '#4f8f46', 'CLEAN · CRISP · DETOX BLEND', 'chill house official music video', 'chill house', 'fresh indie pop'),
+      D('PEACH ICED TEA', 'peach-iced-tea', '🍑', '#e8a06a', 'BREEZY · FRUITY · AFTERNOON BLEND', 'chill pop official music video', 'chill pop', 'fresh indie pop'),
+      D('MANGO SMOOTHIE', 'mango-smoothie', '🥭', '#f3b04e', 'TROPICAL · SWEET · SUNNY BLEND', 'tropical house official music video', 'tropical house', 'fresh indie pop'),
     ],
     [ // body: HEAVY
-      D('COLD BREW', '🧊', '#3a2a20', 'BOLD · SLOW · DARK BLEND', 'dark r&b official music video', 'dark r&b', 'chill lofi beats'),
-      D('ICED LATTE', '🥤', '#b9986e', 'CHILL · SMOOTH · STUDY BLEND', 'mellow pop official music video', 'lofi', 'chill lofi beats'),
-      D('BERRY SMOOTHIE', '🫐', '#a64d79', 'SWEET · BERRY · VELVET BLEND', 'k-r&b official music video', 'k-r&b', 'chill lofi beats'),
+      D('COLD BREW', 'cold-brew', '🧊', '#3a2a20', 'BOLD · SLOW · DARK BLEND', 'dark r&b official music video', 'dark r&b', 'chill lofi beats'),
+      D('ICED LATTE', 'iced-latte', '🥤', '#b9986e', 'CHILL · SMOOTH · STUDY BLEND', 'mellow pop official music video', 'lofi', 'chill lofi beats'),
+      D('BERRY SMOOTHIE', 'berry-smoothie', '🫐', '#a64d79', 'SWEET · BERRY · VELVET BLEND', 'k-r&b official music video', 'k-r&b', 'chill lofi beats'),
     ],
   ],
 };
@@ -162,9 +166,21 @@ function buildProfile(s) {
   // 컵 비주얼용 컬러: 음료 고유색을 당도(밝게)·바디(진하게)로 살짝 변조
   const cupColor = mixHex(mixHex(drink.color, '#ffffff', (s.sweet / 100) * 0.18),
                           '#1f1b14', (s.body / 100) * 0.12);
-  return { name: drink.name, emoji: drink.emoji, color: drink.color, cupColor,
+  return { name: drink.name, slug: drink.slug, emoji: drink.emoji, color: drink.color, cupColor,
            code, sub: drink.sub, sliders: { ...s }, hot, size: state.size,
            vibe: drink.vibe, query: drink.query, itunesTerm: drink.itunesTerm };
+}
+
+/* 음료 그래픽을 슬롯에 채운다. 아직 에셋이 없는 음료(구버전 저장 항목 등)나
+   로드 실패 시에는 .on을 붙이지 않아 뒤에 깔린 이모지가 그대로 보인다. */
+function setDrinkImg(img, slug, variant) {
+  if (!img) return;
+  const src = drinkImg(slug, variant);
+  img.classList.remove('on');
+  if (!src) { img.removeAttribute('src'); return; }
+  img.onload = () => img.classList.add('on');
+  img.onerror = () => img.classList.remove('on');
+  img.src = src;
 }
 
 /* ── SCR-02 컵 비주얼 실시간 반영 ─────────────── */
@@ -684,6 +700,7 @@ function enterPlay(autostart = true) {
   swatch.style.background = mixHex(p.color, '#ffffff', 0.78); // 옅은 음료 틴트 위 그래픽
   swatch.style.opacity = '1';
   $('swatch-emoji').textContent = p.emoji || '🥤';
+  setDrinkImg($('swatch-img'), p.slug, 'play');
 
   renderUpNext();
   renderReceipt();
@@ -796,7 +813,8 @@ function updateMiniPlayer() {
   if (!mp) return;
   if (libEditMode || !state.profile || !state.queue.length) { mp.classList.add('hidden'); return; }
   mp.classList.remove('hidden');
-  $('mini-art').textContent = state.profile.emoji || '🥤';
+  $('mini-art-emoji').textContent = state.profile.emoji || '🥤';
+  setDrinkImg($('mini-art-img'), state.profile.slug, 'mini');
   $('mini-name').textContent = toTitleCase(state.profile.name);
   $('btn-mini-toggle').innerHTML = icon(isPlaying() ? 'pause' : 'play');
   refreshIcons();
@@ -938,7 +956,7 @@ function saveCurrentBlend() {
   lib.unshift({
     id: Date.now(),
     savedAt: Date.now(),
-    name: p.name, emoji: p.emoji, code: p.code, color: p.color, sub: p.sub,
+    name: p.name, slug: p.slug, emoji: p.emoji, code: p.code, color: p.color, sub: p.sub,
     sliders: p.sliders, hot: p.hot, vibe: p.vibe, size: p.size || 'tall',
     videoId: t.videoId, videoTitle: t.title, channel: t.channel, thumb: t.thumb,
     preview: t.preview || null, // 저장 곡 자체의 iTunes 30초 프리뷰
@@ -1000,11 +1018,13 @@ function renderLibrary() {
       <button class="lib-star${item.starred ? ' on' : ''}" aria-label="즐겨찾기">${icon('star')}</button>
       <div class="lib-swatch" style="background:${tint}">
         <span class="lib-emoji">${item.emoji || '🥤'}</span>
+        <img class="drink-img" alt="" loading="lazy" decoding="async">
       </div>
       <div class="lib-label">
         <p class="lib-name"></p>
         <p class="lib-code"></p>
       </div>`;
+    setDrinkImg(card.querySelector('.drink-img'), itemSlug(item), 'card');
     card.querySelector('.lib-name').textContent = item.name;
     card.querySelector('.lib-code').textContent =
       `${item.code} · ${new Date(item.savedAt).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}`;
@@ -1029,6 +1049,13 @@ function renderLibrary() {
 }
 
 /* 저장 당시 음료 이름으로 매트릭스에서 검색 키워드 복원 */
+/* 이 변경 전에 저장된 라이브러리 항목에는 slug가 없다 — 이름으로 역조회해서 메운다 */
+function itemSlug(item) {
+  if (item.slug) return item.slug;
+  const d = findDrinkByName(item.name);
+  return d ? d.slug : '';
+}
+
 function findDrinkByName(name) {
   for (const temp of ['hot', 'cold'])
     for (const row of DRINKS[temp])
@@ -1041,7 +1068,7 @@ function findDrinkByName(name) {
 async function openSaved(item) {
   const drink = findDrinkByName(item.name);
   state.profile = {
-    name: item.name, emoji: item.emoji || '🥤', code: item.code,
+    name: item.name, slug: itemSlug(item), emoji: item.emoji || '🥤', code: item.code,
     color: item.color, cupColor: item.color, sub: item.sub || '',
     sliders: item.sliders, hot: item.hot, vibe: item.vibe || 'chill lofi beats',
     size: item.size || 'tall',
