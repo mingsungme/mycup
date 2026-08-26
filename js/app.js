@@ -719,7 +719,8 @@ function currentPreview() {
 async function playCurrent(autostart = true) {
   const track = state.queue[state.qIndex];
   if (!track) return;
-  $('now-playing').textContent = `${track.title} · ${track.channel}`;
+  $('np-title').textContent = track.title;
+  $('np-artist').textContent = track.channel || '';
   const pv = currentPreview();
   $('press-track').textContent = pv ? pv.label : '미리듣기 트랙 없음';
   $('progress-fill').style.width = '0%';

@@ -376,6 +376,10 @@ svg.lucide {
 /* 모바일에서는 레이아웃에 관여하지 않음(자식이 그대로 play-scroll의 flex item) —
    데스크탑 와이드에서만 실제 2단 컬럼으로 전환 */
 .play-main, .play-side { display: contents; }
+/* 콘텐츠가 길어져도 압축 대신 스크롤 — .order-scroll과 같은 이유.
+   특히 overflow:hidden인 항목은 flex 자동 최소 크기가 0이라 그냥 두면 높이 0으로 눌린다
+   (실제로 겪은 버그: 곡 제목 #now-playing이 안 보였음). display:contents 래퍼 때문에 2단계로 지정. */
+.play-scroll > *, .play-scroll > * > * { flex-shrink: 0; }
 
 .pantone-card {
   width: 100%;
@@ -482,10 +486,18 @@ svg.lucide {
 }
 .ctrl-main:active { transform: scale(.94); }
 .now-playing {
-  font-size: 13px; color: var(--on-surface-variant);
-  text-align: center; margin-bottom: var(--sp-md);
+  width: 100%; text-align: center;
+  margin-bottom: var(--sp-sm);
+}
+.np-title {
+  font-size: 14px; font-weight: 600; color: var(--on-surface);
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.np-artist {
+  font-size: 12px; color: var(--on-surface-variant); margin-top: 2px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.np-artist:empty { display: none; }
 
 .upnext { width: 100%; margin-top: var(--sp-md); }
 .upnext-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-sm); }
