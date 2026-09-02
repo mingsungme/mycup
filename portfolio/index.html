@@ -12,7 +12,7 @@
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="My Cup — UX/UI Portfolio" />
 <meta name="twitter:description" content="Mood-to-Drink Music Player. 3시간 타임어택으로 만든 개인 사이드 프로젝트 포트폴리오." />
-<!-- og:image 미정 — 그래픽 에셋 소싱 방식 결정되면 추가 (guide.md 8번 참고) -->
+<!-- og:image 미제작 — 규격은 1200x630으로 확정, 제작만 남음 (guide.md 9-3 참고) -->
 <style>
 /* ════════════════════════════════════════════════════════════
    My Cup Portfolio — 다크 카페 무드 단일 테마(의도적 — 앱 자체가 다크 전용)
@@ -173,12 +173,14 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 .demo-caption{text-align:center;margin-top:1.4rem;font-size:.85rem;color:var(--text-tertiary);}
 .demo-caption a{color:var(--rose);}
 
-/* ── Graphic assets placeholder ── */
+/* ── Graphic assets ── */
 .shotgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.9rem;margin-top:2.4rem;}
-.shot{aspect-ratio:1/0.86;border:1.5px dashed var(--border);border-radius:12px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;padding:.6rem;}
-.shot svg{opacity:.4;}
-.shot .nm{font-size:.68rem;color:var(--text-tertiary);text-align:center;}
+.shot{position:relative;aspect-ratio:1/0.86;border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  background:var(--card);}
+.shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.shot .nm{position:absolute;left:0;right:0;bottom:0;padding:1.5rem .6rem .5rem;
+  font-size:.62rem;font-weight:700;letter-spacing:.05em;color:var(--text);
+  background:linear-gradient(180deg,transparent,rgba(14,14,12,.92));}
 
 /* ── Code craft ── */
 .codeblock{background:#0a0a09;border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;
@@ -399,9 +401,15 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 <section class="slide" id="assets">
   <div class="wrap">
     <span class="eyebrow">Graphic Assets</span>
-    <h2>이미지로 채워질 자리</h2>
-    <p class="lede">음료 비주얼 소싱 방식(스톡 이미지 · 생성형 AI)은 아직 미정 — 지금은 자리만 잡아둔 상태입니다.</p>
+    <h2>마스터 한 장에서<br />세 가지 규격으로</h2>
+    <p class="lede">음료 18종을 어두운 매크로 사진 한 톤으로 통일했습니다. 같은 음료가 화면마다 다른 비율로 쓰이기 때문에, 마스터 한 장에서 세 규격을 잘라내는 파이프라인으로 정리했습니다.</p>
+    <div class="specs">
+      <div class="spec-row"><div class="k">재생 카드</div><div class="v">1200 × 750 — 16:10, 팬톤 칩 상단을 채우는 메인 비주얼</div></div>
+      <div class="spec-row"><div class="k">라이브러리</div><div class="v">600 × 516 — 1:0.86, 2열 그리드 카드</div></div>
+      <div class="spec-row"><div class="k">미니 플레이어</div><div class="v">160 × 160 — 1:1, 재생 중 표시용 썸네일</div></div>
+    </div>
     <div class="shotgrid" id="shotgrid"></div>
+    <p class="matrixnote">18종 × 3규격 = 54장. 중앙 크롭이 기준이라, 정사각형으로 잘려도 어떤 음료인지 알아볼 수 있게 구도를 잡았습니다.</p>
   </div>
 </section>
 
@@ -420,7 +428,10 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   audio._fadeTimer = setInterval(() =&gt; {
     i++;
     audio.volume = Math.min(<span class="str">1</span>, Math.max(<span class="str">0</span>, from + (to - from) * (i / steps)));
-    <span class="kw">if</span> (i &gt;= steps) { clearInterval(audio._fadeTimer); onDone?.(); }
+    <span class="kw">if</span> (i &gt;= steps) {
+      clearInterval(audio._fadeTimer);
+      <span class="kw">if</span> (onDone) onDone();
+    }
   }, duration / steps);
 }</div>
   </div>
@@ -440,17 +451,29 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 </section>
 
 <script>
-// 그래픽 에셋 플레이스홀더 18개 생성
+// 음료 그래픽 18종 — 앱에 실제로 배선된 라이브러리 규격(600x516) 에셋을 그대로 씀
 (function(){
-  var drinks = ['GREEN TEA','CHAMOMILE','HONEY YUZU TEA','MATCHA LATTE','CHAI LATTE','CARAMEL LATTE',
-    'COFFEE','FLAT WHITE','HOT CHOCOLATE','KIWI JUICE','LEMONADE','ORANGE JUICE',
-    'GREEN JUICE','PEACH ICED TEA','MANGO SMOOTHIE','COLD BREW','ICED LATTE','BERRY SMOOTHIE'];
+  var drinks = [
+    ['GREEN TEA','green-tea'], ['CHAMOMILE','chamomile'], ['HONEY YUZU TEA','honey-yuzu-tea'],
+    ['MATCHA LATTE','matcha-latte'], ['CHAI LATTE','chai-latte'], ['CARAMEL LATTE','caramel-latte'],
+    ['COFFEE','coffee'], ['FLAT WHITE','flat-white'], ['HOT CHOCOLATE','hot-chocolate'],
+    ['KIWI JUICE','kiwi-juice'], ['LEMONADE','lemonade'], ['ORANGE JUICE','orange-juice'],
+    ['GREEN JUICE','green-juice'], ['PEACH ICED TEA','peach-iced-tea'], ['MANGO SMOOTHIE','mango-smoothie'],
+    ['COLD BREW','cold-brew'], ['ICED LATTE','iced-latte'], ['BERRY SMOOTHIE','berry-smoothie']
+  ];
   var grid = document.getElementById('shotgrid');
-  var svg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.6"/><path d="M3 18 L9 11 L13 15 L21 6 L21 18 Z"/></svg>';
-  drinks.forEach(function(name){
-    var el = document.createElement('div');
+  drinks.forEach(function(d){
+    var el = document.createElement('figure');
     el.className = 'shot';
-    el.innerHTML = svg + '<span class="nm">' + name + '</span>';
+    var img = document.createElement('img');
+    img.src = '../assets/drinks/card/' + d[1] + '.webp';
+    img.alt = d[0];
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    var cap = document.createElement('figcaption');
+    cap.className = 'nm';
+    cap.textContent = d[0];
+    el.appendChild(img); el.appendChild(cap);
     grid.appendChild(el);
   });
 })();
