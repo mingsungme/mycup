@@ -1,0 +1,18 @@
+# main 에 포폴 원고가 머지되면 포트폴리오 허브(minseong2027) 재배포를 깨운다.
+# 허브는 빌드 때 scripts/sync-works.mjs 로 이 저장소의 raw 를 다시 받아간다.
+name: 포트폴리오 허브 재배포
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'portfolio/**'
+      - 'assets/**'
+  workflow_dispatch:      # 손으로도 돌릴 수 있게
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 허브 배포 훅 호출
+        run: curl -fsS -X POST "${{ secrets.HUB_DEPLOY_HOOK }}" -o /dev/null
