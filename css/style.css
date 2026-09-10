@@ -179,40 +179,70 @@ svg.lucide {
 .ol {
   font-family: var(--display);
   color: transparent;
-  -webkit-text-stroke: var(--ol-w, 1.4px) var(--ol-c, rgba(229,226,221,.82));
+  /* 시안 기준: 아이폰 16(393pt)에서 1px 균일.
+     em 으로 비례시키면 큰 글자가 두꺼워지고 작은 글자는 하한선 아래로 사라진다. */
+  /* 시안: border 1px solid #E5E2DD (Figma 는 텍스트 stroke 를 border 로 내보낸다).
+     ⚠️ Figma stroke align 은 outside 인데 -webkit-text-stroke 는 center 고정이라
+     0.5px 만큼 안쪽으로 들어온다. 1px 에서는 육안 차이가 거의 없어 그대로 간다. */
+  /* my·cup 은 SVG(.wm)로 빠졌으므로 여기 남는 건 Ade·juice·Coffee·TEA.
+     center 정렬이라 같은 1px 이라도 outside 인 SVG 쪽보다 굵어 보여 절반으로. */
+  -webkit-text-stroke: var(--ol-w, .5px) var(--ol-c, #e5e2dd);
   paint-order: stroke fill;
-  line-height: .9;
+  /* 시안은 -1.92px 고정(52px·140px 양쪽 동일). em 으로 바꾸면 큰 글자에 과하게 들어간다.
+     콜라주 폭 361px 기준 -0.532cqw 로 두면 프레임이 커져도 비율이 유지된다. */
+  letter-spacing: var(--ol-ls, -0.532cqw);
+  line-height: 1;
   white-space: nowrap;
+  /* % 배치라 좌표가 소수(19.61px 등)로 떨어지는데, 1px 스트로크가 서브픽셀에 걸리면
+     꾸불림의 굴곡을 따라 안티에일리어싱이 불균등해져 염주알처럼 끊겨 보인다.
+     합성 레이어로 올리면 정수 기기픽셀에 래스터화돼 사라진다.
+     (will-change:transform 은 효과 없음 — 실제로 레이어를 만드는 translateZ 라야 한다) */
+  transform: translateZ(0);
 }
 
 /* ── 콜라주 ── */
 .collage {
-  position: relative; width: 100%; aspect-ratio: 430/560;
+  position: relative; width: 100%; aspect-ratio: 430/680;
+  container-type: inline-size;   /* 아래 cqw 는 이 폭 기준 */
   flex: 0 1 auto; min-height: 0;
   margin-bottom: var(--sp-sm);
 }
 .collage > * { position: absolute; }
 
-.wm-my    { left: 2%;  top: 14%; font-size: clamp(52px,17vw,78px); --ol-w: 1.8px; }
-.wm-cup   { right: 0;  top: 29%; font-size: clamp(58px,19vw,88px); --ol-w: 1.8px; }
-.wm-ade   { left: 20%; top: -1%; font-size: clamp(17px,5.5vw,25px); }
-.wm-juice { right: 1%; top: 5%;  font-size: clamp(21px,7vw,32px); transform: rotate(-4deg); }
-.wm-coffee{ right: 2%; top: 56%; font-size: clamp(26px,8.5vw,40px); z-index: 6; }
-.wm-tea   { left: 1%;  top: 66%; font-size: clamp(26px,8.5vw,40px); z-index: 6; }
+/* 시안(아이폰 16, 콜라주 폭 361px) 실측값을 cqw 로 환산:
+   my 140px = 38.8cqw / Ade 52px = 14.4cqw. 스트로크는 전부 1px 균일. */
+/* my·cup 은 SVG + mask 로 'outside 1px' 을 재현한다(위 .ol 은 center 고정).
+   viewBox 단위가 140px 기준이라 font-size 는 리터럴, 크기는 폭(cqw)으로 준다. */
+.wm { position: absolute; display: block; height: auto; overflow: visible;
+      transform: translateZ(0); }
+.wm text { font-family: var(--display); font-size: 140px; letter-spacing: -1.92px; }
+.wm mask text { fill: #fff; }          /* 흰 마스크 위에 검정 = 글자 속을 도려냄 */
+.wm mask rect + text { fill: #000; }
+.wm > text { fill: none; stroke: #e5e2dd; stroke-width: 2; stroke-linejoin: round; }
+
+/* 폭 = (글리프폭 + 여유 4) / 콜라주 361px */
+/* SVG 박스는 글리프에 딱 맞아서, line-height:52px 이던 예전 span 보다
+   글자가 46px(≈8.1%) 아래로 내려간다. 그만큼 top 을 올려 보정. */
+.wm-my  { left: 1%;   top: 4.9%;  width: 43.6cqw; }
+.wm-cup { right: -1%; top: 16.9%; width: 54.1cqw; }
+.wm-ade   { left: 22%; top: 1%;  font-size: 14.4cqw; }
+.wm-juice { right: 1%; top: 5%;  font-size: 10.5cqw; transform: rotate(-4deg) translateZ(0); }
+.wm-coffee{ right: 2%; top: 60%; font-size: 12.2cqw; z-index: 6; }
+.wm-tea   { left: 1%;  top: 69%; font-size: 12.2cqw; z-index: 6; }
 
 /* 사진 타일 — 65~170px 구간이라 현재 에셋 해상도로 충분 */
 .tile { border-radius: 3px; overflow: hidden; background: var(--sc-low);
   box-shadow: 0 10px 26px rgba(0,0,0,.5); }
 .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.t1 { left: 22%;  top: 36%; width: 16%; aspect-ratio: 1/1.12; z-index: 3; }
-.t2 { left: -8%;  top: 47%; width: 26%; aspect-ratio: 1/.86;  z-index: 4; }
-.t3 { right: 2%;  top: 46%; width: 42%; aspect-ratio: 16/10;  z-index: 2; }
-.t4 { left: 13%;  top: 57%; width: 29%; aspect-ratio: 1/.92;  z-index: 5; }
-.t5 { left: 40%;  top: 63%; width: 29%; aspect-ratio: 1/1.02; z-index: 5; }
-.t6 { right: -3%; top: 60%; width: 25%; aspect-ratio: 1/1;    z-index: 4; }
+.t1 { left: 24%;  top: 44%; width: 16%; aspect-ratio: 1/1.12; z-index: 3; }
+.t2 { left: -8%;  top: 54%; width: 26%; aspect-ratio: 1/.86;  z-index: 4; }
+.t3 { right: 2%;  top: 53%; width: 42%; aspect-ratio: 16/10;  z-index: 2; }
+.t4 { left: 13%;  top: 63%; width: 29%; aspect-ratio: 1/.92;  z-index: 5; }
+.t5 { left: 40%;  top: 68%; width: 29%; aspect-ratio: 1/1.02; z-index: 5; }
+.t6 { right: -3%; top: 66%; width: 25%; aspect-ratio: 1/1;    z-index: 4; }
 
 .mood-pill {
-  left: 42%; top: 52%; z-index: 8;
+  left: 42%; top: 58%; z-index: 8;
   border: 1px solid rgba(243,229,108,.55); border-radius: var(--r-full);
   padding: 5px 13px; font-size: 11px; font-weight: 700; letter-spacing: .06em;
   color: var(--tertiary-container); background: rgba(19,20,17,.86);
@@ -221,16 +251,18 @@ svg.lucide {
 
 /* ✳ 모티프 */
 .ast {
-  color: transparent; -webkit-text-stroke: 1.3px rgba(229,226,181,.5);
+  color: transparent;
+  /* 레터링과 같은 장식 계열이라 굵기를 맞춘다 (.ol 과 동일하게 0.5px) */
+  -webkit-text-stroke: var(--ol-w, .5px) var(--ol-c, rgba(229,226,181,.5));
   font-family: var(--display); line-height: 1;
   pointer-events: none; user-select: none;
 }
-.a1 { left: 8%;   top: 6%;  font-size: 40px; --r: -8deg; }
-.a2 { right: 14%; top: 17%; font-size: 48px; --r: 12deg; }
-.a3 { left: 47%;  top: 26%; font-size: 24px; }
-.a4 { left: 35%;  top: 33%; font-size: 18px; }
-.a5 { right: 23%; top: 68%; font-size: 32px; --r: -14deg; --ol-c: rgba(243,229,108,.4); }
-.a6 { left: 22%;  top: 88%; font-size: 20px; }
+.a1 { left: 6%;   top: 5%;  font-size: 40px; --r: -8deg; }
+.a2 { right: 12%; top: 20%; font-size: 48px; --r: 12deg; }
+.a3 { left: 52%;  top: 33%; font-size: 24px; }
+.a4 { left: 40%;  top: 40%; font-size: 18px; }
+.a5 { right: 23%; top: 74%; font-size: 32px; --r: -14deg; --ol-c: rgba(243,229,108,.4); }
+.a6 { left: 22%;  top: 91%; font-size: 20px; }
 .ast { transform: rotate(var(--r, 0deg)); animation: ast-drift 5.5s ease-in-out infinite; }
 .a2 { animation-delay: .7s; } .a3 { animation-delay: 1.4s; }
 .a5 { animation-delay: 2.1s; } .a6 { animation-delay: 2.8s; }
