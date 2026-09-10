@@ -33,6 +33,9 @@
 
   --serif: 'MaruBuri', 'Noto Serif KR', serif;
   --sans: 'Pretendard', -apple-system, 'Noto Sans KR', sans-serif;
+  /* 꾸밈용 디스플레이 서체(BM 꾸불림체 파생). ⚠️ 라틴 서브셋이라 한글에는 쓸 수 없다 —
+     한글에 지정하면 조용히 --sans 로 폴백한다. 개명 이유는 fonts/README.md */
+  --display: 'MyCup Display', var(--sans);
 
   --glass-bg: rgba(255, 255, 255, 0.06);
   --glass-line: rgba(151, 144, 135, 0.15);
@@ -49,7 +52,15 @@ body {
   letter-spacing: -0.01em;
   display: flex; justify-content: center;
 }
+/* BM 꾸불림체 라틴 서브셋. OFL 1.1 3항(Reserved Font Name)에 따라 개명했다 —
+   'MyCup Display'를 바꾸지 말 것. 고지는 fonts/OFL.txt */
+@font-face {
+  font-family: 'MyCup Display';
+  src: url('../fonts/mycup-display-latin.woff2') format('woff2');
+  font-display: swap;
+}
 .serif { font-family: var(--serif); }
+.display { font-family: var(--display); }
 .label-caps {
   font-size: 11px; font-weight: 700; line-height: 14px;
   letter-spacing: 0.15em; text-transform: uppercase;
@@ -104,7 +115,8 @@ svg.lucide {
   min-width: 0; /* 좁은 화면에서 헤더 넘침(겹침) 방지 */
 }
 .topbar-title {
-  font-family: var(--serif); font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+  /* 꾸밈 요소 — 세 화면 모두 라틴('My Cup' / 'My Blends' / 음료명)이라 안전 */
+  font-family: var(--display); font-size: 19px; font-weight: 400; letter-spacing: 0;
   flex: 1; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
@@ -145,14 +157,6 @@ svg.lucide {
 .btn-glass:active { background: rgba(255,255,255,.12); }
 
 /* ════════ SCR-01 스플래시 ════════ */
-/* BM 꾸불림체 라틴 서브셋. OFL 1.1 3항(Reserved Font Name)에 따라 개명했다 —
-   'MyCup Display'를 바꾸지 말 것. 고지는 fonts/OFL.txt */
-@font-face {
-  font-family: 'MyCup Display';
-  src: url('../fonts/mycup-display-latin.woff2') format('woff2');
-  font-display: swap;
-}
-
 .scr-splash { justify-content: center; align-items: center; }
 .splash-bg {
   position: absolute; inset: 0;
@@ -173,7 +177,7 @@ svg.lucide {
    플래튼 SVG 대신 라이브 텍스트 + text-stroke. 획 굵기가 글자 크기·화면 폭과
    무관하게 고정돼 320px에서도 안 얇아진다. */
 .ol {
-  font-family: 'MyCup Display', var(--sans);
+  font-family: var(--display);
   color: transparent;
   -webkit-text-stroke: var(--ol-w, 1.4px) var(--ol-c, rgba(229,226,221,.82));
   paint-order: stroke fill;
@@ -218,7 +222,7 @@ svg.lucide {
 /* ✳ 모티프 */
 .ast {
   color: transparent; -webkit-text-stroke: 1.3px rgba(229,226,181,.5);
-  font-family: 'MyCup Display', var(--sans); line-height: 1;
+  font-family: var(--display); line-height: 1;
   pointer-events: none; user-select: none;
 }
 .a1 { left: 8%;   top: 6%;  font-size: 40px; --r: -8deg; }
