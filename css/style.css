@@ -187,9 +187,10 @@ svg.lucide {
   /* my·cup 은 SVG(.wm)로 빠졌으므로 여기 남는 건 Ade·juice·Coffee·TEA.
      my·cup 은 140px 에 1px = 글자 대비 0.71%. 같은 비율로 맞추려면 em 이라야 한다
      (고정 px 이면 작은 글자일수록 비율이 커져 더 굵어 보인다).
-     center 정렬이라 outside 인 SVG 쪽보다 여전히 살짝 굵게 읽히므로 하한만 둔다.
+     다만 center 정렬은 획이 안쪽으로도 파고들어 글자 속을 좁히므로, 같은 비율이면
+     outside 인 my·cup 보다 굵게 읽힌다. 그만큼 낮춰 0.005em(0.5%)로 맞춘다.
      하한 0.2px — 아이폰(@3x)에서 0.6 기기픽셀이라 보인다. 1x 화면에서는 옅어진다. */
-  -webkit-text-stroke: var(--ol-w, max(.2px, .0071em)) var(--ol-c, #e5e2dd);
+  -webkit-text-stroke: var(--ol-w, max(.2px, .005em)) var(--ol-c, #e5e2dd);
   paint-order: stroke fill;
   /* 시안은 -1.92px 고정(52px·140px 양쪽 동일). em 으로 바꾸면 큰 글자에 과하게 들어간다.
      콜라주 폭 361px 기준 -0.532cqw 로 두면 프레임이 커져도 비율이 유지된다. */
