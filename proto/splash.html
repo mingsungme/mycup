@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Cup — 온보딩 리디자인 프로토타입</title>
+<link rel="stylesheet" href="../css/style.css?v=28" />
+<style>
+/* ══════════════════════════════════════════════════════════════
+   SCR-01 온보딩 리디자인 프로토타입 + 애스터리스크 모티프 전파(옵션 2)
+   앱 토큰(css/style.css)을 그대로 상속받고, 이 파일에서 추가분만 정의한다.
+   ══════════════════════════════════════════════════════════════ */
+/* BM 꾸불림체 라틴 서브셋. OFL 1.1 3항에 따라 Reserved Font Name을 쓸 수 없어
+   'MyCup Display'로 개명했다 — 이 이름을 바꾸지 말 것. 고지는 fonts/OFL.txt */
+@font-face{
+  font-family:'MyCup Display';
+  src:url('../fonts/mycup-display-latin.woff2') format('woff2');
+  font-display:swap;   /* 로딩 전엔 폴백으로 먼저 그린다 */
+}
+
+/* ── 아웃라인 레터링 ──────────────────────────────
+   플래튼 SVG 대신 라이브 텍스트 + text-stroke.
+   획 굵기가 글자 크기와 무관하게 고정돼 320px에서도 안 얇아진다. */
+.ol{
+  font-family:'MyCup Display','Noto Sans KR',sans-serif;
+  color:transparent;
+  -webkit-text-stroke:var(--ol-w, 1.4px) var(--ol-c, rgba(229,226,221,.82));
+  paint-order:stroke fill;
+  line-height:.9;
+  user-select:none;
+}
+
+/* ── 콜라주 스테이지 ── */
+.collage{
+  position:relative; width:100%; aspect-ratio:430/560;
+  margin:0 auto var(--sp-sm);
+}
+.collage>*{position:absolute;}
+
+/* 워드마크 */
+.wm-my { left:2%;  top:14%; font-size:clamp(58px,17vw,78px); --ol-w:1.8px; }
+.wm-cup{ right:0;  top:29%; font-size:clamp(66px,19vw,88px); --ol-w:1.8px; }
+.wm-ade{ left:20%; top:-1%; font-size:clamp(19px,5.5vw,25px); }
+.wm-juice{ right:1%; top:5%; font-size:clamp(24px,7vw,32px); transform:rotate(-4deg); }
+.wm-coffee{ right:2%; top:56%; font-size:clamp(30px,8.5vw,40px); z-index:6; }
+.wm-tea{ left:1%;  top:66%; font-size:clamp(30px,8.5vw,40px); z-index:6; }
+
+/* 사진 타일 — 65~170px 구간이라 현재 에셋 해상도로 충분 */
+.tile{border-radius:3px;overflow:hidden;background:var(--sc-low);box-shadow:0 10px 26px rgba(0,0,0,.5);}
+.tile img{width:100%;height:100%;object-fit:cover;display:block;}
+.t1{ left:22%; top:36%; width:16%; aspect-ratio:1/1.12; z-index:3; }
+.t2{ left:-8%; top:47%; width:26%; aspect-ratio:1/.86; z-index:4; }
+.t3{ right:2%; top:46%; width:42%; aspect-ratio:16/10; z-index:2; }
+.t4{ left:13%; top:57%; width:29%; aspect-ratio:1/.92; z-index:5; }
+.t5{ left:40%; top:63%; width:29%; aspect-ratio:1/1.02; z-index:5; }
+.t6{ right:-3%; top:60%; width:25%; aspect-ratio:1/1; z-index:4; }
+
+/* 배지 */
+.mood-pill{
+  left:42%; top:52%; z-index:8;
+  border:1px solid rgba(243,229,108,.55); border-radius:var(--r-full);
+  padding:5px 13px; font-size:11px; font-weight:700; letter-spacing:.06em;
+  color:var(--tertiary-container); background:rgba(19,20,17,.86);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+
+/* ── ✳ 애스터리스크 모티프 — 옵션 2의 핵심.
+   스플래시에서 시작해 로딩·빈 라이브러리로 이어진다. ── */
+.ast{color:transparent;-webkit-text-stroke:1.3px rgba(229,226,181,.5);
+  font-family:'MyCup Display',sans-serif;line-height:1;pointer-events:none;user-select:none;}
+.a1{left:8%;  top:6%;  font-size:44px; transform:rotate(-8deg);}
+.a2{right:14%;top:17%; font-size:52px; transform:rotate(12deg);}
+.a3{left:47%; top:26%; font-size:26px;}
+.a4{left:35%; top:33%; font-size:19px;}
+.a5{right:23%;top:68%; font-size:34px; transform:rotate(-14deg); --ol-c:rgba(243,229,108,.4);}
+.a6{left:22%; top:88%; font-size:22px;}
+
+@keyframes ast-drift{
+  0%,100%{transform:translateY(0) rotate(var(--r,0deg));opacity:.5;}
+  50%    {transform:translateY(-7px) rotate(calc(var(--r,0deg) + 6deg));opacity:.85;}
+}
+.drift .ast{animation:ast-drift 5.5s ease-in-out infinite;}
+.drift .a2{animation-delay:.7s;} .drift .a3{animation-delay:1.4s;}
+.drift .a5{animation-delay:2.1s;} .drift .a6{animation-delay:2.8s;}
+@media (prefers-reduced-motion:reduce){ .drift .ast{animation:none;} }
+
+/* 전파 대상 1 — 로딩(SCR-03): 컵 아트 둘레를 애스터리스크가 돈다.
+   .brew-art 는 overflow:hidden 이라 반드시 그 바깥 래퍼에 얹어야 한다 */
+.brew-wrap{position:relative;display:inline-flex;}
+.brew-ast{position:absolute;inset:-30px;pointer-events:none;z-index:2;}
+.brew-ast span{position:absolute;font-size:20px;color:transparent;
+  -webkit-text-stroke:1.2px rgba(229,190,181,.55);font-family:'MyCup Display',sans-serif;
+  animation:ast-spin 7s linear infinite;}
+.brew-ast span:nth-child(1){top:0;left:12%;}
+.brew-ast span:nth-child(2){bottom:6%;right:4%;animation-delay:-2.3s;font-size:15px;}
+.brew-ast span:nth-child(3){bottom:16%;left:-2%;animation-delay:-4.6s;font-size:24px;}
+@keyframes ast-spin{to{transform:rotate(360deg);}}
+
+/* 전파 대상 2 — 빈 라이브러리 */
+.empty-ast{font-size:56px;color:transparent;
+  -webkit-text-stroke:1.5px rgba(229,226,221,.34);
+  font-family:'MyCup Display',sans-serif;margin-bottom:var(--sp-sm);}
+
+/* ── 프로토타입 전용 UI ── */
+.bar{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;gap:.4rem;flex-wrap:wrap;
+  padding:.5rem .7rem;background:rgba(14,14,12,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--glass-line);font-size:.7rem;}
+.bar button{background:rgba(255,255,255,.06);color:var(--on-surface);border:1px solid var(--glass-line);
+  border-radius:999px;padding:.28rem .66rem;font:inherit;cursor:pointer;}
+.bar button.on{background:var(--secondary);color:#2a1a16;border-color:var(--secondary);font-weight:700;}
+.stage{padding-top:2.6rem;display:flex;gap:1.4rem;justify-content:center;flex-wrap:wrap;}
+.frame{width:430px;max-width:94vw;height:860px;max-height:86svh;position:relative;overflow:hidden;
+  border-radius:28px;border:1px solid var(--glass-line);background:var(--surface);}
+.frame>.screen{position:absolute;inset:0;display:none;}
+.frame>.screen.active{display:flex;}
+.cap{text-align:center;font-size:.68rem;letter-spacing:.14em;color:var(--on-surface-variant);margin-top:.5rem;}
+body{background:var(--sc-lowest);min-height:100svh;}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <button id="v-splash" class="on">온보딩</button>
+  <button id="v-loading">로딩(전파)</button>
+  <button id="v-empty">빈 라이브러리(전파)</button>
+  <span style="flex:1"></span>
+  <button id="t-drift" class="on">✳ 떠다님</button>
+  <button id="t-ast" class="on">✳ 보이기</button>
+</div>
+
+<div class="stage">
+  <div>
+    <div class="frame" id="frame">
+
+      <!-- ══ SCR-01 온보딩 ══ -->
+      <section class="screen scr-splash active" id="s-splash">
+        <div class="splash-bg"></div>
+        <div class="splash-inner drift" id="splash-inner" style="justify-content:center;">
+          <div class="collage" id="collage">
+            <span class="ast a1">✳</span><span class="ast a2">✳</span><span class="ast a3">✳</span>
+            <span class="ast a4">✳</span><span class="ast a5">✳</span><span class="ast a6">✳</span>
+
+            <span class="ol wm-ade">Ade</span>
+            <span class="ol wm-juice">juice</span>
+            <span class="ol wm-my">my</span>
+            <span class="ol wm-cup">cup</span>
+
+            <div class="tile t1"><img alt="" src="../assets/drinks/card/peach-iced-tea.webp"></div>
+            <div class="tile t2"><img alt="" src="../assets/drinks/card/lemonade.webp"></div>
+            <div class="tile t3"><img alt="" src="../assets/drinks/play/matcha-latte.webp"></div>
+            <div class="tile t4"><img alt="" src="../assets/drinks/card/kiwi-juice.webp"></div>
+            <div class="tile t5"><img alt="" src="../assets/drinks/card/flat-white.webp"></div>
+            <div class="tile t6"><img alt="" src="../assets/drinks/card/hot-chocolate.webp"></div>
+
+            <span class="ol wm-coffee">Coffee</span>
+            <span class="ol wm-tea">TEA</span>
+            <span class="mood-pill">mood to play</span>
+          </div>
+
+          <button class="btn-primary splash-enter">Start Blending&nbsp;&nbsp;→</button>
+          <button class="btn-glass splash-install">↓ 앱처럼 설치하기</button>
+          <p class="splash-fine">By entering, you agree to our mindful brewing rituals.</p>
+        </div>
+      </section>
+
+      <!-- ══ SCR-03 로딩 — 모티프 전파 ══ -->
+      <section class="screen scr-loading" id="s-loading">
+        <span class="label-caps loading-caps">BREWING YOUR MIX</span>
+        <div class="brew-wrap">
+          <div class="brew-ast" id="brew-ast"><span>✳</span><span>✳</span><span>✳</span></div>
+          <div class="brew-art">
+            <div class="brew-swirl"></div>
+            <div class="brew-cup">☕</div>
+          </div>
+        </div>
+        <p class="brew-msg">원두를 고르는 중...</p>
+        <div class="brew-bar"><div class="brew-bar-fill" style="width:62%"></div></div>
+      </section>
+
+      <!-- ══ 빈 라이브러리 — 모티프 전파 ══ -->
+      <section class="screen scr-library" id="s-empty" style="flex-direction:column;">
+        <div class="topbar"><h2 class="serif" style="font-size:22px;">My Blends</h2></div>
+        <div class="lib-scroll">
+          <div class="lib-empty" style="display:flex;">
+            <span class="empty-ast" id="empty-ast">✳</span>
+            <p class="serif">아직 저장된 블렌드가 없어요</p>
+            <p>슬라이더로 나만의 음료를 제조하고<br/>플레이리스트를 저장해 보세요.</p>
+            <button class="btn-primary">Blend My Cup&nbsp;✦</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <p class="cap" id="cap">SCR-01 · ONBOARDING</p>
+  </div>
+</div>
+
+<script>
+const views = { 'v-splash':['s-splash','SCR-01 · ONBOARDING'],
+                'v-loading':['s-loading','SCR-03 · BREWING — 모티프 전파'],
+                'v-empty':['s-empty','SCR-05 · EMPTY — 모티프 전파'] };
+const btns = Object.keys(views);
+btns.forEach((id) => document.getElementById(id).addEventListener('click', () => {
+  btns.forEach((b) => document.getElementById(b).classList.toggle('on', b === id));
+  Object.values(views).forEach(([sec]) => document.getElementById(sec).classList.remove('active'));
+  document.getElementById(views[id][0]).classList.add('active');
+  document.getElementById('cap').textContent = views[id][1];
+}));
+
+const t = (id, fn) => { const b = document.getElementById(id);
+  b.addEventListener('click', () => { b.classList.toggle('on'); fn(b.classList.contains('on')); }); };
+t('t-drift', (on) => document.getElementById('splash-inner').classList.toggle('drift', on));
+t('t-ast',   (on) => document.querySelectorAll('.ast, .brew-ast, .empty-ast')
+                       .forEach(e => e.style.visibility = on ? '' : 'hidden'));
+</script>
+</body>
+</html>

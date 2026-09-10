@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-<link rel="stylesheet" href="css/style.css?v=28" />
+<link rel="stylesheet" href="css/style.css?v=29" />
 </head>
 <body>
 <div class="app" id="app">
@@ -21,13 +21,31 @@
   <section class="screen scr-splash active" id="scr-splash">
     <div class="splash-bg"></div>
     <div class="splash-inner">
-      <p class="splash-quote">crafted with<br/>love, peace.</p>
-      <h1 class="splash-logo"><span>my</span><span class="logo-gap"></span><span>cup</span></h1>
-      <div class="splash-cup">
-        <div class="steam"><i></i><i></i><i></i></div>
-        <div class="splash-cup-glyph"><i data-lucide="coffee"></i></div>
-        <span class="splash-badge">MATCHA DIFFERENT.</span>
-      </div>
+      <!-- 콜라주 — 아웃라인 레터링 + 음료 타일. 타일은 라이브러리 규격(600x516)을 재사용 -->
+      <h1 class="collage">
+        <span class="ast a1" aria-hidden="true">✳</span>
+        <span class="ast a2" aria-hidden="true">✳</span>
+        <span class="ast a3" aria-hidden="true">✳</span>
+        <span class="ast a4" aria-hidden="true">✳</span>
+        <span class="ast a5" aria-hidden="true">✳</span>
+        <span class="ast a6" aria-hidden="true">✳</span>
+
+        <span class="ol wm-ade" aria-hidden="true">Ade</span>
+        <span class="ol wm-juice" aria-hidden="true">juice</span>
+        <span class="ol wm-my">my</span>
+        <span class="ol wm-cup">cup</span>
+
+        <span class="tile t1"><img alt="" src="assets/drinks/card/peach-iced-tea.webp" decoding="async"></span>
+        <span class="tile t2"><img alt="" src="assets/drinks/card/lemonade.webp" decoding="async"></span>
+        <span class="tile t3"><img alt="" src="assets/drinks/play/matcha-latte.webp" decoding="async"></span>
+        <span class="tile t4"><img alt="" src="assets/drinks/card/kiwi-juice.webp" decoding="async"></span>
+        <span class="tile t5"><img alt="" src="assets/drinks/card/flat-white.webp" decoding="async"></span>
+        <span class="tile t6"><img alt="" src="assets/drinks/card/hot-chocolate.webp" decoding="async"></span>
+
+        <span class="ol wm-coffee" aria-hidden="true">Coffee</span>
+        <span class="ol wm-tea" aria-hidden="true">TEA</span>
+        <span class="mood-pill">mood to play</span>
+      </h1>
       <button class="btn-primary splash-enter" id="btn-enter">Start Blending&nbsp;&nbsp;<i data-lucide="arrow-right"></i></button>
       <button class="btn-glass splash-install hidden" id="btn-install"><i data-lucide="download"></i> 앱처럼 설치하기</button>
       <p class="splash-fine">By entering, you agree to our mindful brewing rituals.</p>
@@ -271,7 +289,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script src="js/config.js?v=28"></script>
-<script src="js/app.js?v=28"></script>
+<script src="js/config.js?v=29"></script>
+<script src="js/app.js?v=29"></script>
 </body>
 </html>

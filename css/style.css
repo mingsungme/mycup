@@ -68,7 +68,7 @@ svg.lucide {
 .ctrl-main svg.lucide, .upnext-play svg.lucide, .tab.active svg.lucide { fill: currentColor; }
 .mini-btn svg.lucide { width: 17px; height: 17px; fill: currentColor; }
 .lib-star.on svg.lucide { fill: currentColor; }
-.splash-cup-glyph svg.lucide, .brew-cup svg.lucide { stroke-width: 1.25; }
+.brew-cup svg.lucide { stroke-width: 1.25; }
 .progress-head svg.lucide { fill: var(--tertiary-container); color: var(--tertiary-container); }
 
 /* ── 모바일 프레임 ─────────────────────────────── */
@@ -145,6 +145,14 @@ svg.lucide {
 .btn-glass:active { background: rgba(255,255,255,.12); }
 
 /* ════════ SCR-01 스플래시 ════════ */
+/* BM 꾸불림체 라틴 서브셋. OFL 1.1 3항(Reserved Font Name)에 따라 개명했다 —
+   'MyCup Display'를 바꾸지 말 것. 고지는 fonts/OFL.txt */
+@font-face {
+  font-family: 'MyCup Display';
+  src: url('../fonts/mycup-display-latin.woff2') format('woff2');
+  font-display: swap;
+}
+
 .scr-splash { justify-content: center; align-items: center; }
 .splash-bg {
   position: absolute; inset: 0;
@@ -155,48 +163,87 @@ svg.lucide {
 }
 .splash-inner {
   position: relative; z-index: 1;
-  display: flex; flex-direction: column; align-items: center;
-  width: 100%; max-width: 430px; margin: 0 auto; padding: var(--sp-lg) var(--margin-m);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 100%; max-width: 430px; height: 100%; margin: 0 auto;
+  padding: var(--sp-md) var(--margin-m);
   text-align: center;
 }
-.splash-quote {
-  font-family: var(--serif); font-style: italic;
-  color: var(--on-surface-variant); font-size: 15px; line-height: 24px;
-  align-self: flex-start; text-align: left; margin-bottom: var(--sp-lg);
+
+/* ── 아웃라인 레터링 ──
+   플래튼 SVG 대신 라이브 텍스트 + text-stroke. 획 굵기가 글자 크기·화면 폭과
+   무관하게 고정돼 320px에서도 안 얇아진다. */
+.ol {
+  font-family: 'MyCup Display', var(--sans);
+  color: transparent;
+  -webkit-text-stroke: var(--ol-w, 1.4px) var(--ol-c, rgba(229,226,221,.82));
+  paint-order: stroke fill;
+  line-height: .9;
+  white-space: nowrap;
 }
-.splash-logo {
-  font-family: var(--serif); font-weight: 700;
-  font-size: 48px; line-height: 52px; letter-spacing: -0.04em;
-  display: flex; width: 100%; justify-content: space-between;
-  padding: 0 var(--sp-base); margin-bottom: var(--sp-md);
+
+/* ── 콜라주 ── */
+.collage {
+  position: relative; width: 100%; aspect-ratio: 430/560;
+  flex: 0 1 auto; min-height: 0;
+  margin-bottom: var(--sp-sm);
 }
-.logo-gap { flex: 1; }
-.splash-cup {
-  position: relative;
-  width: 200px; height: 200px;
-  border: 1px solid var(--glass-line); border-radius: var(--r-full);
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: var(--sp-lg);
+.collage > * { position: absolute; }
+
+.wm-my    { left: 2%;  top: 14%; font-size: clamp(52px,17vw,78px); --ol-w: 1.8px; }
+.wm-cup   { right: 0;  top: 29%; font-size: clamp(58px,19vw,88px); --ol-w: 1.8px; }
+.wm-ade   { left: 20%; top: -1%; font-size: clamp(17px,5.5vw,25px); }
+.wm-juice { right: 1%; top: 5%;  font-size: clamp(21px,7vw,32px); transform: rotate(-4deg); }
+.wm-coffee{ right: 2%; top: 56%; font-size: clamp(26px,8.5vw,40px); z-index: 6; }
+.wm-tea   { left: 1%;  top: 66%; font-size: clamp(26px,8.5vw,40px); z-index: 6; }
+
+/* 사진 타일 — 65~170px 구간이라 현재 에셋 해상도로 충분 */
+.tile { border-radius: 3px; overflow: hidden; background: var(--sc-low);
+  box-shadow: 0 10px 26px rgba(0,0,0,.5); }
+.tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.t1 { left: 22%;  top: 36%; width: 16%; aspect-ratio: 1/1.12; z-index: 3; }
+.t2 { left: -8%;  top: 47%; width: 26%; aspect-ratio: 1/.86;  z-index: 4; }
+.t3 { right: 2%;  top: 46%; width: 42%; aspect-ratio: 16/10;  z-index: 2; }
+.t4 { left: 13%;  top: 57%; width: 29%; aspect-ratio: 1/.92;  z-index: 5; }
+.t5 { left: 40%;  top: 63%; width: 29%; aspect-ratio: 1/1.02; z-index: 5; }
+.t6 { right: -3%; top: 60%; width: 25%; aspect-ratio: 1/1;    z-index: 4; }
+
+.mood-pill {
+  left: 42%; top: 52%; z-index: 8;
+  border: 1px solid rgba(243,229,108,.55); border-radius: var(--r-full);
+  padding: 5px 13px; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  color: var(--tertiary-container); background: rgba(19,20,17,.86);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
-.splash-cup-glyph { font-size: 64px; filter: grayscale(.3); }
-.splash-badge {
-  position: absolute; top: -14px; right: -28px;
-  font-size: 10px; font-weight: 700; letter-spacing: .15em;
-  color: var(--tertiary-container);
-  border: 1px solid rgba(243, 229, 108, .4);
-  border-radius: var(--r-full); padding: 6px 12px;
-  background: rgba(19, 20, 17, .8);
+
+/* ✳ 모티프 */
+.ast {
+  color: transparent; -webkit-text-stroke: 1.3px rgba(229,226,181,.5);
+  font-family: 'MyCup Display', var(--sans); line-height: 1;
+  pointer-events: none; user-select: none;
 }
-.steam { position: absolute; top: 28px; display: flex; gap: 10px; }
-.steam i, .cup-steam i {
+.a1 { left: 8%;   top: 6%;  font-size: 40px; --r: -8deg; }
+.a2 { right: 14%; top: 17%; font-size: 48px; --r: 12deg; }
+.a3 { left: 47%;  top: 26%; font-size: 24px; }
+.a4 { left: 35%;  top: 33%; font-size: 18px; }
+.a5 { right: 23%; top: 68%; font-size: 32px; --r: -14deg; --ol-c: rgba(243,229,108,.4); }
+.a6 { left: 22%;  top: 88%; font-size: 20px; }
+.ast { transform: rotate(var(--r, 0deg)); animation: ast-drift 5.5s ease-in-out infinite; }
+.a2 { animation-delay: .7s; } .a3 { animation-delay: 1.4s; }
+.a5 { animation-delay: 2.1s; } .a6 { animation-delay: 2.8s; }
+@keyframes ast-drift {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); opacity: .5; }
+  50%      { transform: translateY(-7px) rotate(calc(var(--r, 0deg) + 6deg)); opacity: .85; }
+}
+@media (prefers-reduced-motion: reduce) { .ast { animation: none; } }
+
+/* 연기 — 주문 화면 컵에서 계속 쓴다 */
+.cup-steam i {
   width: 3px; height: 26px; border-radius: 3px;
   background: linear-gradient(180deg, transparent, rgba(255,255,255,.5));
   animation: steam 2.4s ease-in-out infinite;
 }
-.steam i:nth-child(2), .cup-steam i:nth-child(2) { animation-delay: .4s; height: 32px; }
-.steam i:nth-child(3), .cup-steam i:nth-child(3) { animation-delay: .9s; }
+.cup-steam i:nth-child(2) { animation-delay: .4s; height: 32px; }
+.cup-steam i:nth-child(3) { animation-delay: .9s; }
 @keyframes steam {
   0%, 100% { opacity: 0; transform: translateY(6px) scaleY(.7); }
   50% { opacity: 1; transform: translateY(-4px) scaleY(1); }
