@@ -185,8 +185,11 @@ svg.lucide {
      ⚠️ Figma stroke align 은 outside 인데 -webkit-text-stroke 는 center 고정이라
      0.5px 만큼 안쪽으로 들어온다. 1px 에서는 육안 차이가 거의 없어 그대로 간다. */
   /* my·cup 은 SVG(.wm)로 빠졌으므로 여기 남는 건 Ade·juice·Coffee·TEA.
-     center 정렬이라 같은 1px 이라도 outside 인 SVG 쪽보다 굵어 보여 절반으로. */
-  -webkit-text-stroke: var(--ol-w, .5px) var(--ol-c, #e5e2dd);
+     my·cup 은 140px 에 1px = 글자 대비 0.71%. 같은 비율로 맞추려면 em 이라야 한다
+     (고정 px 이면 작은 글자일수록 비율이 커져 더 굵어 보인다).
+     center 정렬이라 outside 인 SVG 쪽보다 여전히 살짝 굵게 읽히므로 하한만 둔다.
+     하한 0.2px — 아이폰(@3x)에서 0.6 기기픽셀이라 보인다. 1x 화면에서는 옅어진다. */
+  -webkit-text-stroke: var(--ol-w, max(.2px, .0071em)) var(--ol-c, #e5e2dd);
   paint-order: stroke fill;
   /* 시안은 -1.92px 고정(52px·140px 양쪽 동일). em 으로 바꾸면 큰 글자에 과하게 들어간다.
      콜라주 폭 361px 기준 -0.532cqw 로 두면 프레임이 커져도 비율이 유지된다. */
@@ -252,8 +255,8 @@ svg.lucide {
 /* ✳ 모티프 */
 .ast {
   color: transparent;
-  /* 레터링과 같은 장식 계열이라 굵기를 맞춘다 (.ol 과 동일하게 0.5px) */
-  -webkit-text-stroke: var(--ol-w, .5px) var(--ol-c, rgba(229,226,181,.5));
+  /* 레터링과 같은 장식 계열이라 같은 비율(0.71%)로 맞춘다 */
+  -webkit-text-stroke: var(--ol-w, max(.2px, .0071em)) var(--ol-c, rgba(229,226,181,.5));
   font-family: var(--display); line-height: 1;
   pointer-events: none; user-select: none;
 }
