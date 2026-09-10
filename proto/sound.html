@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Cup — 브루잉 사운드 프로토타입</title>
+<link rel="stylesheet" href="../css/style.css?v=28" />
+<style>
+/* style.css의 body는 display:flex(앱 프레임 중앙정렬용)라 여기선 되돌린다 */
+body{display:block;background:var(--sc-lowest);color:var(--on-surface);font-family:var(--sans);
+  line-height:1.6;padding:1.5rem 1.2rem 4rem;max-width:640px;margin:0 auto;}
+section{display:block;}
+h1{font-family:var(--serif);font-size:1.5rem;margin-bottom:.3rem;}
+.sub{color:var(--on-surface-variant);font-size:.85rem;margin-bottom:1.6rem;line-height:1.6;}
+section{border:1px solid var(--glass-line);border-radius:14px;padding:1.1rem;margin-bottom:1rem;
+  background:var(--sc-low);}
+h2{font-size:.95rem;margin-bottom:.2rem;}
+.desc{font-size:.78rem;color:var(--on-surface-variant);margin-bottom:.9rem;line-height:1.5;}
+.row{display:flex;align-items:center;gap:.7rem;margin-bottom:.55rem;font-size:.75rem;}
+.row label{flex:0 0 84px;color:var(--on-surface-variant);letter-spacing:.04em;}
+.row input[type=range]{flex:1;accent-color:var(--secondary);}
+.row .v{flex:0 0 46px;text-align:right;font-variant-numeric:tabular-nums;color:var(--tertiary-container);}
+button{background:var(--primary);color:var(--on-primary);border:0;border-radius:999px;
+  padding:.6rem 1.3rem;font:inherit;font-weight:700;cursor:pointer;}
+button.ghost{background:transparent;color:var(--on-surface);border:1px solid var(--glass-line);}
+button:disabled{opacity:.4;cursor:not-allowed;}
+.acts{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem;}
+
+/* 음소거 토글 — 설정 모달에 그대로 옮길 수 있는 형태 */
+.mute-bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:.8rem;
+  background:rgba(19,20,17,.94);backdrop-filter:blur(10px);
+  border:1px solid var(--glass-line);border-radius:999px;padding:.6rem 1rem;margin-bottom:1.2rem;}
+.mute-bar .lbl{flex:1;font-size:.85rem;font-weight:600;}
+.mute-bar .st{font-size:.7rem;color:var(--on-surface-variant);}
+.sw{position:relative;width:46px;height:26px;flex:0 0 auto;}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2;}
+.sw .tr{position:absolute;inset:0;border-radius:999px;background:var(--sc-highest);
+  border:1px solid var(--glass-line);transition:background .2s;}
+.sw .kn{position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;
+  background:var(--on-surface-variant);transition:transform .2s,background .2s;}
+.sw input:checked ~ .tr{background:var(--tertiary-container);}
+.sw input:checked ~ .kn{transform:translateX(20px);background:#1f1b14;}
+.sw input:focus-visible ~ .tr{outline:2px solid var(--secondary);outline-offset:2px;}
+.muted-note{font-size:.72rem;color:var(--error);margin-top:.5rem;display:none;}
+body.is-muted .muted-note{display:block;}
+</style>
+</head>
+<body>
+
+<h1>브루잉 사운드</h1>
+<p class="sub">파일 없이 Web Audio로 합성합니다 — 소싱·라이선스·호스팅이 전부 없습니다.<br>
+슬라이더로 조절하고 ▶로 들어보세요. 값이 정해지면 <code>js/app.js</code>에 옮깁니다.</p>
+
+<div class="mute-bar">
+  <span class="lbl">브루잉 사운드</span>
+  <span class="st" id="mute-state">켜짐</span>
+  <span class="sw">
+    <input type="checkbox" id="sfx-on" checked aria-label="브루잉 사운드 켜기/끄기">
+    <span class="tr"></span><span class="kn"></span>
+  </span>
+</div>
+<p class="muted-note" id="mnote">음소거 상태입니다 — 재생 버튼이 비활성화됩니다.</p>
+
+<section>
+  <h2>🧊 얼음 달그락</h2>
+  <p class="desc">차가운 음료(<code>temp</code> 낮음). 충돌 클릭 + 비조화 공진 모드. 노이즈만 쓰면 '가는' 소리가 되어버립니다.</p>
+  <div class="row"><label>부딪힘 수</label><input type="range" id="ice-n" min="2" max="20" value="9"><span class="v" id="ice-n-v">9</span></div>
+  <div class="row"><label>공진(Hz)</label><input type="range" id="ice-f" min="600" max="3500" value="1500"><span class="v" id="ice-f-v">1500</span></div>
+  <div class="row"><label>길이(s)</label><input type="range" id="ice-d" min="4" max="25" value="11"><span class="v" id="ice-d-v">1.1</span></div>
+  <div class="acts"><button data-play="ice">▶ 재생</button></div>
+</section>
+
+<section>
+  <h2>☕ 원두 가는 소리</h2>
+  <p class="desc">진한 바디(<code>body</code> 높음). 로우패스 노이즈에 진폭 변조를 걸어 모터의 그르렁거림을 만듭니다.</p>
+  <div class="row"><label>거칠기</label><input type="range" id="gr-m" min="10" max="90" value="42"><span class="v" id="gr-m-v">42</span></div>
+  <div class="row"><label>저역(Hz)</label><input type="range" id="gr-f" min="200" max="2400" value="900"><span class="v" id="gr-f-v">900</span></div>
+  <div class="row"><label>길이(s)</label><input type="range" id="gr-d" min="5" max="30" value="16"><span class="v" id="gr-d-v">1.6</span></div>
+  <div class="acts"><button data-play="grind">▶ 재생</button></div>
+</section>
+
+<section>
+  <h2>💧 물 주르륵</h2>
+  <p class="desc">옮겨 붓는 물줄기. 핵심은 <b>받는 그릇이 차면서 공명이 올라가는 것</b> — 그게 없으면 그냥 노이즈입니다.</p>
+  <div class="row"><label>방울</label><input type="range" id="w-n" min="0" max="12" value="4"><span class="v" id="w-n-v">4</span></div>
+  <div class="row"><label>그릇(Hz)</label><input type="range" id="w-f" min="250" max="1400" value="700"><span class="v" id="w-f-v">700</span></div>
+  <div class="row"><label>길이(s)</label><input type="range" id="w-d" min="8" max="35" value="19"><span class="v" id="w-d-v">1.9</span></div>
+  <div class="acts"><button data-play="pour">▶ 재생</button></div>
+</section>
+
+<section>
+  <h2>♨ 스팀 (김)</h2>
+  <p class="desc">뜨거운 음료의 마무리. 원래 물소리로 만들었던 것이 증기로 들려서 이쪽으로 옮겼습니다 — 로딩의 연기 모티프와 짝입니다.</p>
+  <div class="row"><label>음색(Hz)</label><input type="range" id="s-f" min="1200" max="6000" value="3400"><span class="v" id="s-f-v">3400</span></div>
+  <div class="row"><label>쉭쉭함</label><input type="range" id="s-h" min="10" max="100" value="55"><span class="v" id="s-h-v">55</span></div>
+  <div class="row"><label>길이(s)</label><input type="range" id="s-d" min="5" max="35" value="15"><span class="v" id="s-d-v">1.5</span></div>
+  <div class="acts"><button data-play="steam">▶ 재생</button></div>
+</section>
+
+<section>
+  <h2>🎚 프로필 연동 미리보기</h2>
+  <p class="desc">슬라이더 값에 따라 어떤 소리가 어떤 순서로 나는지. 실제 앱의 <code>temp</code>·<code>body</code>와 같은 규칙입니다.</p>
+  <div class="row"><label>TEMP</label><input type="range" id="p-temp" min="0" max="100" value="80"><span class="v" id="p-temp-v">80</span></div>
+  <div class="row"><label>BODY</label><input type="range" id="p-body" min="0" max="100" value="70"><span class="v" id="p-body-v">70</span></div>
+  <p class="desc" id="p-plan" style="margin:.6rem 0 0;color:var(--tertiary-container);"></p>
+  <div class="acts"><button data-play="profile">▶ 브루잉 시퀀스</button></div>
+</section>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   브루잉 사운드 — Web Audio 합성. 오디오 파일 0개.
+   음소거 상태는 localStorage('mycup_sfx')에 저장한다.
+   ══════════════════════════════════════════════════════════ */
+const SFX_KEY = 'mycup_sfx';
+let ctx = null;
+
+/* iOS는 AudioContext를 사용자 제스처 안에서 만들거나 resume 해야 한다.
+   앱에서는 btn-blend 클릭 핸들러가 그 자리다. */
+function audio() {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === 'suspended') ctx.resume();
+  return ctx;
+}
+const sfxOn = () => localStorage.getItem(SFX_KEY) !== 'off';
+
+function noiseBuffer(ac, sec) {
+  const buf = ac.createBuffer(1, Math.ceil(ac.sampleRate * sec), ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return buf;
+}
+
+/* 🧊 얼음 달그락 — 단단한 물체의 충돌.
+   충돌 클릭(광대역) + 비조화 모드 공진(링)이 있어야 '달그락'으로 들린다.
+   노이즈만 쓰면 얼음을 '가는' 소리가 되어버린다. */
+function iceHit(ac, t, base, gain) {
+  // 1) 충돌 순간의 클릭
+  const nb = ac.createBufferSource(); nb.buffer = noiseBuffer(ac, .012);
+  const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2800;
+  const ng = ac.createGain();
+  ng.gain.setValueAtTime(gain * .45, t);
+  ng.gain.exponentialRampToValueAtTime(.0001, t + .014);
+  nb.connect(hp).connect(ng).connect(ac.destination);
+  nb.start(t); nb.stop(t + .04);
+
+  // 2) 얼음덩어리의 공진 모드 — 비조화 비율이라야 금속이 아닌 '얼음/유리'로 들린다
+  [1, 1.59, 2.41, 3.07].forEach((r, i) => {
+    const o = ac.createOscillator();
+    o.type = i === 0 ? 'triangle' : 'sine';
+    o.frequency.value = base * r * (0.97 + Math.random() * 0.06);
+    const g = ac.createGain();
+    const amp = gain * (0.5 / (i + 1));
+    const dec = 0.30 / (1 + i * 0.55);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(amp, t + .003);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dec);
+    o.connect(g).connect(ac.destination);
+    o.start(t); o.stop(t + dec + .05);
+  });
+}
+
+function ice(ac, t0, { n = 9, freq = 1500, dur = 1.1, gain = .5 } = {}) {
+  for (let i = 0; i < n; i++) {
+    // 앞쪽에 몰리고 뒤로 갈수록 성겨진다 — 넣고 나서 잦아드는 느낌
+    const t = t0 + dur * Math.pow(Math.random(), 1.7);
+    iceHit(ac, t, freq * (0.72 + Math.random() * 0.62), gain * (0.45 + Math.random() * 0.55));
+  }
+  return dur;
+}
+
+/* ☕ 그라인더 — 로우패스 노이즈 + 진폭 변조(모터) + 크런치 */
+function grind(ac, t0, { rough = 42, freq = 900, dur = 1.6, gain = .34 } = {}) {
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac, dur + .2); src.loop = true;
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+  lp.frequency.value = freq; lp.Q.value = 1.2;
+  const body = ac.createGain(); body.gain.value = gain;
+
+  const lfo = ac.createOscillator(); lfo.type = 'sawtooth';
+  lfo.frequency.value = 24 + rough * .5;
+  const lfoAmt = ac.createGain(); lfoAmt.gain.value = gain * (rough / 140);
+  lfo.connect(lfoAmt).connect(body.gain);
+
+  const env = ac.createGain();
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(1, t0 + .09);
+  env.gain.setValueAtTime(1, t0 + dur - .18);
+  env.gain.linearRampToValueAtTime(0, t0 + dur);
+
+  src.connect(lp).connect(body).connect(env).connect(ac.destination);
+  src.start(t0); src.stop(t0 + dur);
+  lfo.start(t0); lfo.stop(t0 + dur);
+
+  // 원두가 걸리는 순간들
+  for (let i = 0; i < Math.round(rough / 9); i++) {
+    const t = t0 + .1 + Math.random() * (dur - .3);
+    const c = ac.createBufferSource(); c.buffer = noiseBuffer(ac, .04);
+    const cf = ac.createBiquadFilter(); cf.type = 'bandpass';
+    cf.frequency.value = 500 + Math.random() * 1800; cf.Q.value = 3;
+    const cg = ac.createGain();
+    cg.gain.setValueAtTime(gain * .8, t);
+    cg.gain.exponentialRampToValueAtTime(.0001, t + .045);
+    c.connect(cf).connect(cg).connect(ac.destination);
+    c.start(t); c.stop(t + .1);
+  }
+  return dur;
+}
+
+/* 💧 물 주르륵 — 연속적으로 옮겨 붓는 물줄기.
+   핵심은 '받는 그릇이 차면서 공명 주파수가 올라가는' 것. 그게 없으면
+   그냥 노이즈고, 물방울을 또렷하게 넣으면 '쪼르륵'(가는 물줄기)이 된다. */
+function pour(ac, t0, { drops = 4, freq = 700, dur = 1.9, gain = .34 } = {}) {
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac, dur + .3); src.loop = true;
+
+  // 물줄기 몸통 — 넓게 잡는다(밴드패스로 좁히면 가늘어진다)
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+  lp.frequency.value = freq * 3.4; lp.Q.value = .7;
+  const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 220;
+
+  // 차오르는 그릇의 공명 — 이게 '붓는 중'이라는 신호
+  const res = ac.createBiquadFilter();
+  res.type = 'peaking'; res.Q.value = 3.6; res.gain.value = 13;
+  res.frequency.setValueAtTime(freq, t0);
+  res.frequency.exponentialRampToValueAtTime(freq * 2.5, t0 + dur);
+
+  // 난류 — 느리고 불규칙한 흔들림
+  const turb = ac.createGain();
+  const N = 72, curve = new Float32Array(N);
+  let v = 1;
+  for (let i = 0; i < N; i++) {
+    v += (Math.random() - .5) * .28;
+    curve[i] = v = Math.max(.62, Math.min(1.25, v));
+  }
+  turb.gain.setValueCurveAtTime(curve, t0, dur);
+
+  const env = ac.createGain();
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(gain, t0 + .13);
+  env.gain.setValueAtTime(gain, t0 + dur - .22);
+  env.gain.linearRampToValueAtTime(0, t0 + dur);
+
+  src.connect(lp).connect(hp).connect(res).connect(turb).connect(env).connect(ac.destination);
+  src.start(t0); src.stop(t0 + dur);
+
+  // 방울은 적고 낮게 — 많으면 '쪼르륵'으로 되돌아간다
+  for (let i = 0; i < drops; i++) {
+    const t = t0 + .2 + Math.random() * (dur - .5);
+    const o = ac.createOscillator(); o.type = 'sine';
+    const f0 = 200 + Math.random() * 320;
+    o.frequency.setValueAtTime(f0, t);
+    o.frequency.exponentialRampToValueAtTime(f0 * 1.9, t + .07);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gain * .28, t + .008);
+    g.gain.exponentialRampToValueAtTime(.0001, t + .11);
+    o.connect(g).connect(ac.destination);
+    o.start(t); o.stop(t + .18);
+  }
+  return dur;
+}
+
+/* ♨ 스팀 — 좁은 밴드패스 노이즈 스윕.
+   원래 pour로 만들었던 것이 실제로는 물이 아니라 증기로 들려서 이쪽으로 옮겼다.
+   로딩 화면의 연기 모티프와 짝이 된다. */
+function steam(ac, t0, { freq = 3400, hiss = 55, dur = 1.5, gain = .24 } = {}) {
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac, dur + .3); src.loop = true;
+
+  const bp = ac.createBiquadFilter(); bp.type = 'bandpass';
+  bp.Q.value = 0.8 + hiss / 90;
+  bp.frequency.setValueAtTime(freq * .62, t0);
+  bp.frequency.linearRampToValueAtTime(freq, t0 + dur * .38);
+  bp.frequency.linearRampToValueAtTime(freq * .74, t0 + dur);
+
+  // 압력이 흔들리는 느낌
+  const turb = ac.createGain();
+  const N = 48, curve = new Float32Array(N);
+  let v = 1;
+  for (let i = 0; i < N; i++) { v += (Math.random() - .5) * .22; curve[i] = v = Math.max(.7, Math.min(1.2, v)); }
+  turb.gain.setValueCurveAtTime(curve, t0, dur);
+
+  const env = ac.createGain();
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(gain, t0 + .22);   // 천천히 차오른다
+  env.gain.setValueAtTime(gain, t0 + dur - .35);
+  env.gain.linearRampToValueAtTime(0, t0 + dur);
+
+  src.connect(bp).connect(turb).connect(env).connect(ac.destination);
+  src.start(t0); src.stop(t0 + dur);
+  return dur;
+}
+
+/* 프로필 → 시퀀스. 앱의 temp/body 규칙과 동일 */
+function planFor(temp, body) {
+  const steps = [];
+  if (body >= 60) steps.push(['grind', '원두 갈기']);
+  if (temp <= 40) steps.push(['ice', '얼음 넣기']);
+  else { steps.push(['pour', '물 붓기']); steps.push(['steam', '김 오르기']); }
+  return steps;
+}
+
+const P = {
+  ice:   () => ({ n:+$('ice-n').value, freq:+$('ice-f').value, dur:+$('ice-d').value/10 }),
+  grind: () => ({ rough:+$('gr-m').value, freq:+$('gr-f').value, dur:+$('gr-d').value/10 }),
+  pour:  () => ({ drops:+$('w-n').value, freq:+$('w-f').value, dur:+$('w-d').value/10 }),
+  steam: () => ({ freq:+$('s-f').value, hiss:+$('s-h').value, dur:+$('s-d').value/10 }),
+};
+const FN = { ice, grind, pour, steam };
+function $(id){ return document.getElementById(id); }
+
+function play(kind) {
+  if (!sfxOn()) return;
+  const ac = audio();
+  if (kind === 'profile') {
+    let t = ac.currentTime + .05;
+    planFor(+$('p-temp').value, +$('p-body').value).forEach(([k]) => {
+      t += FN[k](ac, t, P[k]()) + .12;
+    });
+    return;
+  }
+  FN[kind](ac, ac.currentTime + .03, P[kind]());
+}
+
+document.querySelectorAll('[data-play]').forEach((b) =>
+  b.addEventListener('click', () => play(b.dataset.play)));
+
+/* 슬라이더 값 표시 */
+[['ice-n',1],['ice-f',1],['ice-d',10],['gr-m',1],['gr-f',1],['gr-d',10],
+ ['w-n',1],['w-f',1],['w-d',10],['s-f',1],['s-h',1],['s-d',10],
+ ['p-temp',1],['p-body',1]].forEach(([id,div]) => {
+  const el = $(id), out = $(id+'-v');
+  const upd = () => { out.textContent = div === 10 ? (el.value/10).toFixed(1) : el.value; updPlan(); };
+  el.addEventListener('input', upd); upd();
+});
+function updPlan() {
+  const p = $('p-plan'); if (!p) return;
+  p.textContent = '→ ' + planFor(+$('p-temp').value, +$('p-body').value).map(s=>s[1]).join(' · ');
+}
+
+/* ── 음소거 토글 — 설정 모달에 그대로 옮길 수 있는 형태 ── */
+const sw = $('sfx-on');
+function applyMute() {
+  const on = sfxOn();
+  sw.checked = on;
+  $('mute-state').textContent = on ? '켜짐' : '꺼짐';
+  document.body.classList.toggle('is-muted', !on);
+  document.querySelectorAll('[data-play]').forEach(b => b.disabled = !on);
+}
+sw.addEventListener('change', () => {
+  localStorage.setItem(SFX_KEY, sw.checked ? 'on' : 'off');
+  applyMute();
+  if (sw.checked) play('ice');   // 켜는 순간 짧게 확인음
+});
+applyMute();
+updPlan();
+</script>
+</body>
+</html>
