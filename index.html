@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="preload" href="fonts/mycup-display-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="stylesheet" href="css/style.css?v=39" />
+<link rel="stylesheet" href="css/style.css?v=43" />
 </head>
 <body>
 <div class="app" id="app">
@@ -33,8 +33,23 @@
 
         <span class="ol wm-ade" aria-hidden="true">Ade</span>
         <span class="ol wm-juice" aria-hidden="true">juice</span>
-        <span class="ol wm-my">my</span>
-        <span class="ol wm-cup">cup</span>
+        <!-- my·cup 만 SVG — Figma stroke align 이 outside 인데 -webkit-text-stroke 는
+             center 고정이라 속이 1px 좁아진다. 2px 스트로크 후 글자 내부를 마스크로
+             도려내면 정확히 '바깥 1px'이 남고 속은 투명이라 뒤가 비친다. -->
+        <svg class="wm wm-my" viewBox="-2 86 157.4 163.5" role="img" aria-label="my">
+          <mask id="wm-my-mask" maskUnits="userSpaceOnUse" x="-2" y="86" width="157.4" height="163.5">
+            <rect x="-2" y="86" width="157.4" height="163.5" fill="#fff"/>
+            <text x="0" y="200">my</text>
+          </mask>
+          <text x="0" y="200" mask="url(#wm-my-mask)">my</text>
+        </svg>
+        <svg class="wm wm-cup" viewBox="-2 86 195.4 164.0" role="img" aria-label="cup">
+          <mask id="wm-cup-mask" maskUnits="userSpaceOnUse" x="-2" y="86" width="195.4" height="164.0">
+            <rect x="-2" y="86" width="195.4" height="164.0" fill="#fff"/>
+            <text x="0" y="200">cup</text>
+          </mask>
+          <text x="0" y="200" mask="url(#wm-cup-mask)">cup</text>
+        </svg>
 
         <span class="tile t1"><img alt="" src="assets/drinks/card/peach-iced-tea.webp" decoding="async"></span>
         <span class="tile t2"><img alt="" src="assets/drinks/card/lemonade.webp" decoding="async"></span>
@@ -290,7 +305,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script src="js/config.js?v=39"></script>
-<script src="js/app.js?v=39"></script>
+<script src="js/config.js?v=43"></script>
+<script src="js/app.js?v=43"></script>
 </body>
 </html>

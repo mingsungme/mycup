@@ -184,7 +184,9 @@ svg.lucide {
   /* 시안: border 1px solid #E5E2DD (Figma 는 텍스트 stroke 를 border 로 내보낸다).
      ⚠️ Figma stroke align 은 outside 인데 -webkit-text-stroke 는 center 고정이라
      0.5px 만큼 안쪽으로 들어온다. 1px 에서는 육안 차이가 거의 없어 그대로 간다. */
-  -webkit-text-stroke: var(--ol-w, 1px) var(--ol-c, #e5e2dd);
+  /* my·cup 은 SVG(.wm)로 빠졌으므로 여기 남는 건 Ade·juice·Coffee·TEA.
+     center 정렬이라 같은 1px 이라도 outside 인 SVG 쪽보다 굵어 보여 절반으로. */
+  -webkit-text-stroke: var(--ol-w, .5px) var(--ol-c, #e5e2dd);
   paint-order: stroke fill;
   /* 시안은 -1.92px 고정(52px·140px 양쪽 동일). em 으로 바꾸면 큰 글자에 과하게 들어간다.
      콜라주 폭 361px 기준 -0.532cqw 로 두면 프레임이 커져도 비율이 유지된다. */
@@ -209,8 +211,20 @@ svg.lucide {
 
 /* 시안(아이폰 16, 콜라주 폭 361px) 실측값을 cqw 로 환산:
    my 140px = 38.8cqw / Ade 52px = 14.4cqw. 스트로크는 전부 1px 균일. */
-.wm-my    { left: 1%;  top: 13%; font-size: 38.8cqw; line-height: 14.4cqw; }
-.wm-cup   { right: -1%; top: 25%; font-size: 38.8cqw; line-height: 14.4cqw; }
+/* my·cup 은 SVG + mask 로 'outside 1px' 을 재현한다(위 .ol 은 center 고정).
+   viewBox 단위가 140px 기준이라 font-size 는 리터럴, 크기는 폭(cqw)으로 준다. */
+.wm { position: absolute; display: block; height: auto; overflow: visible;
+      transform: translateZ(0); }
+.wm text { font-family: var(--display); font-size: 140px; letter-spacing: -1.92px; }
+.wm mask text { fill: #fff; }          /* 흰 마스크 위에 검정 = 글자 속을 도려냄 */
+.wm mask rect + text { fill: #000; }
+.wm > text { fill: none; stroke: #e5e2dd; stroke-width: 2; stroke-linejoin: round; }
+
+/* 폭 = (글리프폭 + 여유 4) / 콜라주 361px */
+/* SVG 박스는 글리프에 딱 맞아서, line-height:52px 이던 예전 span 보다
+   글자가 46px(≈8.1%) 아래로 내려간다. 그만큼 top 을 올려 보정. */
+.wm-my  { left: 1%;   top: 4.9%;  width: 43.6cqw; }
+.wm-cup { right: -1%; top: 16.9%; width: 54.1cqw; }
 .wm-ade   { left: 22%; top: 1%;  font-size: 14.4cqw; }
 .wm-juice { right: 1%; top: 5%;  font-size: 10.5cqw; transform: rotate(-4deg) translateZ(0); }
 .wm-coffee{ right: 2%; top: 60%; font-size: 12.2cqw; z-index: 6; }
@@ -238,7 +252,8 @@ svg.lucide {
 /* ✳ 모티프 */
 .ast {
   color: transparent;
-  -webkit-text-stroke: var(--ol-w, 1px) var(--ol-c, rgba(229,226,181,.5));
+  /* 레터링과 같은 장식 계열이라 굵기를 맞춘다 (.ol 과 동일하게 0.5px) */
+  -webkit-text-stroke: var(--ol-w, .5px) var(--ol-c, rgba(229,226,181,.5));
   font-family: var(--display); line-height: 1;
   pointer-events: none; user-select: none;
 }
