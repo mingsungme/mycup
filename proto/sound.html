@@ -62,7 +62,19 @@ body.is-muted .muted-note{display:block;}
 <p class="muted-note" id="mnote">음소거 상태입니다 — 재생 버튼이 비활성화됩니다.</p>
 
 <section>
-  <h2>🧊 얼음 달그락</h2>
+  <h2>🎧 녹음 음원 (Freesound)</h2>
+  <p class="desc">합성본과 A/B 비교용. 원본 7~20초를 에너지 높은 구간 1.6초만 잘라 mono 24kHz AAC 로 인코딩했습니다.
+  <b>합계 53KB</b> (원본 764KB).</p>
+  <div class="acts">
+    <button data-file="ice">▶ 얼음</button>
+    <button data-file="pour">▶ 물 붓기</button>
+    <button data-file="soda">▶ 탄산</button>
+  </div>
+  <p class="desc" style="margin:.8rem 0 0">출처 Pixabay — Content License 라 상업적 사용 가능하고 출처 표기 의무가 없습니다. 상세는 <code>assets/sfx/README.md</code>.</p>
+</section>
+
+<section>
+  <h2>🧊 얼음 달그락 <span style="font-size:.7rem;color:var(--on-surface-variant)">(합성)</span></h2>
   <p class="desc">차가운 음료(<code>temp</code> 낮음). 충돌 클릭 + 비조화 공진 모드. 노이즈만 쓰면 '가는' 소리가 되어버립니다.</p>
   <div class="row"><label>부딪힘 수</label><input type="range" id="ice-n" min="2" max="20" value="9"><span class="v" id="ice-n-v">9</span></div>
   <div class="row"><label>공진(Hz)</label><input type="range" id="ice-f" min="600" max="3500" value="1500"><span class="v" id="ice-f-v">1500</span></div>
@@ -325,6 +337,18 @@ function play(kind) {
 document.querySelectorAll('[data-play]').forEach((b) =>
   b.addEventListener('click', () => play(b.dataset.play)));
 
+/* 녹음 음원 — 합성본과 같은 음소거 토글을 따른다 */
+const files = {};
+document.querySelectorAll('[data-file]').forEach((b) => {
+  b.addEventListener('click', () => {
+    if (!sfxOn()) return;
+    const k = b.dataset.file;
+    const a = files[k] || (files[k] = new Audio(`../assets/sfx/${k}.m4a`));
+    a.currentTime = 0;
+    a.play().catch((e) => console.warn('재생 실패', k, e));
+  });
+});
+
 /* 슬라이더 값 표시 */
 [['ice-n',1],['ice-f',1],['ice-d',10],['gr-m',1],['gr-f',1],['gr-d',10],
  ['w-n',1],['w-f',1],['w-d',10],['s-f',1],['s-h',1],['s-d',10],
@@ -345,7 +369,7 @@ function applyMute() {
   sw.checked = on;
   $('mute-state').textContent = on ? '켜짐' : '꺼짐';
   document.body.classList.toggle('is-muted', !on);
-  document.querySelectorAll('[data-play]').forEach(b => b.disabled = !on);
+  document.querySelectorAll('[data-play],[data-file]').forEach(b => b.disabled = !on);
 }
 sw.addEventListener('change', () => {
   localStorage.setItem(SFX_KEY, sw.checked ? 'on' : 'off');
