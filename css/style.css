@@ -222,6 +222,10 @@ svg.lucide {
 .wm text { font-family: var(--display); font-size: 140px; letter-spacing: -1.92px; }
 .wm mask text { fill: #fff; }          /* 흰 마스크 위에 검정 = 글자 속을 도려냄 */
 .wm mask rect + text { fill: #000; }
+/* stroke-width 는 viewBox 사용자 단위라 SVG 가 축소되면 획도 얇아진다
+   (360px 임베드에서 0.91px, 430px 에서 1.10px). non-scaling-stroke 로 고정하면
+   컨테이너 폭과 무관하게 항상 2 CSS px -> 마스크로 절반 잘려 실효 1px 이 된다.
+   얇아진 획이 마스크 경계 안티에일리어싱에 먹혀 번지던 문제도 함께 해결. */
 .wm > text { fill: none; stroke: #e5e2dd; stroke-width: 2; stroke-linejoin: round; }
 
 /* 폭 = (글리프폭 + 여유 4) / 콜라주 361px */
