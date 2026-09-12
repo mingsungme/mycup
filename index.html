@@ -6,14 +6,17 @@
 <meta name="theme-color" content="#131411" />
 <title>My Cup — Mood-to-Drink Music Player</title>
 <link rel="manifest" href="manifest.json" />
+<!-- SVG 를 먼저 주고, 못 읽는 브라우저는 .ico 로 폴백.
+     apple-touch-icon 은 iOS 가 SVG 를 못 읽으므로 반드시 PNG. -->
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="icons/icon.svg" />
+<link rel="alternate icon" href="icons/favicon.ico" sizes="16x16 32x32 48x48" />
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
 <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="preload" href="fonts/mycup-display-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="stylesheet" href="css/style.css?v=54" />
+<link rel="stylesheet" href="css/style.css?v=55" />
 </head>
 <body>
 <div class="app" id="app">
@@ -319,7 +322,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script src="js/config.js?v=54"></script>
-<script src="js/app.js?v=54"></script>
+<script src="js/config.js?v=55"></script>
+<script src="js/app.js?v=55"></script>
 </body>
 </html>
