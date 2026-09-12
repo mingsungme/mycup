@@ -147,12 +147,54 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 .matrixnote{margin-top:1.2rem;font-size:.85rem;color:var(--text-tertiary);}
 
 /* ── Design system ── */
-.swrow{display:flex;gap:.9rem;margin-top:2.4rem;flex-wrap:wrap;}
+/* ── Design System: 라벨 · 용례 · 컴포넌트 ── */
+.dslabel{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--rose);margin:2.6rem 0 .9rem;}
+.sw .use,.typecard .use,.cmp .use{font-size:.72rem;color:var(--text-tertiary);
+  margin-top:.35rem;line-height:1.5;}
+.typecard.ol .big{font-family:var(--sans);color:transparent;
+  -webkit-text-stroke:1px var(--text);paint-order:stroke fill;}
+
+.cmpgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.cmp{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;}
+.cmp-stage{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
+  min-height:66px;padding:.6rem 0 .9rem;}
+.cmp-name{font-weight:700;font-size:.86rem;}
+@media (max-width:860px){.cmpgrid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.cmpgrid{grid-template-columns:1fr;}}
+
+/* 앱의 실제 스타일을 축소 재현 */
+.d-btn{background:#e5e2dd;color:#1f1b14;border-radius:999px;padding:.5rem 1rem;
+  font-size:.78rem;font-weight:700;}
+.d-btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border);}
+.d-chip{display:grid;justify-items:center;border:1px solid var(--border);border-radius:12px;
+  padding:.4rem .7rem;min-width:56px;}
+.d-chip b{font-size:.78rem;}
+.d-chip i{font-style:normal;font-size:.64rem;color:var(--text-tertiary);}
+.d-chip.on{background:#e5e2dd;color:#1f1b14;border-color:#e5e2dd;}
+.d-chip.on i{color:#57503f;}
+.d-sw{width:40px;height:23px;border-radius:999px;background:var(--card-high);
+  border:1px solid var(--border);position:relative;}
+.d-sw::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;
+  border-radius:50%;background:var(--text-tertiary);}
+.d-sw.on{background:var(--yellow);border-color:var(--yellow);}
+.d-sw.on::after{left:auto;right:2px;background:#1f1b14;}
+.d-pan{display:grid;gap:.4rem;background:#f6f4ef;border-radius:10px;padding:.5rem;width:100%;}
+.d-pan i{display:block;height:34px;border-radius:4px;background:#b07b4a;}
+.d-pan u{text-decoration:none;font-size:.62rem;font-weight:700;letter-spacing:.1em;color:#1f1b14;}
+.d-pan em{font-style:normal;font-weight:400;color:#6a635b;}
+.d-rc{display:flex;justify-content:space-between;width:100%;font-size:.7rem;
+  letter-spacing:.06em;padding:.15rem 0;}
+.d-rc span{color:var(--text-tertiary);font-weight:600;}
+.d-rc b{font-weight:700;}
+.d-tok{width:34px;height:34px;border:1px solid var(--rose);border-radius:var(--r);}
+
+.swrow{display:flex;gap:.9rem;margin-top:0;flex-wrap:wrap;}
 .sw{width:120px;}
 .sw .chip{width:120px;height:120px;border-radius:16px;border:1px solid var(--border);}
 .sw .lbl{font-size:.72rem;font-weight:700;margin-top:.6rem;letter-spacing:.04em;}
 .sw .hex{font-size:.72rem;color:var(--text-tertiary);font-family:var(--mono);}
-.typespecimen{display:flex;gap:1.4rem;margin-top:2rem;flex-wrap:wrap;}
+.typespecimen{display:flex;gap:1.4rem;margin-top:0;flex-wrap:wrap;}
 .typecard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.8rem;flex:1;min-width:260px;}
 .typecard .big{font-family:var(--serif);font-weight:700;font-size:3rem;}
 .typecard.sans .big{font-family:var(--sans);font-weight:700;}
@@ -176,15 +218,6 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 @media (max-width:760px){.featlist{grid-template-columns:1fr;}}
 
 /* ── Process (case study) ── */
-.process{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;margin-top:2.6rem;}
-.case{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;}
-.case .tag{font-size:.72rem;font-weight:700;color:var(--text-tertiary);letter-spacing:.06em;text-transform:uppercase;}
-.case h3{font-family:var(--serif);font-weight:700;font-size:1.25rem;margin-top:.5rem;text-wrap:balance;}
-.case .step{margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid var(--border);}
-.case .step:first-of-type{margin-top:1.3rem;}
-.case .step .k{font-size:.72rem;font-weight:700;color:var(--rose);letter-spacing:.08em;}
-.case .step .v{font-size:.87rem;color:var(--text-secondary);margin-top:.4rem;line-height:1.65;}
-@media (max-width:760px){.process{grid-template-columns:1fr;}}
 
 /* ── Live demo iframe ── */
 .demo-wrap{display:flex;justify-content:center;margin-top:2.6rem;}
@@ -233,7 +266,6 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   <a href="#logic" aria-label="Drink Logic"></a>
   <a href="#design" aria-label="Design System"></a>
   <a href="#features" aria-label="Features"></a>
-  <a href="#process" aria-label="Process"></a>
   <a href="#demo" aria-label="Live Demo"></a>
   <a href="#assets" aria-label="Graphic Assets"></a>
   <a href="#craft" aria-label="Craft"></a>
@@ -270,7 +302,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   <div class="wrap">
     <span class="eyebrow">Motivation</span>
     <blockquote>지금 기분,<br />어떤 <mark>음료</mark>에 가까울까</blockquote>
-    <p class="lede">당도, 온도, 바디 — 기분을 음료 레시피로 옮기면, 그 음료에 어울리는 플레이리스트가 완성된다.</p>
+    <p class="lede">당도, 온도, 바디 — 기분을 음료 레시피로 옮기면, 그 음료에 어울리는 플레이리스트가 완성됩니다.</p>
     <p class="tag">카페 무드 · 인스타 감성을 즐기는 사람들을 위한 사이드 프로젝트</p>
   </div>
 </section>
@@ -346,18 +378,51 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   <div class="wrap">
     <span class="eyebrow">Design System</span>
     <h2>다크 카페 무드 × Pantone 칩</h2>
+    <p class="lede">색은 다섯 개, 서체는 세 개로 묶었습니다. 개수를 늘리는 대신 <b>각각이 어디에 쓰이는지</b>를 정해두고 화면마다 같은 규칙으로 반복했습니다.</p>
+
+    <p class="dslabel">Color</p>
     <div class="swrow">
-      <div class="sw"><div class="chip" style="background:#131411"></div><div class="lbl">SURFACE</div><div class="hex">#131411</div></div>
-      <div class="sw"><div class="chip" style="background:#e5beb5"></div><div class="lbl">SECONDARY</div><div class="hex">#E5BEB5</div></div>
-      <div class="sw"><div class="chip" style="background:#f3e56c"></div><div class="lbl">TERTIARY</div><div class="hex">#F3E56C</div></div>
-      <div class="sw"><div class="chip" style="background:#979087"></div><div class="lbl">OUTLINE</div><div class="hex">#979087</div></div>
-      <div class="sw"><div class="chip" style="background:#e5e2dd"></div><div class="lbl">ON-SURFACE</div><div class="hex">#E5E2DD</div></div>
+      <div class="sw"><div class="chip" style="background:#131411"></div><div class="lbl">SURFACE</div><div class="hex">#131411</div><div class="use">모든 화면의 바탕</div></div>
+      <div class="sw"><div class="chip" style="background:#e5beb5"></div><div class="lbl">SECONDARY</div><div class="hex">#E5BEB5</div><div class="use">슬라이더 손잡이 · 선택 상태</div></div>
+      <div class="sw"><div class="chip" style="background:#f3e56c"></div><div class="lbl">TERTIARY</div><div class="hex">#F3E56C</div><div class="use">재생 · 진행 중 표시</div></div>
+      <div class="sw"><div class="chip" style="background:#979087"></div><div class="lbl">OUTLINE</div><div class="hex">#979087</div><div class="use">테두리 · 보조 텍스트</div></div>
+      <div class="sw"><div class="chip" style="background:#e5e2dd"></div><div class="lbl">ON-SURFACE</div><div class="hex">#E5E2DD</div><div class="use">본문 텍스트</div></div>
     </div>
+
+    <p class="dslabel">Typeface</p>
     <div class="typespecimen">
-      <div class="typecard"><div class="big">Aa 가</div><div class="label">DISPLAY · MaruBuri</div></div>
-      <div class="typecard sans"><div class="big">Aa 가</div><div class="label">BODY · Pretendard</div></div>
+      <div class="typecard"><div class="big">Today: Chai Latte</div><div class="label">DISPLAY · MaruBuri</div><div class="use">화면 제목 · 곡 이름</div></div>
+      <div class="typecard sans"><div class="big">원두를 고르는 중</div><div class="label">BODY · Pretendard</div><div class="use">본문 · 버튼 · 라벨</div></div>
+      <div class="typecard ol"><div class="big">my cup</div><div class="label">DECO · 아웃라인 레터링</div><div class="use">온보딩 · 상단 타이틀</div></div>
     </div>
-    <p class="lede" style="margin-top:2rem;">Smoked Glass 카드 · 16px 라운드 · Pantone 코드 모티프(예: "555 C") · 꾸밈용 아웃라인 레터링</p>
+
+    <p class="dslabel">Component</p>
+    <div class="cmpgrid">
+      <div class="cmp">
+        <div class="cmp-stage"><span class="d-btn">Blend My Cup</span><span class="d-btn ghost">재시도</span></div>
+        <div class="cmp-name">Button</div><div class="use">Primary는 화면당 하나. 나머지는 Ghost</div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-stage"><span class="d-chip on"><b>Tall</b><i>12oz</i></span><span class="d-chip"><b>Venti</b><i>20oz</i></span></div>
+        <div class="cmp-name">Size Chip</div><div class="use">선택된 하나만 채움</div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-stage"><span class="d-sw on"></span><span class="d-sw"></span></div>
+        <div class="cmp-name">Toggle</div><div class="use">켜짐은 TERTIARY</div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-stage"><span class="d-pan"><i></i><u>CHAI LATTE <em>555 C</em></u></span></div>
+        <div class="cmp-name">Pantone Card</div><div class="use">음료 = 색 + 이름 + 코드</div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-stage"><span class="d-rc"><span>SWEETNESS</span><b>20%</b></span><span class="d-rc"><span>SIZE</span><b>TALL</b></span></div>
+        <div class="cmp-name">Receipt Row</div><div class="use">로딩·재생에서 같은 형식</div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-stage"><span class="d-tok" style="--r:8px"></span><span class="d-tok" style="--r:12px"></span><span class="d-tok" style="--r:16px"></span><span class="d-tok" style="--r:999px"></span></div>
+        <div class="cmp-name">Radius</div><div class="use">8 · 12 · 16 · 999</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -368,7 +433,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
     <div class="feat-hero">
       <span class="eyebrow" style="margin-bottom:.4rem;">PEEK PREVIEW</span>
       <h3>살짝 미리듣기</h3>
-      <p>곡 목록에 커서를 올리면(모바일은 길게 누르면) 30초만 미리 들려요. 손 떼면 원래 재생으로 자연스럽게 볼륨 페이드하며 복귀합니다.</p>
+      <p>곡 목록에 커서를 올리면(모바일은 길게 누르면) 30초만 미리 들려요. 손 떼면 원래 재생으로 자연스럽게 볼륨을 줄이며 돌아와요.</p>
       <p class="ref">음악 플레이어 앱 Flo의 프리뷰 인터랙션에서 착안 — 다만 "무드를 음료로 시각화"하는 컨셉 자체는 완전히 다른 방향으로 풀었습니다.</p>
       <div class="mocklist">
         <div class="mockrow"><div class="dot"></div><div class="t">트랙 1</div></div>
@@ -386,50 +451,18 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   </div>
 </section>
 
-<!-- ══════ PROCESS ══════ -->
-<section class="slide" id="process">
-  <div class="wrap">
-    <span class="eyebrow">Process</span>
-    <h2>완벽한 결과보다, 판단의 과정</h2>
-    <p class="lede">한 번에 맞은 적은 별로 없습니다. 실제로 다시 진단하고, 다시 뜯어고친 두 장면입니다.</p>
-    <div class="process">
-      <div class="case">
-        <div class="tag">Case 1 — 슬라이드 덱 재설계</div>
-        <h3>같은 구조 반복을 버리기로 했습니다</h3>
-        <div class="step"><div class="k">BEFORE</div><div class="v">1차 시안 6장이 전부 "eyebrow + 헤드라인 + 카드그리드" 동일 구조. 표지도 텍스트만 얹은 구성이라, 내용은 다른데 페이지가 구별되지 않았습니다</div></div>
-        <div class="step"><div class="k">판단</div><div class="v">실제 참고 삼은 팀 프로젝트 덱을 직접 뜯어봄 — 작은 반복 요소(배지)만 오토레이아웃, 큰 레이아웃은 의도적 비대칭. 표지엔 진짜 앱 데이터(음료 색상 18종)로 키비주얼을 세움</div></div>
-        <div class="step"><div class="k">AFTER</div><div class="v">슬라이드마다 다른 앵커·강약. 색면이 캔버스 가장자리 밖으로 bleed</div></div>
-      </div>
-      <div class="case">
-        <div class="tag">Case 2 — "고쳤다"고 생각했던 버그</div>
-        <h3>호버 프리뷰가 계속 무음이었던 이유</h3>
-        <div class="step"><div class="k">BEFORE</div><div class="v">1차 진단: 브라우저 자동재생 정책이 마우스 호버를 "사용자 제스처"로 안 쳐줘서라고 판단, 오디오 프라이밍 로직을 추가해 배포</div></div>
-        <div class="step"><div class="k">판단</div><div class="v">그래도 안 됨. 모바일 롱프레스(의심할 여지 없는 진짜 제스처)조차 안 되는 걸 보고 재진단 — 코드를 다시 추적하니 애초에 일부 매칭 경로(YouTube 단독 검색·데모 모드)의 곡에는 iTunes 프리뷰 URL 자체가 붙지 않고 있었음</div></div>
-        <div class="step"><div class="k">AFTER</div><div class="v">블렌드 직후 백그라운드로 트랙마다 iTunes를 재검색해 URL을 채워넣도록 수정, 실제 오디오 재생까지 확인 후 종료</div></div>
-      </div>
-      <div class="case">
-        <div class="tag">Case 3 — 로딩 화면 재설계</div>
-        <h3>"기다리는 시간"을 무엇으로 채울까</h3>
-        <div class="step"><div class="k">BEFORE</div><div class="v">회전하는 커피색 그라디언트 + 컵 아이콘. 흔한 스피너와 다를 게 없고, 이 앱만의 장면이 아니었습니다</div></div>
-        <div class="step"><div class="k">판단</div><div class="v">재생 화면에 이미 있는 영수증을 앞으로 당겨왔습니다. 새 오브젝트를 만드는 대신 있는 자산을 쓰면, 로딩이 독립된 대기 화면이 아니라 "주문 → 제조 → 완성"의 한 장면이 됩니다. 시안 3안(프린터에서 출력 / 제자리 인쇄 / 컵 채우기)을 만들어 비교했습니다</div></div>
-        <div class="step"><div class="k">AFTER</div><div class="v">영수증이 위에서 내려오며 주문 내역이 한 줄씩 찍힙니다. 재생 화면에서 같은 영수증이 완성본으로 이어집니다</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ══════ LIVE DEMO ══════ -->
 <section class="slide" id="demo">
   <div class="wrap">
     <span class="eyebrow">Live Prototype</span>
-    <h2>직접 눌러볼 수 있어요</h2>
-    <p class="lede">스크린샷이 아니라 실제로 배포된 앱입니다. 슬라이더를 움직이고, 블렌드하고, 곡을 미리 들어보세요.</p>
+    <h2>직접 눌러보는 프로토타입</h2>
+    <p class="lede">스크린샷이 아니라 실제로 배포된 앱입니다. 슬라이더를 움직이고, 블렌드하고, 곡을 미리 들어볼 수 있습니다.</p>
     <div class="demo-wrap">
       <div class="pocframe">
         <iframe src="https://mingsungme.github.io/mycup/" title="My Cup 라이브 데모" loading="lazy"></iframe>
       </div>
     </div>
-    <p class="demo-caption">iframe이 안 보이면 → <a href="https://mingsungme.github.io/mycup/" target="_blank" rel="noopener">mingsungme.github.io/mycup</a> 에서 직접 열어보세요</p>
+    <p class="demo-caption">iframe이 안 보이면 → <a href="https://mingsungme.github.io/mycup/" target="_blank" rel="noopener">mingsungme.github.io/mycup</a> 에서 직접 열어볼 수 있습니다</p>
   </div>
 </section>
 
@@ -473,8 +506,8 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 <section class="slide closing" id="closing">
   <div class="wrap">
     <span class="eyebrow">Thanks</span>
-    <h2>MATCHA DIFFERENT.</h2>
-    <p class="lede" style="margin:0 auto;">읽어주셔서 고마워요. 이 프로젝트는 계속 다듬는 중입니다.</p>
+    <h2>오늘 기분은<br />어떤 음료에 가깝나요</h2>
+    <p class="lede" style="margin:0 auto;">읽어주셔서 고맙습니다. 혼자 기획·디자인·개발했습니다.</p>
     <div class="links">
       <a class="btn" href="https://mingsungme.github.io/mycup/" target="_blank" rel="noopener">라이브 데모 열기</a>
       <a class="btn" href="https://github.com/mingsungme/mycup" target="_blank" rel="noopener">GitHub 저장소</a>
