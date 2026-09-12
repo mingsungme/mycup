@@ -239,7 +239,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
     <div class="specs">
       <div class="spec-row"><div class="k">개발 기간</div><div class="v">3시간 타임어택 — 개인 스피드 코딩 챌린지</div></div>
       <div class="spec-row"><div class="k">제약 조건</div><div class="v">외부 DB 없이, 로컬스토리지 아카이빙만으로</div></div>
-      <div class="spec-row"><div class="k">핵심 루프</div><div class="v">커스텀 슬라이더 → YouTube+iTunes API 매칭 → 로컬 아카이빙</div></div>
+      <div class="spec-row"><div class="k">핵심 루프</div><div class="v">슬라이더로 제조 → 소리와 영수증으로 확인 → 매칭된 플레이리스트 재생 → 로컬 아카이빙</div></div>
     </div>
   </div>
 </section>
@@ -330,7 +330,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
       <div class="typecard"><div class="big">Aa 가</div><div class="label">DISPLAY · MaruBuri</div></div>
       <div class="typecard sans"><div class="big">Aa 가</div><div class="label">BODY · Pretendard</div></div>
     </div>
-    <p class="lede" style="margin-top:2rem;">Smoked Glass 카드 · 16px 라운드 · Pantone 코드 모티프(예: "555 C")</p>
+    <p class="lede" style="margin-top:2rem;">Smoked Glass 카드 · 16px 라운드 · Pantone 코드 모티프(예: "555 C") · 꾸밈용 아웃라인 레터링</p>
   </div>
 </section>
 
@@ -352,6 +352,8 @@ mark{background:none;color:var(--yellow);font-weight:700;}
     <div class="featlist">
       <div><div class="f-t">컵 사이즈 = 재생 시간</div><div class="f-d">사이즈를 고르면 플레이리스트 길이도 함께 정해져요 (Tall = 15곡 · 60분)</div></div>
       <div><div class="f-t">내 컬렉션</div><div class="f-d">마음에 든 블렌드를 저장하고 즐겨찾기로 고정해요</div></div>
+      <div><div class="f-t">제조 과정이 들려요</div><div class="f-d">차가운 음료를 고르면 얼음이 달그락거리고, 뜨거우면 물이 주르륵 부어져요. 진한 바디는 원두 가는 소리부터 시작해요</div></div>
+      <div><div class="f-t">기다리는 동안 영수증이 인쇄돼요</div><div class="f-d">로딩 화면에서 주문서가 한 줄씩 찍히고, 재생 화면에서 완성된 영수증으로 이어져요. 빈 스피너 대신 방금 주문한 내용을 보여줘요</div></div>
       <div><div class="f-t">어디서든, 설치까지</div><div class="f-d">모바일 우선이지만 데스크톱에서도 넓게, 홈 화면에 앱처럼 설치도 가능해요</div></div>
     </div>
   </div>
@@ -378,6 +380,13 @@ mark{background:none;color:var(--yellow);font-weight:700;}
         <div class="step"><div class="k">판단</div><div class="v">그래도 안 됨. 모바일 롱프레스(의심할 여지 없는 진짜 제스처)조차 안 되는 걸 보고 재진단 — 코드를 다시 추적하니 애초에 일부 매칭 경로(YouTube 단독 검색·데모 모드)의 곡에는 iTunes 프리뷰 URL 자체가 붙지 않고 있었음</div></div>
         <div class="step"><div class="k">AFTER</div><div class="v">블렌드 직후 백그라운드로 트랙마다 iTunes를 재검색해 URL을 채워넣도록 수정, 실제 오디오 재생까지 확인 후 종료</div></div>
       </div>
+      <div class="case">
+        <div class="tag">Case 3 — 로딩 화면 재설계</div>
+        <h3>"기다리는 시간"을 무엇으로 채울까</h3>
+        <div class="step"><div class="k">BEFORE</div><div class="v">회전하는 커피색 그라디언트 + 컵 아이콘. 흔한 스피너와 다를 게 없고, 이 앱만의 장면이 아니었습니다</div></div>
+        <div class="step"><div class="k">판단</div><div class="v">재생 화면에 이미 있는 영수증을 앞으로 당겨왔습니다. 새 오브젝트를 만드는 대신 있는 자산을 쓰면, 로딩이 독립된 대기 화면이 아니라 "주문 → 제조 → 완성"의 한 장면이 됩니다. 시안 3안(프린터에서 출력 / 제자리 인쇄 / 컵 채우기)을 만들어 비교했습니다</div></div>
+        <div class="step"><div class="k">AFTER</div><div class="v">영수증이 위에서 내려오며 주문 내역이 한 줄씩 찍힙니다. 재생 화면에서 같은 영수증이 완성본으로 이어집니다</div></div>
+      </div>
     </div>
   </div>
 </section>
@@ -401,15 +410,11 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 <section class="slide" id="assets">
   <div class="wrap">
     <span class="eyebrow">Graphic Assets</span>
-    <h2>마스터 한 장에서<br />세 가지 규격으로</h2>
-    <p class="lede">음료 18종을 어두운 매크로 사진 한 톤으로 통일했습니다. 같은 음료가 화면마다 다른 비율로 쓰이기 때문에, 마스터 한 장에서 세 규격을 잘라내는 파이프라인으로 정리했습니다.</p>
-    <div class="specs">
-      <div class="spec-row"><div class="k">재생 카드</div><div class="v">1200 × 750 — 16:10, 팬톤 칩 상단을 채우는 메인 비주얼</div></div>
-      <div class="spec-row"><div class="k">라이브러리</div><div class="v">600 × 516 — 1:0.86, 2열 그리드 카드</div></div>
-      <div class="spec-row"><div class="k">미니 플레이어</div><div class="v">160 × 160 — 1:1, 재생 중 표시용 썸네일</div></div>
-    </div>
+    <h2>한 장의 사진이<br />세 개의 자리를 채우는 법</h2>
+    <p class="lede">같은 음료가 재생 화면에서는 가로로 넓게, 라이브러리에서는 카드로, 미니 플레이어에서는 작은 정사각형으로 나타납니다. 세 자리의 비율이 모두 달라서, 한 장을 어떻게 자를지 먼저 정하고 촬영 구도를 맞췄습니다.</p>
+    <p class="lede">정사각형으로 잘려도 어떤 음료인지 알아볼 수 있어야 한다 — 이 한 가지 원칙으로 18종의 구도를 통일했습니다.</p>
     <div class="shotgrid" id="shotgrid"></div>
-    <p class="matrixnote">18종 × 3규격 = 54장. 중앙 크롭이 기준이라, 정사각형으로 잘려도 어떤 음료인지 알아볼 수 있게 구도를 잡았습니다.</p>
+    <p class="matrixnote">재생 카드 1200×750(16:10) · 라이브러리 600×516(1:0.86) · 미니 플레이어 160×160(1:1). 18종 × 3규격 = 54장.</p>
   </div>
 </section>
 
