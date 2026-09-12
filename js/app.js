@@ -1401,6 +1401,8 @@ function init() {
     });
   });
   $('btn-go-order').addEventListener('click', () => showScreen('order'));
+  // 브라우저 폼 복원(bfcache 포함)을 무시하고 항상 기본값으로 시작한다
+  $('sort-select').value = 'recent';
   $('sort-select').addEventListener('change', renderLibrary);
   $('btn-lib-edit').addEventListener('click', () => setLibEditMode(!libEditMode));
   $('btn-edit-done').addEventListener('click', () => setLibEditMode(false));
