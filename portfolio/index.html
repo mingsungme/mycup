@@ -33,7 +33,15 @@
   --yellow-ink:#3d3800;
   --serif:'Noto Serif KR','Apple SD Gothic Neo','Batang',serif;
   --sans:'Pretendard','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --display:'MyCup Display',var(--sans);
   --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+}
+/* 앱과 같은 디스플레이 서체(BM 꾸불림체 라틴 서브셋). 절대 URL 인 이유는
+   이 페이지가 portfoliomsk.shop 으로 동기화되는데 거기엔 상대경로가 없기 때문. */
+@font-face{
+  font-family:'MyCup Display';
+  src:url('https://mingsungme.github.io/mycup/fonts/mycup-display-latin.woff2') format('woff2');
+  font-display:swap;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -152,8 +160,9 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   color:var(--rose);margin:2.6rem 0 .9rem;}
 .sw .use,.typecard .use,.cmp .use{font-size:.72rem;color:var(--text-tertiary);
   margin-top:.35rem;line-height:1.5;}
-.typecard.ol .big{font-family:var(--sans);color:transparent;
-  -webkit-text-stroke:1px var(--text);paint-order:stroke fill;}
+.typecard.ol .big{font-family:var(--display);color:transparent;
+  -webkit-text-stroke:1px var(--text);paint-order:stroke fill;
+  letter-spacing:-.02em;}
 
 .cmpgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
 .cmp{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;}
@@ -246,7 +255,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 
 /* ── Closing ── */
 .closing{align-items:center;text-align:center;}
-.closing h2{max-width:600px;}
+.closing h2{max-width:600px;margin-inline:auto;}
 .closing .links{margin-top:2.2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;}
 .closing a.btn{padding:.9rem 1.6rem;border-radius:999px;border:1px solid var(--border);color:var(--text);
   text-decoration:none;font-size:.9rem;font-weight:700;transition:border-color .2s,color .2s;}
@@ -506,7 +515,7 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 <section class="slide closing" id="closing">
   <div class="wrap">
     <span class="eyebrow">Thanks</span>
-    <h2>오늘 기분은<br />어떤 음료에 가깝나요</h2>
+    <h2>오늘 기분은 어떤 음료에 가깝나요</h2>
     <p class="lede" style="margin:0 auto;">읽어주셔서 고맙습니다. 혼자 기획·디자인·개발했습니다.</p>
     <div class="links">
       <a class="btn" href="https://mingsungme.github.io/mycup/" target="_blank" rel="noopener">라이브 데모 열기</a>

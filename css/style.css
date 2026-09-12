@@ -206,10 +206,14 @@ svg.lucide {
 
 /* ── 콜라주 ── */
 .collage {
-  position: relative; width: 100%; aspect-ratio: 430/680;
+  position: relative;
+  /* 세로가 짧을 때 눌려서 비율이 깨지면 안의 요소(%·cqw 기준)가 전부 뭉개진다.
+     폭을 화면 높이로도 제한해, 눌리는 대신 비율을 유지한 채 작아지게 한다.
+     47svh — 852pt 기기에서 400px 이라 max-width(398) 에 걸려 원래 크기가 나온다. */
+  width: min(100%, 47svh); aspect-ratio: 430/680;
   container-type: inline-size;   /* 아래 cqw 는 이 폭 기준 */
-  flex: 0 1 auto; min-height: 0;
-  margin-bottom: var(--sp-sm);
+  flex: 0 0 auto;                /* 눌리지 않게 — 크기는 위 width 가 결정 */
+  margin: 0 auto var(--sp-sm);
 }
 .collage > * { position: absolute; }
 
@@ -252,9 +256,21 @@ svg.lucide {
 .mood-pill {
   left: 42%; top: 58%; z-index: 8;
   border: 1px solid rgba(243,229,108,.55); border-radius: var(--r-full);
-  padding: 5px 13px; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  /* 콜라주가 줄어도 같이 줄도록 cqw 기준(361px 기준 5px·13px·11px).
+     고정 px 이면 혼자 커 보이고 줄바꿈된다. */
+  padding: 1.4cqw 3.6cqw; font-size: 3.05cqw; font-weight: 700; letter-spacing: .06em;
+  white-space: nowrap;
   color: var(--tertiary-container); background: rgba(19,20,17,.86);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+
+/* 아주 낮은 창(데스크톱에서 세로로 줄였을 때)에서는 여백과 부가 문구를 줄여
+   콜라주와 버튼이 겹치지 않게 한다 */
+@media (max-height: 600px) {
+  .splash-inner { padding-top: var(--sp-sm); padding-bottom: var(--sp-sm); }
+  .splash-fine { display: none; }
+  .splash-enter { margin-bottom: var(--sp-xs); }
+  .collage { width: min(100%, 40svh); }   /* 버튼까지 들어갈 만큼 한 단계 더 */
 }
 
 /* ✳ 모티프 */

@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="preload" href="fonts/mycup-display-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="stylesheet" href="css/style.css?v=50" />
+<link rel="stylesheet" href="css/style.css?v=54" />
 </head>
 <body>
 <div class="app" id="app">
@@ -241,8 +241,10 @@
       <span class="topbar-title"><span class="cup-ico"><i data-lucide="coffee"></i></span> My Blends</span>
       <div class="lib-head-actions">
         <button class="btn-lib-edit" id="btn-lib-edit">편집</button>
-        <select class="sort-select" id="sort-select" aria-label="정렬">
-          <option value="recent">최신순</option>
+        <!-- autocomplete=off — 없으면 브라우저가 이전 선택값을 복원해서
+             기본값(최신순)이 아닌 상태로 열린다 -->
+        <select class="sort-select" id="sort-select" aria-label="정렬" autocomplete="off">
+          <option value="recent" selected>최신순</option>
           <option value="name">이름순</option>
         </select>
       </div>
@@ -317,7 +319,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script src="js/config.js?v=50"></script>
-<script src="js/app.js?v=50"></script>
+<script src="js/config.js?v=54"></script>
+<script src="js/app.js?v=54"></script>
 </body>
 </html>
