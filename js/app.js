@@ -183,6 +183,144 @@ function setDrinkImg(img, slug, variant) {
   img.src = src;
 }
 
+
+/* ════════════════════════════════════════════════
+   브루잉 효과음 — 로딩 화면(SCR-03)에서 프로필에 맞춰 재생
+   ice·pour·soda 는 녹음(assets/sfx), grind·steam 은 Web Audio 합성.
+   로딩은 항상 btn-blend 클릭 뒤라 자동재생 정책에 걸리지 않는다.
+   ════════════════════════════════════════════════ */
+const SFX_KEY = 'mycup_sfx';
+const SFX_FILES = { ice: 'assets/sfx/ice.m4a', pour: 'assets/sfx/pour.m4a', soda: 'assets/sfx/soda.m4a' };
+const sfxOn = () => localStorage.getItem(SFX_KEY) !== 'off';
+
+let actx = null;
+const sfxBuf = {};
+let sfxLoad = null;
+let sfxTimers = [];
+
+/* iOS 는 AudioContext 를 사용자 제스처 안에서 만들거나 resume 해야 한다.
+   호출 지점은 btn-blend 클릭 핸들러. */
+function audioCtx() {
+  if (!actx) {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return null;
+    actx = new C();
+  }
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function preloadSfx() {
+  if (sfxLoad) return sfxLoad;
+  const ac = audioCtx();
+  if (!ac) return (sfxLoad = Promise.resolve());
+  sfxLoad = Promise.all(Object.entries(SFX_FILES).map(([k, url]) =>
+    fetch(url).then((r) => r.arrayBuffer())
+      .then((b) => new Promise((res, rej) => ac.decodeAudioData(b, res, rej)))
+      .then((buf) => { sfxBuf[k] = buf; })
+      .catch(() => {})   // 음원 하나 실패해도 나머지는 살린다
+  ));
+  return sfxLoad;
+}
+
+function playClip(ac, name, t0, gain = .9) {
+  const buf = sfxBuf[name];
+  if (!buf) return 0;
+  const src = ac.createBufferSource(); src.buffer = buf;
+  const g = ac.createGain(); g.gain.value = gain;
+  src.connect(g).connect(ac.destination);
+  src.start(t0);
+  return buf.duration;
+}
+
+function noiseBuffer(ac, sec) {
+  const buf = ac.createBuffer(1, Math.ceil(ac.sampleRate * sec), ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return buf;
+}
+
+/* ☕ 그라인더 — 로우패스 노이즈 + 진폭 변조(모터) + 크런치.
+   노이즈 기반이라 합성이 충분히 그럴듯해 녹음으로 바꾸지 않았다. */
+function sfxGrind(ac, t0, dur = 1.5, gain = .3) {
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac, dur + .2); src.loop = true;
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; lp.Q.value = 1.2;
+  const body = ac.createGain(); body.gain.value = gain;
+  const lfo = ac.createOscillator(); lfo.type = 'sawtooth'; lfo.frequency.value = 45;
+  const amt = ac.createGain(); amt.gain.value = gain * .3;
+  lfo.connect(amt).connect(body.gain);
+  const env = ac.createGain();
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(1, t0 + .09);
+  env.gain.setValueAtTime(1, t0 + dur - .18);
+  env.gain.linearRampToValueAtTime(0, t0 + dur);
+  src.connect(lp).connect(body).connect(env).connect(ac.destination);
+  src.start(t0); src.stop(t0 + dur);
+  lfo.start(t0); lfo.stop(t0 + dur);
+  for (let i = 0; i < 5; i++) {
+    const t = t0 + .1 + Math.random() * (dur - .3);
+    const c = ac.createBufferSource(); c.buffer = noiseBuffer(ac, .04);
+    const cf = ac.createBiquadFilter(); cf.type = 'bandpass';
+    cf.frequency.value = 500 + Math.random() * 1800; cf.Q.value = 3;
+    const cg = ac.createGain();
+    cg.gain.setValueAtTime(gain * .8, t);
+    cg.gain.exponentialRampToValueAtTime(.0001, t + .045);
+    c.connect(cf).connect(cg).connect(ac.destination);
+    c.start(t); c.stop(t + .1);
+  }
+  return dur;
+}
+
+/* ♨ 스팀 — 밴드패스 노이즈 스윕. 뜨거운 음료의 마무리, 연기 모티프와 짝. */
+function sfxSteam(ac, t0, dur = 1.4, gain = .2) {
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac, dur + .3); src.loop = true;
+  const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;
+  bp.frequency.setValueAtTime(2100, t0);
+  bp.frequency.linearRampToValueAtTime(3400, t0 + dur * .38);
+  bp.frequency.linearRampToValueAtTime(2500, t0 + dur);
+  const env = ac.createGain();
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(gain, t0 + .22);
+  env.gain.setValueAtTime(gain, t0 + dur - .35);
+  env.gain.linearRampToValueAtTime(0, t0 + dur);
+  src.connect(bp).connect(env).connect(ac.destination);
+  src.start(t0); src.stop(t0 + dur);
+  return dur;
+}
+
+/* 프로필 → 브루잉 시퀀스. 슬라이더가 소리까지 바꾼다. */
+function brewPlan(sliders) {
+  const steps = [];
+  if (sliders.body >= 60) steps.push('grind');
+  if (sliders.temp <= 40) { steps.push('ice'); steps.push('soda'); }
+  else { steps.push('pour'); steps.push('steam'); }
+  return steps;
+}
+
+function stopBrewSfx() {
+  sfxTimers.forEach(clearTimeout);
+  sfxTimers = [];
+}
+
+/* btn-blend 클릭 핸들러에서 호출 — 그 자리가 제스처 컨텍스트다 */
+function playBrewSfx(sliders) {
+  if (!sfxOn()) return;
+  const ac = audioCtx();
+  if (!ac) return;
+  preloadSfx().then(() => {
+    if (!sfxOn()) return;               // 로딩 중에 껐을 수 있다
+    let t = ac.currentTime + .05;
+    brewPlan(sliders).forEach((k) => {
+      const d = k === 'grind' ? sfxGrind(ac, t)
+              : k === 'steam' ? sfxSteam(ac, t)
+              : playClip(ac, k, t);
+      t += d + .1;
+    });
+  });
+}
+
 /* ── SCR-02 컵 비주얼 실시간 반영 ─────────────── */
 const SLIDER_KEYS = ['sweet', 'temp', 'body'];
 
@@ -514,7 +652,9 @@ const BREW_MSGS = ['재료를 고르는 중...', '무드를 추출하는 중...'
 async function blend() {
   if (!navigator.onLine) { toast('오프라인 상태예요. 네트워크 연결을 확인해 주세요.'); return; }
   state.profile = buildProfile(state.sliders);
+  playBrewSfx(state.sliders);
   showScreen('loading');
+  renderBrewReceipt();
   $('brew-error').classList.add('hidden');
   $('brew-bar-fill').style.width = '8%';
 
@@ -807,6 +947,76 @@ function renderReceipt() {
     ['30s PREVIEW', state.itunes ? state.itunes.trackName : '—'],
   ].map(([k, v]) => `<div class="receipt-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
 }
+
+/* ── SCR-03 로딩: 영수증이 뽑혀 나오며 한 줄씩 인쇄된다 ──
+   재생 화면 renderReceipt() 와 같은 항목이라 '제조 중 -> 완성본' 으로 이어진다.
+   TRACKS 는 큐가 아직 없어 컵 사이즈에서 예정 곡수를 쓴다. */
+let brewRowTimers = [];
+
+function renderBrewReceipt() {
+  const p = state.profile;
+  if (!p) return;
+  const sl = p.sliders;
+  const size = SIZES[p.size] || SIZES.tall;
+  $('brew-batch').textContent = `#BATCH-${p.code.replace(' ', '')}-${p.name.split(' ')[0]}`;
+
+  const rows = [
+    ['SWEETNESS', `${sl.sweet}%`],
+    ['TEMPERATURE', `${p.hot ? 'HOT' : 'COLD'} (${sl.temp}%)`],
+    ['BODY', `${sl.body}%`],
+    ['SIZE', `${size.label.toUpperCase()} (${size.oz}OZ)`],
+    ['BLEND', p.name],
+    ['TRACKS', `${size.tracks} SONGS · ~${size.mins} MIN`],
+  ];
+  const box = $('brew-rows');
+  box.innerHTML = rows
+    .map(([k, v]) => `<div class="receipt-row"><span class="k">${k}</span><span class="v">${v}</span></div>`)
+    .join('');
+
+  brewRowTimers.forEach(clearTimeout);
+  brewRowTimers = [];
+  const els = [...box.children];
+  els.forEach((el, i) => {
+    brewRowTimers.push(setTimeout(() => {
+      els.forEach((x) => x.classList.remove('cursor'));
+      el.classList.add('in');
+      if (i < els.length - 1) el.classList.add('cursor');   // 다음 줄 대기 커서
+    }, 300 * i + 420));                                     // 종이가 내려오는 동안 시작
+  });
+}
+
+function stopBrewReceipt() {
+  brewRowTimers.forEach(clearTimeout);
+  brewRowTimers = [];
+}
+
+/* ── 포트폴리오 Flow 섹션용 화면 미리보기 ──
+   포트폴리오가 이 앱을 iframe 으로 띄우고, 스텝을 누르면 해당 화면으로 전환한다.
+   포트폴리오와 앱이 다른 도메인일 수 있어 postMessage 로 받는다.
+   화이트리스트된 화면 이름만 처리하고, 하는 일은 로컬 UI 전환뿐이다. */
+const PREVIEW_SCREENS = ['splash', 'order', 'loading', 'play', 'library'];
+
+function seedPreview(screen) {
+  if (!state.profile) state.profile = buildProfile(state.sliders);
+  if (screen === 'play' && !state.queue.length) {
+    // 재생 화면 렌더에 트랙 하나가 필요하다. 실제 재생은 videoId/preview 가 없어 일어나지 않는다.
+    state.queue = [{ title: 'Preview Track', channel: 'My Cup', videoId: '', thumb: '', preview: null }];
+    state.qIndex = 0;
+  }
+}
+
+addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || d.type !== 'mycup:screen' || !PREVIEW_SCREENS.includes(d.screen)) return;
+  seedPreview(d.screen);
+  if (d.screen === 'play') {
+    state.savedMode = !!d.saved;
+    enterPlay(false);
+    return;
+  }
+  showScreen(d.screen);
+  if (d.screen === 'loading') renderBrewReceipt();
+});
 
 /* ── NOW BREWING 미니 플레이어 (라이브러리 하단) ── */
 function updateMiniPlayer() {
@@ -1133,6 +1343,17 @@ function init() {
 
   // 블렌딩
   $('btn-blend').addEventListener('click', blend);
+
+  /* 브루잉 사운드 토글 — localStorage 에 저장, 끄면 재생 중인 것도 멈춘다 */
+  const sfxSw = $('sfx-toggle');
+  if (sfxSw) {
+    sfxSw.checked = sfxOn();
+    sfxSw.addEventListener('change', () => {
+      localStorage.setItem(SFX_KEY, sfxSw.checked ? 'on' : 'off');
+      if (!sfxSw.checked) stopBrewSfx();
+      toast(sfxSw.checked ? '브루잉 사운드 켜짐' : '브루잉 사운드 꺼짐');
+    });
+  }
   $('btn-retry').addEventListener('click', blend);
   $('btn-reset-sliders').addEventListener('click', () => {
     state.sliders = { sweet: 50, temp: 50, body: 50 };

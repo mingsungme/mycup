@@ -419,23 +419,54 @@ svg.lucide {
   max-width: 430px; margin: 0 auto;
 }
 .loading-caps { margin-bottom: var(--sp-md); }
-.brew-art {
-  position: relative; width: 230px; height: 230px;
-  border-radius: var(--r-lg); overflow: hidden;
-  border: 1px solid var(--glass-line);
+/* ── 영수증이 뽑혀 나오는 로딩 ──
+   재생 화면(.receipt)과 같은 종이를 쓴다. 여기서 인쇄되기 시작한 영수증이
+   재생 화면에서 완성본으로 이어지는 흐름. */
+.brew-slot {
+  width: 100%; overflow: hidden;          /* 종이가 위에서 밀려 내려온다 */
   margin-bottom: var(--sp-md);
 }
-.brew-swirl {
-  position: absolute; inset: -40%;
-  background: conic-gradient(from 0deg, #2a1d14, #6a4a2e, #cba37a, #3a2a1c, #8a6242, #2a1d14);
-  animation: swirl 5s linear infinite;
-  filter: blur(14px) saturate(.9);
+.brew-paper {
+  width: 100%;
+  background: var(--primary-container); color: var(--on-primary);
+  padding: var(--sp-md) var(--sp-md) var(--sp-lg);
+  text-align: center;
+  /* 하단 톱니 — 이미지 없이 mask 로 */
+  --tooth: 10px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth)) no-repeat,
+    radial-gradient(circle at 50% 0, transparent var(--tooth), #000 calc(var(--tooth) + .5px))
+      bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth)) no-repeat,
+    radial-gradient(circle at 50% 0, transparent var(--tooth), #000 calc(var(--tooth) + .5px))
+      bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x;
+  animation: paper-feed 2.4s cubic-bezier(.33, 1, .68, 1) both;
 }
-@keyframes swirl { to { transform: rotate(360deg); } }
-.brew-cup {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 52px; text-shadow: 0 6px 24px rgba(0,0,0,.6);
+@keyframes paper-feed { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+.brew-paper .rt {
+  font-family: var(--serif); font-weight: 700; letter-spacing: .3em; font-size: 15px;
+}
+.brew-paper .rb {
+  font-size: 11px; letter-spacing: .12em;
+  color: var(--on-primary-container); margin: 4px 0 var(--sp-sm);
+}
+.brew-dash { border-top: 1px dashed rgba(31, 27, 20, .35); margin: var(--sp-sm) 0; }
+.brew-rows .receipt-row {
+  padding: 3px 0;
+  opacity: 0; transform: translateY(-6px);
+}
+.brew-rows .receipt-row.in {
+  opacity: 1; transform: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+/* 다음 줄을 기다리는 동안 커서가 깜빡인다 */
+.brew-rows .receipt-row.cursor .v::after { content: '▌'; animation: blink .7s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .brew-paper { animation: none; }
+  .brew-rows .receipt-row { opacity: 1; transform: none; }
+  .brew-rows .receipt-row.cursor .v::after { animation: none; }
 }
 .brew-msg { font-family: var(--serif); font-size: 17px; margin-bottom: var(--sp-md); min-height: 26px; }
 .brew-bar {
@@ -844,6 +875,31 @@ svg.lucide {
 }
 .modal-card input:focus { border-color: var(--secondary); }
 .modal-actions { display: flex; gap: var(--sp-sm); justify-content: flex-end; }
+
+/* 브루잉 사운드 토글 */
+.sfx-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  gap: 2px var(--sp-sm);
+  padding: var(--sp-sm) 0; margin-bottom: var(--sp-sm);
+  border-top: 1px solid var(--glass-line);
+}
+.sfx-label { font-size: 14px; font-weight: 600; }
+.sfx-desc { grid-column: 1; font-size: 12px; color: var(--on-surface-variant); }
+.sfx-row .sw { grid-column: 2; grid-row: 1 / span 2; }
+.sw { position: relative; width: 46px; height: 26px; flex: 0 0 auto; }
+.sw input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 2; }
+.sw .tr {
+  position: absolute; inset: 0; border-radius: var(--r-full);
+  background: var(--sc-highest); border: 1px solid var(--glass-line);
+  transition: background .2s;
+}
+.sw .kn {
+  position: absolute; top: 3px; left: 3px; width: 19px; height: 19px; border-radius: 50%;
+  background: var(--on-surface-variant); transition: transform .2s, background .2s;
+}
+.sw input:checked ~ .tr { background: var(--tertiary-container); }
+.sw input:checked ~ .kn { transform: translateX(20px); background: #1f1b14; }
+.sw input:focus-visible ~ .tr { outline: 2px solid var(--secondary); outline-offset: 2px; }
 .modal-close {
   position: absolute; top: 14px; right: 14px;
   color: var(--on-surface-variant); font-size: 15px;
