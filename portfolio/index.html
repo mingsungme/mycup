@@ -107,6 +107,27 @@ mark{background:none;color:var(--yellow);font-weight:700;}
 .flowarrow{font-family:var(--serif);font-size:1.6rem;color:var(--text-tertiary);}
 
 /* ── Flow (6 screens) ── */
+/* ── Flow: 스텝 + 라이브 임베드 ── */
+.flowlab{display:grid;grid-template-columns:1fr minmax(300px,340px);gap:2rem;
+  align-items:start;margin-top:2.2rem;}
+.flowsteps2{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
+.fs{display:grid;grid-template-columns:auto 1fr;gap:.15rem .9rem;width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:.95rem 1.1rem;cursor:pointer;color:var(--text);font:inherit;
+  transition:border-color .18s,background .18s;}
+.fs:hover,.fs:focus-visible{border-color:var(--rose);}
+.fs.on{background:var(--card-high);border-color:var(--rose);}
+.fs b{grid-row:1 / span 2;align-self:center;font-family:var(--serif);font-size:1.5rem;color:var(--rose);}
+.fs .n{font-weight:700;}
+.fs .d{font-size:.82rem;color:var(--text-tertiary);}
+.flowphone{position:sticky;top:5rem;aspect-ratio:390/780;border-radius:30px;overflow:hidden;
+  border:6px solid #000;box-shadow:0 24px 60px rgba(0,0,0,.6);background:#000;}
+.flowphone iframe{width:100%;height:100%;border:0;}
+@media (max-width:860px){
+  .flowlab{grid-template-columns:1fr;}
+  .flowphone{position:static;width:min(330px,86vw);margin:0 auto;}
+}
+
 .flowgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.6rem;}
 .flowgrid .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
 .flowgrid .num{font-family:var(--serif);font-weight:700;font-size:1.8rem;color:var(--rose);}
@@ -275,13 +296,19 @@ mark{background:none;color:var(--yellow);font-weight:700;}
   <div class="wrap">
     <span class="eyebrow">User Flow</span>
     <h2>6단계 화면 흐름</h2>
-    <div class="flowgrid">
-      <div class="card"><div class="num">01</div><div class="name">스플래시</div><div class="desc">온보딩, "my cup" 진입</div></div>
-      <div class="card"><div class="num">02</div><div class="name">커스텀</div><div class="desc">슬라이더 3축으로 제조</div></div>
-      <div class="card"><div class="num">03</div><div class="name">블렌딩</div><div class="desc">조제 애니메이션 + 선곡</div></div>
-      <div class="card"><div class="num">04</div><div class="name">재생</div><div class="desc">팬톤 카드 + 컨트롤</div></div>
-      <div class="card"><div class="num">05</div><div class="name">라이브러리</div><div class="desc">저장한 블렌드 모음</div></div>
-      <div class="card"><div class="num">06</div><div class="name">저장곡 재생</div><div class="desc">카드 클릭 → 바로 재생</div></div>
+    <p class="lede">스텝을 누르면 실제 앱이 그 화면으로 이동합니다. 스크린샷이 아니라 배포된 앱을 그대로 띄웠습니다.</p>
+    <div class="flowlab">
+      <ol class="flowsteps2" id="flowsteps">
+        <li><button class="fs on" data-screen="splash"><b>01</b><span class="n">스플래시</span><span class="d">온보딩, "my cup" 진입</span></button></li>
+        <li><button class="fs" data-screen="order"><b>02</b><span class="n">커스텀</span><span class="d">슬라이더 3축으로 제조</span></button></li>
+        <li><button class="fs" data-screen="loading"><b>03</b><span class="n">블렌딩</span><span class="d">영수증 인쇄 + 선곡</span></button></li>
+        <li><button class="fs" data-screen="play"><b>04</b><span class="n">재생</span><span class="d">팬톤 카드 + 컨트롤</span></button></li>
+        <li><button class="fs" data-screen="library"><b>05</b><span class="n">라이브러리</span><span class="d">저장한 블렌드 모음</span></button></li>
+        <li><button class="fs" data-screen="play" data-saved="1"><b>06</b><span class="n">저장곡 재생</span><span class="d">카드 클릭 → 바로 재생</span></button></li>
+      </ol>
+      <div class="flowphone">
+        <iframe id="flow-frame" src="https://mingsungme.github.io/mycup/" title="My Cup 화면 흐름" loading="lazy"></iframe>
+      </div>
     </div>
   </div>
 </section>
@@ -480,6 +507,23 @@ mark{background:none;color:var(--yellow);font-weight:700;}
     cap.textContent = d[0];
     el.appendChild(img); el.appendChild(cap);
     grid.appendChild(el);
+  });
+})();
+
+// Flow — 스텝 클릭 시 임베드된 앱을 해당 화면으로
+(function(){
+  var frame = document.getElementById('flow-frame');
+  var btns = document.querySelectorAll('#flowsteps .fs');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      btns.forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      frame.contentWindow.postMessage({
+        type: 'mycup:screen',
+        screen: b.dataset.screen,
+        saved: b.dataset.saved === '1'
+      }, '*');
+    });
   });
 })();
 

@@ -990,6 +990,34 @@ function stopBrewReceipt() {
   brewRowTimers = [];
 }
 
+/* ── 포트폴리오 Flow 섹션용 화면 미리보기 ──
+   포트폴리오가 이 앱을 iframe 으로 띄우고, 스텝을 누르면 해당 화면으로 전환한다.
+   포트폴리오와 앱이 다른 도메인일 수 있어 postMessage 로 받는다.
+   화이트리스트된 화면 이름만 처리하고, 하는 일은 로컬 UI 전환뿐이다. */
+const PREVIEW_SCREENS = ['splash', 'order', 'loading', 'play', 'library'];
+
+function seedPreview(screen) {
+  if (!state.profile) state.profile = buildProfile(state.sliders);
+  if (screen === 'play' && !state.queue.length) {
+    // 재생 화면 렌더에 트랙 하나가 필요하다. 실제 재생은 videoId/preview 가 없어 일어나지 않는다.
+    state.queue = [{ title: 'Preview Track', channel: 'My Cup', videoId: '', thumb: '', preview: null }];
+    state.qIndex = 0;
+  }
+}
+
+addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || d.type !== 'mycup:screen' || !PREVIEW_SCREENS.includes(d.screen)) return;
+  seedPreview(d.screen);
+  if (d.screen === 'play') {
+    state.savedMode = !!d.saved;
+    enterPlay(false);
+    return;
+  }
+  showScreen(d.screen);
+  if (d.screen === 'loading') renderBrewReceipt();
+});
+
 /* ── NOW BREWING 미니 플레이어 (라이브러리 하단) ── */
 function updateMiniPlayer() {
   const mp = $('miniplayer');
