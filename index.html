@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="preload" href="fonts/mycup-display-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="stylesheet" href="css/style.css?v=48" />
+<link rel="stylesheet" href="css/style.css?v=49" />
 </head>
 <body>
 <div class="app" id="app">
@@ -133,9 +133,13 @@
   <!-- ════════ SCR-03 · 블렌딩 로딩 ════════ -->
   <section class="screen scr-loading" id="scr-loading">
     <span class="label-caps loading-caps">BREWING YOUR MIX</span>
-    <div class="brew-art" id="brew-art">
-      <div class="brew-swirl"></div>
-      <div class="brew-cup"><i data-lucide="coffee"></i></div>
+    <div class="brew-slot">
+      <div class="brew-paper" id="brew-paper">
+        <p class="rt">BREWING&hellip;</p>
+        <p class="rb" id="brew-batch">#BATCH-000-MOOD</p>
+        <div class="brew-dash"></div>
+        <div class="receipt-rows brew-rows" id="brew-rows"></div>
+      </div>
     </div>
     <p class="brew-msg" id="brew-msg">원두를 고르는 중...</p>
     <div class="brew-bar"><div class="brew-bar-fill" id="brew-bar-fill"></div></div>
@@ -313,7 +317,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script src="js/config.js?v=48"></script>
-<script src="js/app.js?v=48"></script>
+<script src="js/config.js?v=49"></script>
+<script src="js/app.js?v=49"></script>
 </body>
 </html>

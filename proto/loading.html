@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Cup — 로딩 화면 시안 3종</title>
+<link rel="stylesheet" href="../css/style.css?v=48" />
+<style>
+/* ══════════════════════════════════════════════════════════════
+   SCR-03 로딩 리디자인 — 영수증 모티프 3안 비교
+   앱 토큰을 상속받고 여기서는 추가분만 정의한다.
+   ══════════════════════════════════════════════════════════════ */
+body{display:block;background:var(--sc-lowest);padding:1.2rem .9rem 4rem;}
+.head{max-width:1180px;margin:0 auto 1.4rem;}
+.head h1{font-family:var(--display);font-size:1.5rem;font-weight:400;margin-bottom:.3rem;}
+.head p{font-size:.82rem;color:var(--on-surface-variant);line-height:1.6;}
+.bar{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.9rem;}
+.bar button{background:rgba(255,255,255,.06);color:var(--on-surface);border:1px solid var(--glass-line);
+  border-radius:999px;padding:.34rem .8rem;font:inherit;font-size:.78rem;cursor:pointer;}
+.bar button.on{background:var(--secondary);color:#2a1a16;border-color:var(--secondary);font-weight:700;}
+
+.lab{display:flex;gap:1.1rem;justify-content:center;flex-wrap:wrap;max-width:1180px;margin:0 auto;}
+.col{width:360px;max-width:94vw;}
+.col > h2{font-size:.82rem;font-weight:700;margin-bottom:.2rem;}
+.col > .why{font-size:.72rem;color:var(--on-surface-variant);line-height:1.55;margin-bottom:.6rem;min-height:3.2em;}
+.frame{position:relative;height:700px;max-height:74svh;border-radius:26px;overflow:hidden;
+  border:1px solid var(--glass-line);background:var(--surface);}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:var(--sp-md) var(--margin-m);text-align:center;}
+
+/* ── 공통: 영수증 종이 ── */
+.paper{
+  width:100%;background:var(--primary-container);color:var(--on-primary);
+  padding:var(--sp-md) var(--sp-md) var(--sp-lg);text-align:center;
+  /* 아래쪽 톱니 — 프린터에서 잘려나온 느낌 */
+  --tooth:10px;
+  -webkit-mask:
+     linear-gradient(#000 0 0) top/100% calc(100% - var(--tooth)) no-repeat,
+     radial-gradient(circle at 50% 0, transparent var(--tooth), #000 calc(var(--tooth) + .5px))
+       bottom/calc(var(--tooth)*2) var(--tooth) repeat-x;
+  mask:
+     linear-gradient(#000 0 0) top/100% calc(100% - var(--tooth)) no-repeat,
+     radial-gradient(circle at 50% 0, transparent var(--tooth), #000 calc(var(--tooth) + .5px))
+       bottom/calc(var(--tooth)*2) var(--tooth) repeat-x;
+}
+.paper .rt{font-family:var(--serif);font-weight:700;letter-spacing:.3em;font-size:14px;}
+.paper .rb{font-size:11px;letter-spacing:.12em;color:var(--on-primary-container);margin:3px 0 var(--sp-sm);}
+.paper .dash{border-top:1px dashed rgba(31,27,20,.35);margin:var(--sp-sm) 0;}
+.rrow{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.06em;padding:3px 0;}
+.rrow .k{color:var(--on-primary-container);font-weight:600;}
+.rrow .v{font-weight:700;}
+.rrow.pend .v{opacity:.28;}
+.cursorline .v::after{content:'▌';animation:blink .7s steps(1) infinite;}
+@keyframes blink{50%{opacity:0}}
+
+/* 한 줄씩 인쇄되는 효과 */
+.rrow{opacity:0;transform:translateY(-6px);}
+.rrow.in{opacity:1;transform:none;transition:opacity .18s ease, transform .18s ease;}
+
+/* ── A안: 프린터에서 영수증이 밀려 나온다 ── */
+.slotA{width:100%;position:relative;}
+.slotA .machine{
+  height:26px;border-radius:8px 8px 3px 3px;background:var(--sc-high);
+  border:1px solid var(--glass-line);position:relative;z-index:3;
+  display:flex;align-items:center;justify-content:center;
+}
+.slotA .machine::after{content:'';width:76%;height:4px;border-radius:3px;background:#0b0b09;}
+.slotA .win{overflow:hidden;margin-top:-2px;}
+.slotA .paper{animation:feed 2.6s cubic-bezier(.33,1,.68,1) forwards;}
+@keyframes feed{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+
+/* ── B안: 영수증이 그 자리에서 인쇄된다(높이 자람) ── */
+.slotB .paper{transition:none;}
+.slotB .cap{font-size:10px;letter-spacing:.2em;color:var(--on-surface-variant);margin-bottom:var(--sp-sm);}
+
+/* ── C안: 컵 + 김 위에 영수증이 짧게 겹친다 ── */
+.slotC .cupwrap{position:relative;display:inline-flex;margin-bottom:var(--sp-md);}
+.slotC .cup{
+  width:104px;height:118px;border-radius:10px 10px 34px 34px;
+  border:2.5px solid rgba(229,226,221,.9);position:relative;overflow:hidden;
+  background:rgba(255,255,255,.03);
+}
+.slotC .cup i{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--secondary);
+  animation:fill 3.4s ease-in-out forwards;}
+@keyframes fill{to{height:64%}}
+.slotC .handle{position:absolute;right:-26px;top:28px;width:30px;height:44px;
+  border:2.5px solid rgba(229,226,221,.9);border-left:0;border-radius:0 16px 16px 0;}
+.slotC .stm{position:absolute;left:50%;top:-30px;transform:translateX(-50%);display:flex;gap:9px;}
+.slotC .stm b{width:3px;height:24px;border-radius:3px;
+  background:linear-gradient(180deg,transparent,rgba(229,226,221,.55));
+  animation:steam 2.4s ease-in-out infinite;}
+.slotC .stm b:nth-child(2){animation-delay:.4s;height:30px}
+.slotC .stm b:nth-child(3){animation-delay:.9s}
+@keyframes steam{0%,100%{opacity:0;transform:translateY(6px) scaleY(.7)}50%{opacity:1;transform:translateY(-4px) scaleY(1)}}
+.slotC .paper{--tooth:8px;}
+.slotC .rrow{font-size:11px;}
+
+.msg{font-family:var(--serif);font-size:15px;margin-top:var(--sp-md);min-height:24px;}
+.bar2{width:100%;height:3px;border-radius:3px;background:var(--sc-highest);overflow:hidden;margin-top:var(--sp-sm);}
+.bar2 i{display:block;height:100%;width:0;background:var(--tertiary-container);animation:grow 3.6s linear forwards;}
+@keyframes grow{to{width:100%}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>로딩 화면 시안</h1>
+  <p>영수증(BREWING RECEIPT) 모티프를 로딩에 끌어온 3안입니다. 실제 영수증은 재생 화면에서 이미 쓰고 있어서,
+  <b>로딩에서 인쇄되기 시작해 재생 화면에서 완성된 영수증으로 이어지는</b> 흐름을 만들 수 있습니다.</p>
+  <div class="bar">
+    <button id="replay" class="on">↻ 다시 재생</button>
+    <button id="slow">느리게</button>
+  </div>
+</div>
+
+<div class="lab">
+  <div class="col">
+    <h2>A · 프린터에서 뽑혀 나온다</h2>
+    <p class="why">기기 슬롯에서 영수증이 밀려 내려오고, 내려오는 동안 줄이 하나씩 찍힙니다. "제조 중"이 가장 직관적이고 화면이 꽉 찹니다.</p>
+    <div class="frame"><div class="scr slotA" id="A">
+      <div class="machine"></div>
+      <div class="win"><div class="paper">
+        <p class="rt">BREWING…</p>
+        <p class="rb" id="A-batch">#BATCH-555-CHAI</p>
+        <div class="dash"></div>
+        <div class="rows" id="A-rows"></div>
+      </div></div>
+      <p class="msg" id="A-msg">원두를 고르는 중...</p>
+      <div class="bar2"><i></i></div>
+    </div></div>
+  </div>
+
+  <div class="col">
+    <h2>B · 그 자리에서 인쇄된다</h2>
+    <p class="why">종이는 고정, 줄만 위에서부터 찍히며 커서가 깜빡입니다. 가장 조용하고 정보 전달에 집중합니다. 재생 화면 영수증과 시각적으로 가장 가깝습니다.</p>
+    <div class="frame"><div class="scr slotB" id="B">
+      <p class="cap">NOW PRINTING</p>
+      <div class="paper">
+        <p class="rt">BREWING RECEIPT</p>
+        <p class="rb" id="B-batch">#BATCH-555-CHAI</p>
+        <div class="dash"></div>
+        <div class="rows" id="B-rows"></div>
+      </div>
+      <p class="msg" id="B-msg">원두를 고르는 중...</p>
+      <div class="bar2"><i></i></div>
+    </div></div>
+  </div>
+
+  <div class="col">
+    <h2>C · 컵이 채워지고 영수증은 짧게</h2>
+    <p class="why">연기 모티프(기존 <code>@keyframes steam</code>)를 살리고 컵이 차오릅니다. 영수증은 3줄 요약만. 앱의 다른 화면과 가장 이어지고 세로 공간을 덜 씁니다.</p>
+    <div class="frame"><div class="scr slotC" id="C">
+      <div class="cupwrap">
+        <div class="stm"><b></b><b></b><b></b></div>
+        <div class="cup"><i></i></div>
+        <div class="handle"></div>
+      </div>
+      <div class="paper">
+        <p class="rt">BREWING…</p>
+        <div class="dash"></div>
+        <div class="rows" id="C-rows"></div>
+      </div>
+      <p class="msg" id="C-msg">원두를 고르는 중...</p>
+      <div class="bar2"><i></i></div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+/* 실제 renderReceipt() 와 같은 항목 구성 */
+const FULL = [
+  ['SWEETNESS','20%'], ['TEMPERATURE','HOT (80%)'], ['BODY','70%'],
+  ['SIZE','TALL (12OZ)'], ['BLEND','CHAI LATTE'], ['TRACKS','15 SONGS · ~60 MIN'],
+];
+const SHORT = [ ['BLEND','CHAI LATTE'], ['SIZE','TALL (12OZ)'], ['TRACKS','15 · ~60 MIN'] ];
+const MSGS = ['원두를 고르는 중...','온도를 맞추는 중...','무드를 섞는 중...','플레이리스트 고르는 중...'];
+
+let speed = 1;
+function rowsHTML(list){
+  return list.map(([k,v]) =>
+    `<div class="rrow pend"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+function run(id, list, gap){
+  const box = document.getElementById(id+'-rows');
+  box.innerHTML = rowsHTML(list);
+  const rows = [...box.children];
+  rows.forEach((r,i) => setTimeout(() => {
+    rows.forEach(x=>x.classList.remove('cursorline'));
+    r.classList.add('in'); r.classList.remove('pend');
+    if (i < rows.length-1) r.classList.add('cursorline');
+  }, (gap*i + 260) * speed));
+  const msg = document.getElementById(id+'-msg');
+  MSGS.forEach((m,i)=> setTimeout(()=> msg.textContent = m, (800*i + 300) * speed));
+}
+function replay(){
+  document.querySelectorAll('.scr').forEach(s=>{
+    s.querySelectorAll('.paper, .bar2 i, .cup i').forEach(el=>{
+      const a = el.style.animation; el.style.animation='none'; void el.offsetWidth; el.style.animation=a||'';
+    });
+  });
+  run('A', FULL, 300); run('B', FULL, 320); run('C', SHORT, 420);
+}
+document.getElementById('replay').addEventListener('click', replay);
+document.getElementById('slow').addEventListener('click', (e)=>{
+  e.target.classList.toggle('on');
+  speed = e.target.classList.contains('on') ? 2.2 : 1;
+  replay();
+});
+replay();
+</script>
+</body>
+</html>

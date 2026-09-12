@@ -654,6 +654,7 @@ async function blend() {
   state.profile = buildProfile(state.sliders);
   playBrewSfx(state.sliders);
   showScreen('loading');
+  renderBrewReceipt();
   $('brew-error').classList.add('hidden');
   $('brew-bar-fill').style.width = '8%';
 
@@ -945,6 +946,48 @@ function renderReceipt() {
     ['SOURCE', ENGINE_LABELS[state.engine] || (state.demo ? 'Demo Curation' : 'YouTube Match')],
     ['30s PREVIEW', state.itunes ? state.itunes.trackName : '—'],
   ].map(([k, v]) => `<div class="receipt-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+
+/* ── SCR-03 로딩: 영수증이 뽑혀 나오며 한 줄씩 인쇄된다 ──
+   재생 화면 renderReceipt() 와 같은 항목이라 '제조 중 -> 완성본' 으로 이어진다.
+   TRACKS 는 큐가 아직 없어 컵 사이즈에서 예정 곡수를 쓴다. */
+let brewRowTimers = [];
+
+function renderBrewReceipt() {
+  const p = state.profile;
+  if (!p) return;
+  const sl = p.sliders;
+  const size = SIZES[p.size] || SIZES.tall;
+  $('brew-batch').textContent = `#BATCH-${p.code.replace(' ', '')}-${p.name.split(' ')[0]}`;
+
+  const rows = [
+    ['SWEETNESS', `${sl.sweet}%`],
+    ['TEMPERATURE', `${p.hot ? 'HOT' : 'COLD'} (${sl.temp}%)`],
+    ['BODY', `${sl.body}%`],
+    ['SIZE', `${size.label.toUpperCase()} (${size.oz}OZ)`],
+    ['BLEND', p.name],
+    ['TRACKS', `${size.tracks} SONGS · ~${size.mins} MIN`],
+  ];
+  const box = $('brew-rows');
+  box.innerHTML = rows
+    .map(([k, v]) => `<div class="receipt-row"><span class="k">${k}</span><span class="v">${v}</span></div>`)
+    .join('');
+
+  brewRowTimers.forEach(clearTimeout);
+  brewRowTimers = [];
+  const els = [...box.children];
+  els.forEach((el, i) => {
+    brewRowTimers.push(setTimeout(() => {
+      els.forEach((x) => x.classList.remove('cursor'));
+      el.classList.add('in');
+      if (i < els.length - 1) el.classList.add('cursor');   // 다음 줄 대기 커서
+    }, 300 * i + 420));                                     // 종이가 내려오는 동안 시작
+  });
+}
+
+function stopBrewReceipt() {
+  brewRowTimers.forEach(clearTimeout);
+  brewRowTimers = [];
 }
 
 /* ── NOW BREWING 미니 플레이어 (라이브러리 하단) ── */
