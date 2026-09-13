@@ -65,5 +65,8 @@ print(f"  {'favicon.ico':<28} {len(out)//1024 or 1}K")
 PY
 fi
 
+cp "$OUT/favicon.ico" favicon.ico   # Safari 등이 링크와 무관하게 /favicon.ico 를 직접 요청
+printf "  %-28s %s\n" "/favicon.ico (루트 복사)" "$(du -h favicon.ico | cut -f1)"
+
 echo
 echo "완료 — index.html 의 <link> 와 manifest.json 이 이 파일들을 가리키는지 확인할 것"
