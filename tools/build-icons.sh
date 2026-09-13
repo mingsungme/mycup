@@ -19,6 +19,7 @@ command -v rsvg-convert >/dev/null || { echo "rsvg-convert 없음 — brew insta
 
 SRC=icons/icon.svg
 MASK=icons/icon-maskable.svg
+FAV=icons/favicon.svg   # 16~48px 전용 — 여백을 줄이고 별을 굵게 다시 그린 버전
 OUT=icons
 
 png() {  # png <소스> <크기> <출력> [배경색]
@@ -31,9 +32,9 @@ png() {  # png <소스> <크기> <출력> [배경색]
 }
 
 echo "일반 아이콘"
-png "$SRC" 16  favicon-16.png
-png "$SRC" 32  favicon-32.png
-png "$SRC" 48  favicon-48.png
+png "$FAV" 16  favicon-16.png
+png "$FAV" 32  favicon-32.png
+png "$FAV" 48  favicon-48.png
 png "$SRC" 180 apple-touch-icon.png "#131411"   # iOS 는 알파를 검게 칠함
 png "$SRC" 192 icon-192.png
 png "$SRC" 512 icon-512.png

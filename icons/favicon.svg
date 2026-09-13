@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 16/32/48px 파비콘용. icon.svg 를 그대로 줄이면 여백 때문에 그림이 10px 남짓이라
+       배경 여백을 줄여 컵을 키우고, 별은 6각으로 굵게 + 배경색 테두리로 컵과 떼어 놓았다 -->
+  <rect width="512" height="512" rx="96" fill="#131411"/>
+  <g transform="translate(56 220) scale(1.15) translate(-122 -208)">
+    <path d="M122 222 C190 208 318 214 372 220 C374 300 358 372 314 404 C282 426 214 426 184 404 C140 372 124 300 122 222 Z" fill="#f1e7a6"/>
+    <path d="M368 252 C442 236 452 344 350 350" fill="none" stroke="#f1e7a6" stroke-width="34" stroke-linecap="round"/>
+  </g>
+  <polygon points="341,35 354,98 417,106 371,143 396,201 334,179 291,239 284,170 209,159 267,118 254,59 307,81" fill="#e5beb5" stroke="#131411" stroke-width="32" stroke-linejoin="round" paint-order="stroke"/>
+</svg>
