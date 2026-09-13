@@ -6,10 +6,12 @@
 <meta name="theme-color" content="#131411" />
 <title>My Cup — Mood-to-Drink Music Player</title>
 <link rel="manifest" href="manifest.json" />
-<!-- SVG 를 먼저 주고, 못 읽는 브라우저는 .ico 로 폴백.
+<!-- Safari 는 macOS 26 이전까지 SVG 파비콘을 못 읽고 'alternate icon' 도 무시한다.
+     그래서 .ico 를 평범한 rel="icon" 으로 먼저 주고(sizes 를 박아 두면 Chrome 은 SVG 를 고른다),
+     루트 /favicon.ico 도 둔다(Safari 가 링크와 별개로 직접 요청함).
      apple-touch-icon 은 iOS 가 SVG 를 못 읽으므로 반드시 PNG. -->
+<link rel="icon" href="icons/favicon.ico" sizes="32x32" />
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
-<link rel="alternate icon" href="icons/favicon.ico" sizes="16x16 32x32 48x48" />
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
 <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
